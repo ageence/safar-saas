@@ -65,7 +65,7 @@ export default async function OffersPage() {
                 <a href={`/offre/${offer.id}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline" }) + " w-full text-primary hover:text-primary hover:bg-primary/10"}>
                   Voir la page publique
                 </a>
-              </CardFooter>
+              </CardFoote>
             </Card>
           ))
         )}
