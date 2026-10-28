@@ -35,82 +35,50 @@
 
 @layer base {
   :root {
-    /* Fond principal : Un beige/sable très lumineux (fini le blanc clinique) */
-    --background: 40 33% 98%;
-    /* Texte principal : Bleu marine profond (fini le noir agressif) */
-    --foreground: 222 47% 15%;
-
-    /* Cartes : Blanches avec un éclat chaud */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 15%;
-
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 15%;
-
-    /* PRIMAIRE : Bleu Lagon / Turquoise vibrant (La mer) */
-    --primary: 190 90% 45%;
-    --primary-foreground: 0 0% 100%;
-
-    /* SECONDAIRE : Corail intense (Le coucher de soleil) */
-    --secondary: 15 85% 60%;
-    --secondary-foreground: 0 0% 100%;
-
-    /* ACCENT : Jaune d'or pour les survols (Le soleil) */
-    --accent: 45 93% 55%;
-    --accent-foreground: 222 47% 15%;
-
-    /* MUTED : Un bleu-gris très doux pour les éléments secondaires (fini le gris triste) */
-    --muted: 190 30% 93%;
-    --muted-foreground: 215 25% 45%;
-
-    /* DESTRUCTIVE : Un rouge rosé éclatant */
+    --popover-foreground: 222 47% 11%;
+    --primary: 199 89% 48%; /* Ocean Blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 15 85% 60%; /* Coral / Sun */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 260 80% 65%; /* Purple touch */
+    --accent-foreground: 210 40% 98%;
     --destructive: 345 80% 55%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* BORDURES : Un bleu lagon très clair translucide au lieu du gris basique */
-    --border: 190 40% 85%;
-    --input: 190 40% 85%;
-    --ring: 190 90% 45%;
-
-    /* Des angles très arrondis (généreux, modernes et amicaux) */
-    --radius: 1.5rem;
-  }
-
-  .dark {
-    /* Un mode nuit basé sur des tons "Nuit Tropicale" (Bleu abyssal) au lieu du gris/noir */
-    --background: 230 40% 10%;
-    --foreground: 210 40% 98%;
-    --card: 230 40% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 230 40% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 190 90% 45%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 15 85% 60%;
-    --secondary-foreground: 0 0% 100%;
-    --accent: 45 93% 55%;
-    --accent-foreground: 230 40% 10%;
-    --muted: 230 30% 20%;
-    --muted-foreground: 215 20% 70%;
-    --destructive: 345 80% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 230 30% 25%;
-    --input: 230 30% 25%;
-    --ring: 190 90% 45%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+    --radius: 1.25rem;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
+  
+  /* Fond global : Léger dégradé ciel/sable très subtil */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground min-h-screen;
+    background: radial-gradient(circle at top left, #e0f2fe 0%, #f8fafc 50%, #fff7ed 100%);
   }
-  /* Ajout d'une ombre colorée douce sous toutes les cartes pour un effet premium */
-  .bg-card {
-    box-shadow: 0 10px 40px -10px rgba(6, 182, 212, 0.08);
-  }
+}
+
+/* --- CLASSES UI PREMIUM POUR LE VOYAGE --- */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-xl border border-white shadow-xl;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-500;
 }
 
 @theme inline {

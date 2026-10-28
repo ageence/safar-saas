@@ -1,4 +1,5 @@
 export const instant = false;
+
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -20,13 +21,8 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // On récupère la session utilisateur
   const session = await auth();
-
-  // Si pas de session, sécurité supplémentaire (le middleware s'en occupe normalement)
-  if (!session?.user) {
-    redirect("/login");
-  }
+  if (!session?.user) redirect("/login");
 
   const navLinks = [
     { name: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard },
@@ -38,65 +34,83 @@ export default async function DashboardLayout({
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-muted/20">
-      {/* SIDEBAR - Desktop */}
-      <aside className="hidden border-r bg-card md:flex md:w-64 md:flex-col">
-        <div className="flex h-14 items-center border-b px-6 text-primary">
-          <PlaneTakeoff className="h-6 w-6 mr-2" />
-          <span className="font-bold tracking-tight">Safar SaaS</span>
+    <div className="flex min-h-screen w-full bg-transparent">
+      
+      {/* SIDEBAR - Desktop (Premium Océan) */}
+      <aside className="hidden md:flex w-64 flex-col flex-shrink-0 bg-gradient-to-b from-slate-900 via-blue-900 to-indigo-900 text-white shadow-2xl relative z-20">
+        <div className="h-20 flex items-center px-8 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-tr from-cyan-400 to-blue-500 p-2 rounded-xl shadow-lg">
+              <PlaneTakeoff className="h-6 w-6 text-white" />
+            </div>
+            <span className="font-bold text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-100 to-white">
+              Safar<span className="font-light">SaaS</span>
+            </span>
+          </div>
         </div>
-        <nav className="flex-1 overflow-auto py-4">
-          <ul className="grid gap-1 px-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-primary transition-colors"
-                >
-                  <link.icon className="h-4 w-4" />
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-blue-100/70 rounded-xl transition-all duration-300 hover:bg-white/10 hover:text-white hover:translate-x-1 hover:shadow-lg"
+            >
+              <link.icon className="h-5 w-5" />
+              {link.name}
+            </Link>
+          ))}
         </nav>
-        <div className="border-t p-4">
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+
+        <div className="p-4 m-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
               {session.user.name?.charAt(0) || "U"}
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{session.user.name}</span>
-              <span className="text-xs text-muted-foreground">{session.user.email}</span>
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-sm font-semibold truncate text-white">{session.user.name}</span>
+              <span className="text-xs text-blue-200 truncate">{session.user.email}</span>
             </div>
           </div>
+          <form action={async () => {
+            "use server";
+            const { signOut } = await import("@/auth");
+            await signOut();
+          }}>
+            <Button variant="ghost" type="submit" className="w-full justify-start text-red-300 hover:text-red-100 hover:bg-red-500/20 transition-all rounded-xl">
+              <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+            </Button>
+          </form>
         </div>
       </aside>
 
-      {/* CONTENU PRINCIPAL */}
-      <div className="flex flex-1 flex-col">
-        {/* HEADER - Mobile & Desktop */}
-        <header className="flex h-14 items-center justify-between border-b bg-card px-4 md:justify-end">
-          
-          {/* Menu Mobile */}
+      {/* CONTENU PRINCIPAL & HEADER MOBILE */}
+      <div className="flex flex-1 flex-col relative z-10">
+        
+        {/* HEADER - Mobile (Affiché uniquement sur petits écrans) */}
+        <header className="flex md:hidden h-16 items-center justify-between border-b bg-white/70 backdrop-blur-md px-4 shadow-sm relative z-30">
           <Sheet>
-          <SheetTrigger className="md:hidden p-2 rounded-md hover:bg-accent text-foreground">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Menu</span>
+            <SheetTrigger className="p-2 rounded-md hover:bg-blue-50 text-blue-900 transition-colors">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Menu</span>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 sm:w-72 bg-card p-0">
-              <div className="flex h-14 items-center border-b px-6 text-primary">
-                <PlaneTakeoff className="h-6 w-6 mr-2" />
-                <span className="font-bold tracking-tight">Safar SaaS</span>
+            <SheetContent side="left" className="w-72 bg-gradient-to-b from-slate-900 via-blue-900 to-indigo-900 p-0 border-r-white/10">
+              <div className="flex h-20 items-center px-6 border-b border-white/10 text-white">
+                <div className="bg-gradient-to-tr from-cyan-400 to-blue-500 p-2 rounded-xl shadow-lg mr-3">
+                  <PlaneTakeoff className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-bold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-100 to-white">
+                  Safar<span className="font-light">SaaS</span>
+                </span>
               </div>
-              <nav className="grid gap-1 p-4">
+              <nav className="grid gap-2 p-4">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-primary"
+                  <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-blue-100/70 hover:bg-white/10 hover:text-white transition-all"
                   >
-                    <link.icon className="h-4 w-4" />
+                    <link.icon className="h-5 w-5" />
                     {link.name}
                   </Link>
                 ))}
@@ -104,22 +118,22 @@ export default async function DashboardLayout({
             </SheetContent>
           </Sheet>
 
-          {/* Déconnexion Rapide (Header) */}
           <form action={async () => {
             "use server";
             const { signOut } = await import("@/auth");
             await signOut();
           }}>
-            <Button variant="ghost" size="sm" type="submit" className="text-muted-foreground hover:text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
-              Déconnexion
+            <Button variant="ghost" size="icon" type="submit" className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl">
+              <LogOut className="h-5 w-5" />
             </Button>
           </form>
         </header>
 
-        {/* ZONE DE RENDU DES PAGES */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-100/40 via-amber-50/30 to-rose-100/40">
-          {children}
+        {/* ZONE DE RENDU DES PAGES (Avec le fond aquarelle) */}
+        <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-100/40 via-amber-50/30 to-rose-100/40">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
