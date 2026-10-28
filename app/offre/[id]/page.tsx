@@ -1,3 +1,4 @@
+export const instant = false;
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { MapPin, Users, PlaneTakeoff } from "lucide-react";
