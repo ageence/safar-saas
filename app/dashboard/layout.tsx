@@ -118,7 +118,7 @@ export default async function DashboardLayout({
         </header>
 
         {/* ZONE DE RENDU DES PAGES */}
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-gradient-to-br from-blue-50/50 via-white to-orange-50/30">
           {children}
         </main>
       </div>
