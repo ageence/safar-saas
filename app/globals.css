@@ -23,7 +23,10 @@
 
 @layer base {
   body {
-    @apply text-foreground bg-slate-50 antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    background-color: #f8fafc;
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
