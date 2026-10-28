@@ -1,9 +1,7 @@
-
-
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { Search, MessageCircle, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -86,12 +84,10 @@ export default async function ClientsPage() {
                       {client.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" asChild>
-                      <a href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer">
-                        <MessageCircle className="h-4 w-4 text-green-500" />
-                      </a>
-                    </Button>
+                 <TableCell className="text-right">
+                    <a href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "ghost", size: "icon" })}>
+                      <MessageCircle className="h-4 w-4 text-green-500" />
+                    </a>
                   </TableCell>
                 </TableRow>
               ))

@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { PlaneTakeoff, MapPin, Users, Tag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button"; // <-- IL MANQUAIT CETTE LIGNE
+import { buttonVariants } from "@/components/ui/button";
 import { AddOfferDialog } from "./add-offer-dialog";
 
 export default async function OffersPage() {
@@ -62,11 +62,9 @@ export default async function OffersPage() {
 
               {/* LE NOUVEAU BOUTON EST ICI */}
               <CardFooter className="pt-4 border-t border-border/50">
-                <Button variant="outline" className="w-full text-primary hover:text-primary hover:bg-primary/10" asChild>
-                  <a href={`/offre/${offer.id}`} target="_blank" rel="noreferrer">
-                    Voir la page publique
-                  </a>
-                </Button>
+                <a href={`/offre/${offer.id}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline" }) + " w-full text-primary hover:text-primary hover:bg-primary/10"}>
+                  Voir la page publique
+                </a>
               </CardFooter>
             </Card>
           ))
