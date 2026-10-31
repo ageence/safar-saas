@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { 
-  LayoutDashboard, Users, PlaneTakeoff, FileText, Wallet, Settings, LogOut, Compass
+  LayoutDashboard, Users, PlaneTakeoff, FileText, Wallet, Settings, LogOut, Compass, Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
