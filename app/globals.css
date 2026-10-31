@@ -50,36 +50,33 @@
 
 @layer base {
   :root {
-    /* THÈME VOYAGE PREMIUM (Bleu Océan, Corail, Soleil) */
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 199 89% 48%; /* Bleu Océan */
+    --primary: 199 89% 48%; 
     --primary-foreground: 0 0% 100%;
-    --secondary: 15 85% 60%; /* Corail */
+    --secondary: 15 85% 60%; 
     --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 45 93% 55%; /* Jaune Soleil */
+    --accent: 45 93% 55%; 
     --accent-foreground: 222 47% 11%;
-    --destructive: 345 80% 55%; /* Rouge Rosé */
+    --destructive: 345 80% 55%; 
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 199 89% 48%;
-    --radius: 1.5rem; /* Arrondis très doux */
+    --radius: 1.5rem; 
 
-    /* Graphiques vibrants */
     --chart-1: 199 89% 48%;
     --chart-2: 15 85% 60%;
     --chart-3: 45 93% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 160 60% 45%;
 
-    /* Sidebar (Panneau latéral sombre et chic) */
     --sidebar: 222 47% 11%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 199 89% 48%;
@@ -141,56 +138,92 @@
 }
 
 /* =========================================
-   STYLE WOW & PREMIUM (CSS PUR POUR VERCEL)
+   STYLE WOW & PREMIUM EXTRÊME (ANIMATIONS)
    ========================================= */
 
-/* FOND VIVANT : Dégradé très doux Ciel / Sable en arrière-plan */
+/* 1. FOND VIVANT (Animation des dégradés) */
 .bg-paradise {
-  background: radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.08), transparent 50%),
-              radial-gradient(circle at 85% 30%, rgba(249, 115, 22, 0.08), transparent 50%),
-              radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.08), transparent 50%);
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.15), transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.1), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15), transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.1), transparent 50%);
   background-color: #f8fafc;
+  background-size: 200% 200%;
+  animation: bgAnimation 15s ease infinite alternate;
   background-attachment: fixed;
 }
+@keyframes bgAnimation {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 100%; }
+}
 
-/* EFFET VERRE TREMPÉ (Glassmorphism) pour les cartes et tableaux */
+/* 2. VERRE TREMPÉ 3D AVANCÉ (Reflet de lumière sur les bords) */
 .glass-panel {
-  background-color: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 1px solid rgba(255, 255, 255, 1);
+  border-left: 1px solid rgba(255, 255, 255, 0.8);
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-radius: 1.5rem;
 }
 
 .glass-panel-solid {
   background-color: #ffffff;
   border: 1px solid #f1f5f9;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
   border-radius: 1.5rem;
 }
 
-/* ANIMATION FLUIDE AU SURVOL (Boutons, Cartes) */
+/* 3. HOVER AVEC EFFET RESSORT (Bouncy Lift) & Lueur */
 .hover-lift {
-  transition: all 0.5s cubic-bezier(0, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .hover-lift:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px -10px rgba(6, 182, 212, 0.25);
-  border-color: rgba(6, 182, 212, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 40px -10px rgba(6, 182, 212, 0.25), 0 0 20px rgba(6, 182, 212, 0.1);
+  border-color: rgba(255, 255, 255, 1);
 }
 
-/* TEXTES EN DÉGRADÉ (Titres principaux) */
+/* 4. TEXTE EN DÉGRADÉ ANIMÉ (Titres qui changent de couleur) */
 .text-gradient {
-  background-image: linear-gradient(to right, #0891b2, #2563eb, #6366f1);
+  background-image: linear-gradient(270deg, #0891b2, #2563eb, #8b5cf6, #0891b2);
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: textGradientMove 6s ease infinite;
+}
+@keyframes textGradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* =========================================
-   BARRE DE DÉFILEMENT INVISIBLE (Mac OS Style)
-   ========================================= */
+/* 5. TABLEAUX PREMIUM (Animation au survol des lignes) */
+tbody tr {
+  transition: all 0.3s ease;
+}
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  transform: scale(1.005);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+  border-radius: 0.75rem;
+}
+tbody tr td:first-child {
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+tbody tr td:last-child {
+  border-top-right-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+/* 6. BARRE DE DÉFILEMENT INVISIBLE (Mac OS Style) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
