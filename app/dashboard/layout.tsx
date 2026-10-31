@@ -14,43 +14,48 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
 
   const navLinks = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard, color: "text-blue-500" },
-    { name: "Clients", href: "/dashboard/clients", icon: Users, color: "text-emerald-500" },
-    { name: "Voyages", href: "/dashboard/offres", icon: PlaneTakeoff, color: "text-orange-500" },
-    { name: "Visas", href: "/dashboard/visas", icon: FileText, color: "text-purple-500" },
-    { name: "Finances", href: "/dashboard/finances", icon: Wallet, color: "text-rose-500" },
-    { name: "Settings", href: "/dashboard/parametres", icon: Settings, color: "text-slate-500" },
+    { name: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard, color: "text-blue-500", bg: "bg-blue-50" },
+    { name: "Clients", href: "/dashboard/clients", icon: Users, color: "text-emerald-500", bg: "bg-emerald-50" },
+    { name: "Voyages", href: "/dashboard/offres", icon: PlaneTakeoff, color: "text-orange-500", bg: "bg-orange-50" },
+    { name: "Visas", href: "/dashboard/visas", icon: FileText, color: "text-purple-500", bg: "bg-purple-50" },
+    { name: "Finances", href: "/dashboard/finances", icon: Wallet, color: "text-rose-500", bg: "bg-rose-50" },
+    { name: "Paramètres", href: "/dashboard/parametres", icon: Settings, color: "text-slate-500", bg: "bg-slate-100" },
   ];
 
   return (
     <>
-      <div className="bg-light-paradise"></div>
+      <div className="bg-promax-paradise"></div>
 
       <div className="flex h-screen w-full overflow-hidden text-slate-800 selection:bg-cyan-100">
         
-        {/* SIDEBAR FLOTTANTE CLAIRE */}
-        <aside className="hidden md:flex flex-col w-72 h-full py-6 pl-6">
-          <div className="premium-glass flex-1 flex flex-col relative z-20">
+        {/* SIDEBAR FLOTTANTE PRO MAX */}
+        <aside className="hidden md:flex flex-col w-[300px] h-full py-6 pl-6">
+          <div className="glass-promax flex-1 flex flex-col relative z-20">
             
+            {/* Décor abstrait dans le coin de la sidebar */}
+            <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-cyan-100/50 to-transparent rounded-t-[1.75rem] pointer-events-none"></div>
+
             {/* Logo Area */}
-            <div className="h-24 flex items-center px-8 border-b border-slate-100/50">
+            <div className="h-28 flex items-center px-8 relative z-10">
               <div className="flex items-center gap-3">
-                <Compass className="h-8 w-8 text-cyan-500 animate-[spin_10s_linear_infinite]" />
+                <div className="p-2.5 bg-white rounded-2xl shadow-[0_8px_15px_rgba(14,165,233,0.2)]">
+                  <Compass className="h-7 w-7 text-cyan-500 animate-[spin_12s_linear_infinite]" />
+                </div>
                 <span className="font-extrabold text-2xl tracking-tighter text-slate-800">
-                  SAFAR<span className="text-cyan-500 font-light">.OS</span>
+                  SAFAR<span className="text-cyan-500 font-light">.PRO</span>
                 </span>
               </div>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <nav className="flex-1 px-5 py-4 space-y-2 relative z-10 overflow-y-auto">
               {navLinks.map((link) => (
                 <Link 
                   key={link.href} href={link.href} 
-                  className="flex items-center gap-4 px-4 py-3.5 text-[15px] font-bold text-slate-500 rounded-xl transition-all duration-300 hover:bg-white hover:text-slate-900 hover:pl-6 hover:shadow-sm group"
+                  className="flex items-center gap-4 px-4 py-3.5 text-[15px] font-bold text-slate-500 rounded-2xl transition-all duration-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)] group border border-transparent hover:border-white"
                 >
-                  <div className={`p-2 rounded-lg bg-slate-50 group-hover:bg-${link.color.split('-')[1]}-50 transition-colors`}>
-                    <link.icon className={`h-5 w-5 ${link.color} transition-transform group-hover:scale-110`} />
+                  <div className={`p-2.5 rounded-xl ${link.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                    <link.icon className={`h-5 w-5 ${link.color}`} />
                   </div>
                   {link.name}
                 </Link>
@@ -58,19 +63,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </nav>
 
             {/* User Profile */}
-            <div className="p-4 border-t border-slate-100/50 bg-white/50">
-              <div className="flex items-center gap-3 mb-4 px-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-md">
+            <div className="p-5 m-5 bg-white/60 rounded-2xl border border-white shadow-sm relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white font-black shadow-lg shadow-cyan-500/30">
                   {session.user.name?.charAt(0) || "U"}
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-bold text-slate-800 truncate">{session.user.name}</span>
-                  <span className="text-xs text-slate-500 truncate">Administrateur</span>
+                  <span className="text-sm font-extrabold text-slate-800 truncate">{session.user.name}</span>
+                  <span className="text-[11px] font-bold text-cyan-600 uppercase tracking-wider truncate">CEO / Admin</span>
                 </div>
               </div>
               <form action={async () => { "use server"; const { signOut } = await import("@/auth"); await signOut(); }}>
-                <Button variant="ghost" type="submit" className="w-full text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all justify-start font-bold">
-                  <LogOut className="mr-3 h-4 w-4" /> Déconnexion
+                <Button variant="ghost" type="submit" className="w-full text-rose-500 hover:text-white hover:bg-rose-500 rounded-xl transition-all font-bold h-10 shadow-sm bg-white">
+                  <LogOut className="mr-2 h-4 w-4" /> Déconnexion
                 </Button>
               </form>
             </div>
@@ -80,19 +85,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 flex flex-col h-full overflow-hidden relative">
           
-          {/* Header Mobile */}
-          <header className="md:hidden flex h-20 items-center justify-between px-6 premium-glass m-4 rounded-2xl relative z-50">
-             <span className="font-extrabold text-xl text-slate-800">SAFAR<span className="text-cyan-500 font-light">.OS</span></span>
+          {/* Header Mobile (Ultra Luxe) */}
+          <header className="md:hidden flex h-20 items-center justify-between px-6 glass-promax m-4 relative z-50">
+             <span className="font-extrabold text-xl text-slate-800 flex items-center gap-2">
+               <Compass className="h-6 w-6 text-cyan-500" /> SAFAR.PRO
+             </span>
             <Sheet>
-              <SheetTrigger className="p-2 text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">
+              <SheetTrigger className="p-2.5 bg-white text-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all">
                 <Menu className="h-6 w-6" />
               </SheetTrigger>
-              <SheetContent side="left" className="w-80 bg-white/95 backdrop-blur-xl border-none p-0 text-slate-800 m-2 h-[calc(100vh-16px)] rounded-3xl shadow-2xl">
-                 <div className="p-8"><span className="text-2xl font-extrabold text-gradient-ocean">Menu Principal</span></div>
-                 <nav className="px-4 space-y-2">
+              <SheetContent side="left" className="w-[85vw] bg-white/90 backdrop-blur-3xl border-none p-0 text-slate-800 m-2 h-[calc(100vh-16px)] rounded-3xl shadow-2xl">
+                 <div className="p-8"><span className="text-2xl font-extrabold text-royal-ocean">Menu</span></div>
+                 <nav className="px-4 space-y-3">
                     {navLinks.map((link) => (
-                      <Link key={link.href} href={link.href} className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-xl font-bold text-slate-600 hover:text-slate-900 transition-colors">
-                        <link.icon className={`h-6 w-6 ${link.color}`}/>
+                      <Link key={link.href} href={link.href} className="flex items-center gap-4 p-4 hover:bg-white rounded-2xl font-bold text-slate-600 shadow-sm border border-transparent hover:border-slate-100 transition-all">
+                        <div className={`p-2 rounded-xl ${link.bg}`}><link.icon className={`h-6 w-6 ${link.color}`}/></div>
                         {link.name}
                       </Link>
                     ))}
