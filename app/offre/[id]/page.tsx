@@ -1,3 +1,5 @@
+export const instant = false;
+
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Users, CheckCircle2, ArrowRight, PlaneTakeoff } from "lucide-react";
