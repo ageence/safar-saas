@@ -67,6 +67,7 @@ model Offer {
   title          String   
   destination    String
   type           String   
+  imageUrl       String?
   price          Float    
   totalSeats     Int?     
   availableSeats Int?     

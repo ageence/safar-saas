@@ -1,77 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createOffer } from "./actions";
+import { UploadCloud, X, Plus, PlaneTakeoff } from "lucide-react";
 
 export function AddOfferDialog() {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    await createOffer(new FormData(e.currentTarget));
-    setLoading(false);
-    setOpen(false);
-  }
+  // Fonction magique qui convertit l'image uploadée en format texte (Base64) pour la BDD
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
-    <>
-      <Button onClick={() => setOpen(true)} className="bg-primary text-primary-foreground font-semibold">
-        <Plus className="mr-2 h-4 w-4" /> Nouvelle Offre
-      </Button>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 font-black rounded-2xl h-14 px-8 hover:scale-105 transition-all">
+          <Plus className="mr-2 h-6 w-6" /> Créer un Voyage
+        </Button>
+      </DialogTrigger>
       
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Créer une offre de voyage</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={onSubmit} className="space-y-4">
+      {/* MODAL ULTRA LUXE */}
+      <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden">
+        
+        {/* HEADER MODAL */}
+        <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-8 border-b border-white/50 flex items-center gap-5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-[30px]"></div>
+          <div className="p-4 bg-white rounded-2xl shadow-sm border border-cyan-50 relative z-10">
+            <PlaneTakeoff className="h-7 w-7 text-cyan-500" />
+          </div>
+          <div className="relative z-10">
+            <DialogTitle className="text-3xl font-black text-slate-800 tracking-tighter">Nouveau Voyage</DialogTitle>
+            <p className="text-sm font-bold text-slate-500 mt-1">Configurez l'offre et uploadez l'affiche.</p>
+          </div>
+        </div>
+
+        {/* FORMULAIRE (À relier à ton server action habituel) */}
+        <form className="p-8 space-y-6" action="/api/offers" method="POST">
+          
+          {/* ZONE D'UPLOAD D'IMAGE (Drag & Drop visuel) */}
+          <div className="space-y-3">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Affiche / Photo (Upload)</label>
+
+            {preview ? (
+              <div className="relative w-full h-56 rounded-[2rem] overflow-hidden border-4 border-cyan-500 shadow-lg group">
+                <img src={preview} alt="Aperçu" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                  <Button type="button" variant="destructive" className="rounded-xl font-bold px-6 h-12" onClick={() => setPreview(null)}>
+                    <X className="mr-2 h-5 w-5" /> Changer la photo
+                  </Button>
+                </div>
+                {/* L'image convertie est stockée ici pour être envoyée au backend */}
+                <input type="hidden" name="imageUrl" value={preview} />
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-56 rounded-[2rem] border-2 border-dashed border-slate-300 hover:border-cyan-500 hover:bg-cyan-50/50 transition-all flex flex-col items-center justify-center cursor-pointer group bg-slate-50/50"
+              >
+                <div className="p-5 bg-white rounded-2xl shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all mb-4 border border-slate-100">
+                  <UploadCloud className="h-8 w-8 text-cyan-500" />
+                </div>
+                <p className="text-base font-black text-slate-700">Cliquez pour uploader l'affiche</p>
+                <p className="text-xs font-bold text-slate-400 mt-2">JPEG, PNG ou WEBP (Auto-converti)</p>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              </div>
+            )}
+          </div>
+
+          {/* AUTRES CHAMPS DU VOYAGE */}
+          <div className="grid grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label htmlFor="title">Titre de l'offre</Label>
-              <Input id="title" name="title" placeholder="Ex: Séjour Istanbul 7 Nuits" required className="bg-muted/50" />
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Titre du voyage</label>
+              <input required name="title" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="Ex: Omra VIP VIP" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="destination">Destination</Label>
-                <Input id="destination" name="destination" placeholder="Ex: Turquie" required className="bg-muted/50" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
-                <Select name="type" required defaultValue="VOYAGE">
-                  <SelectTrigger className="bg-muted/50">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="VOYAGE">Voyage organisé</SelectItem>
-                    <SelectItem value="OMRA">Omra</SelectItem>
-                    <SelectItem value="VISA">Dossier Visa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Destination</label>
+              <input required name="destination" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="Ex: La Mecque" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price">Prix (DA)</Label>
-                <Input id="price" name="price" type="number" required className="bg-muted/50" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="totalSeats">Nombre de places</Label>
-                <Input id="totalSeats" name="totalSeats" type="number" required className="bg-muted/50" />
-              </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Prix (DA)</label>
+              <input required name="price" type="number" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="250000" />
             </div>
-            <Button type="submit" className="w-full font-semibold" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Créer l'offre"}
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Catégorie</label>
+              <select required name="type" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white cursor-pointer">
+                <option value="VOYAGE">Voyage Organisé</option>
+                <option value="OMRA">Omra</option>
+              </select>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black h-14 rounded-2xl text-lg mt-6 shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.15)] hover:-translate-y-1 transition-all">
+            Publier l'Offre & Générer la Page
+          </Button>
+        </form>
+
+      </DialogContent>
+    </Dialog>
   );
 }
