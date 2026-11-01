@@ -2,17 +2,19 @@ export const instant = false;
 
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Calendar, MapPin, Users, CheckCircle2, ArrowRight, PlaneTakeoff } from "lucide-react";
+import { Calendar, MapPin, Users, CheckCircle2, ArrowRight, PlaneTakeoff, Sparkles } from "lucide-react";
 
-export default async function PublicOfferPage({ params }: { params: { id: string } }) {
+// LA CORRECTION EST ICI : params est maintenant une Promise (Next.js 15)
+export default async function PublicOfferPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params; // <--- On attend que l'ID charge !
+
   const offerData = await prisma.offer.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { agency: true }
   });
 
   if (!offerData) return notFound();
   
-  // Contournement TS pour s'adapter à ton schéma réel (availableSeats au lieu de availableSpots, etc.)
   const offer = offerData as any; 
 
   const defaultImage = offer.type === "OMRA" 
@@ -110,11 +112,6 @@ export default async function PublicOfferPage({ params }: { params: { id: string
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Numéro de téléphone</label>
                 <input required name="phone" type="tel" className="w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" placeholder="0555 00 00 00" />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">N° Passeport (Optionnel)</label>
-                <input name="passport" type="text" className="w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" placeholder="Numéro de passeport" />
               </div>
 
               <div className="pt-4">
