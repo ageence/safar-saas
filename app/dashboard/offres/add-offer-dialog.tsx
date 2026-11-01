@@ -10,7 +10,6 @@ export function AddOfferDialog() {
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fonction magique qui convertit l'image uploadée en format texte (Base64) pour la BDD
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -24,16 +23,12 @@ export function AddOfferDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 font-black rounded-2xl h-14 px-8 hover:scale-105 transition-all">
-          <Plus className="mr-2 h-6 w-6" /> Créer un Voyage
-        </Button>
+      <DialogTrigger className="inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 font-black rounded-2xl h-14 px-8 hover:scale-105 transition-all">
+        <Plus className="mr-2 h-6 w-6" /> Créer un Voyage
       </DialogTrigger>
       
-      {/* MODAL ULTRA LUXE */}
       <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden">
         
-        {/* HEADER MODAL */}
         <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-8 border-b border-white/50 flex items-center gap-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-[30px]"></div>
           <div className="p-4 bg-white rounded-2xl shadow-sm border border-cyan-50 relative z-10">
@@ -45,10 +40,7 @@ export function AddOfferDialog() {
           </div>
         </div>
 
-        {/* FORMULAIRE (À relier à ton server action habituel) */}
         <form className="p-8 space-y-6" action="/api/offers" method="POST">
-          
-          {/* ZONE D'UPLOAD D'IMAGE (Drag & Drop visuel) */}
           <div className="space-y-3">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Affiche / Photo (Upload)</label>
 
@@ -60,7 +52,6 @@ export function AddOfferDialog() {
                     <X className="mr-2 h-5 w-5" /> Changer la photo
                   </Button>
                 </div>
-                {/* L'image convertie est stockée ici pour être envoyée au backend */}
                 <input type="hidden" name="imageUrl" value={preview} />
               </div>
             ) : (
@@ -72,13 +63,12 @@ export function AddOfferDialog() {
                   <UploadCloud className="h-8 w-8 text-cyan-500" />
                 </div>
                 <p className="text-base font-black text-slate-700">Cliquez pour uploader l'affiche</p>
-                <p className="text-xs font-bold text-slate-400 mt-2">JPEG, PNG ou WEBP (Auto-converti)</p>
+                <p className="text-xs font-bold text-slate-400 mt-2">JPEG, PNG ou WEBP</p>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               </div>
             )}
           </div>
 
-          {/* AUTRES CHAMPS DU VOYAGE */}
           <div className="grid grid-cols-2 gap-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Titre du voyage</label>
@@ -108,7 +98,6 @@ export function AddOfferDialog() {
             Publier l'Offre & Générer la Page
           </Button>
         </form>
-
       </DialogContent>
     </Dialog>
   );
