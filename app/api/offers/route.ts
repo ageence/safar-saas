@@ -12,13 +12,19 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
+    
+    // Récupération des données du formulaire
     const title = formData.get("title") as string;
     const destination = formData.get("destination") as string;
     const price = Number(formData.get("price"));
     const type = formData.get("type") as string;
     const imageUrl = formData.get("imageUrl") as string | null;
 
-    // SÉCURITÉ : On essaie de créer l'offre avec les variables de base
+    // Dates par défaut (Aujourd'hui, et dans 7 jours)
+    const startDate = new Date();
+    const endDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    // SÉCURITÉ : On respecte EXACTEMENT ton fichier schema.prisma
     await prisma.offer.create({
       data: {
         title,
@@ -27,19 +33,18 @@ export async function POST(request: Request) {
         type,
         imageUrl,
         agencyId,
-        
-        // On remplit les champs obligatoires probables pour éviter que Prisma ne crashe
-        dateDepart: new Date(),
-        dateRetour: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-        availableSeats: 50,
-      } as any 
+        // Les VRAIS noms de colonnes de ton Prisma :
+        startDate: startDate,
+        endDate: endDate,
+        totalSpots: 50,
+        availableSpots: 50,
+      }
     });
 
     return NextResponse.redirect(new URL("/dashboard/offres", request.url), 303);
     
   } catch (error: any) {
     console.error("CRASH PRISMA:", error);
-    // HNA L'ASTUCE : Si ça plante, tu verras EXACTEMENT pourquoi sur ton écran blanc !
     return new NextResponse(`CRASH DE LA BASE DE DONNÉES : ${error.message}`, { status: 500 });
   }
 }
