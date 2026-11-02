@@ -73,7 +73,12 @@ model Offer {
   availableSeats Int?     
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
+// 👇 LES 4 NOUVELLES COLONNES À AJOUTER 👇
+  startDate      DateTime?
+  endDate        DateTime?
+  totalSpots     Int?
+  availableSpots Int?
+  // 👆 👆 👆 👆 👆
   agencyId       String
   agency         Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   bookings       Booking[]
