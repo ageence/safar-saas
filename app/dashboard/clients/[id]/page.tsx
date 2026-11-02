@@ -3,11 +3,14 @@ export const instant = false;
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, PlaneTakeoff, Wallet, FileText, CheckCircle2, Printer, Plus, Download } from "lucide-react";
+import { ArrowLeft, User, PlaneTakeoff, Wallet, CheckCircle2, Printer, Plus } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 
-// ACTION SERVEUR : Ajouter un paiement (Correction du bug de Prisma)
+// ⚠️ IMPORT TRÈS IMPORTANT DU GESTIONNAIRE DE DOCUMENTS (Compression + Aperçu)
+import { DocumentManager } from "./document-manager"; 
+
+// ACTION SERVEUR : Ajouter un paiement
 async function addPaymentAction(formData: FormData) {
   "use server";
   const bookingId = formData.get("bookingId") as string;
@@ -21,7 +24,7 @@ async function addPaymentAction(formData: FormData) {
           agencyId: formData.get("agencyId") as string,
           clientId: formData.get("clientId") as string,
           bookingId: bookingId, 
-          method: "ESPÈCES" // <--- LE CORRECTIF EST ICI !
+          method: "ESPÈCES" 
         } as any 
       });
       revalidatePath(`/dashboard/clients/${bookingId}`);
@@ -29,22 +32,12 @@ async function addPaymentAction(formData: FormData) {
   }
 }
 
-// ACTION SERVEUR : Ajouter un document
-async function addDocumentAction(formData: FormData) {
+// ACTION SERVEUR : Ajouter un document (Adaptée pour la compression)
+async function addDocumentAction(bookingId: string, name: string, fileData: string) {
   "use server";
-  const bookingId = formData.get("bookingId") as string;
-  const name = formData.get("name") as string;
-  const file = formData.get("file") as File;
-  
-  let fileUrl = "";
-  if (file && file.size > 0) {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    fileUrl = `data:${file.type};base64,${buffer.toString("base64")}`;
-  }
-
   try {
     await prisma.document.create({
-      data: { name, fileUrl, bookingId } as any
+      data: { name, fileUrl: fileData, bookingId } as any
     });
     revalidatePath(`/dashboard/clients/${bookingId}`);
   } catch (e) { console.error("Erreur Document", e); }
@@ -123,40 +116,9 @@ export default async function ClientDossierPage({ params }: { params: Promise<{ 
             </div>
           </div>
 
-          {/* NOUVEAU : GESTION DES DOCUMENTS LIBRES */}
-          <div className="glass-promax p-8 rounded-[2rem]">
-            <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
-              <div className="p-3 bg-purple-50 text-purple-500 rounded-xl"><FileText className="w-6 h-6" /></div>
-              <h2 className="text-2xl font-black text-slate-800">Documents du Client</h2>
-            </div>
-            
-            {/* Liste des documents déjà uploadés */}
-            <div className="space-y-3 mb-6">
-              {documents.length === 0 ? (
-                <p className="text-slate-500 font-medium">Aucun document uploadé.</p>
-              ) : (
-                documents.map(doc => (
-                  <div key={doc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <span className="font-bold text-slate-700">{doc.name}</span>
-                    {doc.fileUrl && (
-                      <a href={doc.fileUrl} download={doc.name} className="flex items-center gap-2 text-cyan-600 font-bold hover:underline">
-                        <Download className="w-4 h-4" /> Télécharger
-                      </a>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+          {/* LE NOUVEAU COMPOSANT DOCUMENT QUI COMPRESSE ET AFFICHE */}
+          <DocumentManager bookingId={booking.id} documents={documents} onUpload={addDocumentAction} />
 
-            {/* Formulaire Libre d'upload */}
-            <form action={addDocumentAction} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-              <h4 className="font-bold text-slate-800">Ajouter un nouveau document</h4>
-              <input type="hidden" name="bookingId" value={booking.id} />
-              <input required type="text" name="name" placeholder="Nom (Ex: Passeport, Photo...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-cyan-500 outline-none" />
-              <input required type="file" name="file" className="text-slate-600" />
-              <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all">Uploader le document</button>
-            </form>
-          </div>
         </div>
 
         {/* COLONNE DROITE : FINANCES & PAIEMENT */}
