@@ -101,13 +101,21 @@ model Booking {
 documents   Document[]
 }
 
-// Table des Dossiers Visas (Celle qui manquait !)
+// 1. LE NOUVEAU MODÈLE VISA
 model VisaApplication {
   id              String   @id @default(cuid())
   country         String   
-  status          String   @default("DOC_MANQUANTS") 
-  missingDocs     String?  
+  type            String   @default("Touristique")
+  price           Float    @default(0)
+  status          String   @default("EN_ATTENTE") 
+  
   appointmentDate DateTime? 
+  appointmentLink String?
+  notes           String?
+  
+  identityPhoto   String?
+  videoUrl        String?
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -115,9 +123,12 @@ model VisaApplication {
   client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   agencyId        String
   agency          Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  payments        Payment[]
+  documents       Document[]
 }
 
-// Table des Paiements (Entrées d'argent)
+// 2. METS À JOUR LA TABLE PAYMENT (Ajoute les 2 lignes Visa)
 model Payment {
   id          String   @id @default(cuid())
   amount      Float
@@ -126,15 +137,17 @@ model Payment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  booking      Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId   String?
+  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  // 👇 AJOUTE CES 2 LIGNES 👇
+  visaId      String?
+  visa        VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
+
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-// 👇 AJOUTE CES DEUX LIGNES (Avec le ?) 👇
   clientId    String?
-  bookingId   String?
-  // 👆 👆 👆 👆 👆
 }
-
 // Table des Dépenses (Sorties d'argent)
 model Expense {
   id          String   @id @default(cuid())
@@ -147,13 +160,17 @@ model Expense {
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 }
-// Table des Documents (Passeports, Photos, etc.)
+// 3. METS À JOUR LA TABLE DOCUMENT (Ajoute les 2 lignes Visa et met un ? au bookingId)
 model Document {
   id          String   @id @default(cuid())
   name        String   
-  fileUrl     String?  // L'image ou le fichier uploadé
+  fileUrl     String?
   createdAt   DateTime @default(now())
 
-  bookingId   String
-  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId   String?  // <--- N'oublie pas le point d'interrogation ici !
+  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  // 👇 AJOUTE CES 2 LIGNES 👇
+  visaId      String?
+  visa        VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
 }
