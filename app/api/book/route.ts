@@ -11,13 +11,14 @@ export async function POST(request: Request) {
     const lastName = formData.get("lastName") as string;
     const phone = formData.get("phone") as string;
 
-    // 1. On crée le Client dans ton agence
+    // 1. On crée le Client dans ton agence (AVEC LE CHAMP SOURCE !)
     const client = await prisma.client.create({
       data: {
         firstName,
         lastName,
         phone,
         agencyId,
+        source: "SITE WEB", // <--- LE CORRECTIF EST LÀ !
       } as any
     });
 
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error("Erreur Réservation:", error);
-    // En cas de crash (ex: numéro déjà utilisé), on affiche l'erreur
+    // Le fameux cadre rouge qui s'affiche s'il manque encore un champ !
     return NextResponse.redirect(new URL(`/offre/${offerId}?error=${encodeURIComponent(error.message)}`, request.url), 303);
   }
 }
