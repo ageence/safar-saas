@@ -25,13 +25,12 @@ export function DocumentManager({ bookingId, documents, onUpload }: { bookingId:
     reader.onload = async (event) => {
       const base64 = event.target?.result as string;
 
-      // COMPRESSION MAGIQUE POUR LES IMAGES (Bypass Vercel Limit) !
       if (file.type.startsWith("image/")) {
         const img = new Image();
         img.src = base64;
         img.onload = async () => {
           const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 1200; // Taille max idéale
+          const MAX_WIDTH = 1500; // Augmenté pour une super qualité en plein écran
           let width = img.width;
           let height = img.height;
 
@@ -45,13 +44,12 @@ export function DocumentManager({ bookingId, documents, onUpload }: { bookingId:
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, width, height);
           
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7); // Qualité 70%
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
           await onUpload(bookingId, name, compressedBase64);
           setUploading(false);
           form.reset();
         };
       } else {
-        // Si c'est un PDF, pas de compression image
         await onUpload(bookingId, name, base64);
         setUploading(false);
         form.reset();
@@ -67,7 +65,6 @@ export function DocumentManager({ bookingId, documents, onUpload }: { bookingId:
         <h2 className="text-2xl font-black text-slate-800">Documents du Client</h2>
       </div>
 
-      {/* LISTE DES DOCUMENTS */}
       <div className="space-y-3 mb-6">
         {documents.length === 0 ? (
           <p className="text-slate-500 font-medium">Aucun document uploadé.</p>
@@ -88,7 +85,6 @@ export function DocumentManager({ bookingId, documents, onUpload }: { bookingId:
         )}
       </div>
 
-      {/* FORMULAIRE D'UPLOAD */}
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
         <h4 className="font-bold text-slate-800">Ajouter un document (Image/PDF)</h4>
         <input required type="text" name="name" placeholder="Nom (Ex: Passeport...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-cyan-500 outline-none" />
@@ -99,21 +95,34 @@ export function DocumentManager({ bookingId, documents, onUpload }: { bookingId:
         </button>
       </form>
 
-      {/* MODAL APERÇU EN PLEIN ÉCRAN */}
+      {/* VRAI MODAL APERÇU EN PLEIN ÉCRAN */}
       {preview && (
-        <div className="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex flex-col items-center justify-center p-4">
-          <div className="w-full max-w-5xl flex justify-between items-center mb-4">
-            <h3 className="text-white text-2xl font-black">{preview.name}</h3>
-            <button onClick={() => setPreview(null)} className="p-3 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all">
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          <div className="w-full max-w-5xl flex-1 bg-white rounded-2xl overflow-hidden flex items-center justify-center p-2 relative min-h-[70vh]">
+        <div 
+          className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8 animate-in fade-in duration-300"
+          onClick={() => setPreview(null)} // Le clic sur le fond noir ferme l'aperçu
+        >
+          {/* Bouton X géant en haut à droite */}
+          <button 
+            onClick={() => setPreview(null)} 
+            className="absolute top-6 right-6 md:top-10 md:right-10 p-3 md:p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all z-50 cursor-pointer"
+          >
+            <X className="w-6 h-6 md:w-8 md:h-8" />
+          </button>
+
+          {/* Conteneur de l'image (stoppe le clic pour ne pas fermer si on clique sur la photo) */}
+          <div 
+            className="relative w-full max-w-6xl h-full max-h-[85vh] flex items-center justify-center animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()} 
+          >
             {preview.type === "pdf" ? (
-              <iframe src={preview.url} className="w-full h-full min-h-[70vh] rounded-xl" />
+              <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl shadow-2xl" />
             ) : (
-              <img src={preview.url} alt={preview.name} className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-lg" />
+              <img src={preview.url} alt={preview.name} className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
             )}
+          </div>
+          
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/10 backdrop-blur-md text-white font-bold rounded-full">
+            {preview.name}
           </div>
         </div>
       )}
