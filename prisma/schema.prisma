@@ -146,3 +146,13 @@ model Expense {
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 }
+// Table des Documents (Passeports, Photos, etc.)
+model Document {
+  id          String   @id @default(cuid())
+  name        String   
+  fileUrl     String?  // L'image ou le fichier uploadé
+  createdAt   DateTime @default(now())
+
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
