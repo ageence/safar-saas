@@ -125,10 +125,13 @@ model Payment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  bookingId   String
-  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  booking      Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+// 👇 AJOUTE CES DEUX LIGNES (Avec le ?) 👇
+  clientId    String?
+  bookingId   String?
+  // 👆 👆 👆 👆 👆
 }
 
 // Table des Dépenses (Sorties d'argent)
