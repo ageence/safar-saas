@@ -3,7 +3,7 @@ export const instant = false;
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, Passport, Wallet, Calendar, FileText, CheckCircle2, Save, Video, Link as LinkIcon, Printer } from "lucide-react";
+import { ArrowLeft, User, Wallet, Calendar, FileText, CheckCircle2, Save, Video, Link as LinkIcon, Printer } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 
@@ -55,7 +55,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
   return (
     <div className="animate-in fade-in zoom-in-95 duration-700 w-full max-w-7xl mx-auto pb-12">
       
-      {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 flex items-center gap-4">Dossier Visa {visa.country}</h1>
@@ -70,7 +69,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* COL 1 : IDENTITÉ & VIDÉO */}
         <div className="space-y-8">
           <div className="glass-promax p-8 rounded-[2rem] bg-indigo-50 border-indigo-100">
             <div className="flex items-center gap-4 mb-6">
@@ -78,7 +76,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
               <h2 className="text-2xl font-black text-slate-800">Identité</h2>
             </div>
             
-            {/* Espace Photo Client */}
             <div className="w-32 h-32 mx-auto bg-white rounded-3xl shadow-lg border-4 border-white overflow-hidden mb-6 flex items-center justify-center text-slate-300">
                {visa.identityPhoto ? <img src={visa.identityPhoto} className="w-full h-full object-cover" /> : <User className="w-12 h-12" />}
             </div>
@@ -100,7 +97,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        {/* COL 2 : RENDEZ-VOUS ET GESTION */}
         <div className="glass-promax p-8 rounded-[2rem]">
           <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
             <div className="p-3 bg-orange-50 text-orange-500 rounded-xl"><Calendar className="w-6 h-6" /></div>
@@ -153,7 +149,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
           </form>
         </div>
 
-        {/* COL 3 : FINANCES */}
         <div className="space-y-8">
           <div className="glass-promax p-8 rounded-[2rem]">
             <div className="flex items-center gap-4 mb-6">

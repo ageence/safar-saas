@@ -2,11 +2,11 @@ export const instant = false;
 
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { Passport, CheckCircle2, ArrowRight, AlertTriangle } from "lucide-react";
+import { Globe, CheckCircle2, ArrowRight, AlertTriangle } from "lucide-react";
 
 async function applyVisaAction(formData: FormData) {
   "use server";
-  const agencyId = "cmvs6wjv80000tp0w9rlf3uaa"; // Remplace par l'ID réel de ton agence ou récupère-le dynamiquement
+  const agencyId = "cmvs6wjv80000tp0w9rlf3uaa"; 
   let errorMsg = "";
 
   try {
@@ -56,7 +56,9 @@ export default async function PublicVisaPage({ searchParams }: { searchParams: P
       
       <div className="relative z-10 w-full max-w-lg glass-promax p-10 rounded-[2.5rem] shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-md border border-indigo-500/30"><Passport className="w-8 h-8" /></div>
+          <div className="mx-auto w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-md border border-indigo-500/30">
+            <Globe className="w-8 h-8" />
+          </div>
           <h1 className="text-3xl font-black text-white">Dossier Visa</h1>
           <p className="text-slate-300 font-medium mt-2">Commencez votre procédure en ligne</p>
         </div>
