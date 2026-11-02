@@ -27,7 +27,7 @@ export function AddOfferDialog() {
         <Plus className="mr-2 h-6 w-6" /> Créer un Voyage
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[700px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden">
         
         <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-8 border-b border-white/50 flex items-center gap-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-[30px]"></div>
@@ -36,16 +36,16 @@ export function AddOfferDialog() {
           </div>
           <div className="relative z-10">
             <DialogTitle className="text-3xl font-black text-slate-800 tracking-tighter">Nouveau Voyage</DialogTitle>
-            <p className="text-sm font-bold text-slate-500 mt-1">Configurez l'offre et uploadez l'affiche.</p>
+            <p className="text-sm font-bold text-slate-500 mt-1">Configurez l'offre avec les dates et places dispo.</p>
           </div>
         </div>
 
-        <form className="p-8 space-y-6" action="/api/offers" method="POST">
+        <form className="p-8 space-y-6 max-h-[70vh] overflow-y-auto" action="/api/offers" method="POST">
+          
           <div className="space-y-3">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Affiche / Photo (Upload)</label>
-
             {preview ? (
-              <div className="relative w-full h-56 rounded-[2rem] overflow-hidden border-4 border-cyan-500 shadow-lg group">
+              <div className="relative w-full h-48 rounded-[2rem] overflow-hidden border-4 border-cyan-500 shadow-lg group">
                 <img src={preview} alt="Aperçu" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                   <Button type="button" variant="destructive" className="rounded-xl font-bold px-6 h-12" onClick={() => setPreview(null)}>
@@ -57,13 +57,12 @@ export function AddOfferDialog() {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full h-56 rounded-[2rem] border-2 border-dashed border-slate-300 hover:border-cyan-500 hover:bg-cyan-50/50 transition-all flex flex-col items-center justify-center cursor-pointer group bg-slate-50/50"
+                className="w-full h-48 rounded-[2rem] border-2 border-dashed border-slate-300 hover:border-cyan-500 hover:bg-cyan-50/50 transition-all flex flex-col items-center justify-center cursor-pointer group bg-slate-50/50"
               >
-                <div className="p-5 bg-white rounded-2xl shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all mb-4 border border-slate-100">
+                <div className="p-4 bg-white rounded-2xl shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all mb-3 border border-slate-100">
                   <UploadCloud className="h-8 w-8 text-cyan-500" />
                 </div>
                 <p className="text-base font-black text-slate-700">Cliquez pour uploader l'affiche</p>
-                <p className="text-xs font-bold text-slate-400 mt-2">JPEG, PNG ou WEBP</p>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               </div>
             )}
@@ -72,11 +71,26 @@ export function AddOfferDialog() {
           <div className="grid grid-cols-2 gap-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Titre du voyage</label>
-              <input required name="title" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="Ex: Omra VIP VIP" />
+              <input required name="title" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="Ex: Omra VIP" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Destination</label>
               <input required name="destination" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" placeholder="Ex: La Mecque" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-5">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Date Départ</label>
+              <input required type="date" name="dateDepart" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Date Retour</label>
+              <input required type="date" name="dateRetour" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Places Dispo</label>
+              <input required type="number" name="totalSeats" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" placeholder="50" />
             </div>
           </div>
 
