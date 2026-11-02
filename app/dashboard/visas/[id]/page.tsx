@@ -3,7 +3,7 @@ export const instant = false;
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, Wallet, Calendar, FileText, CheckCircle2, Save, Video, Link as LinkIcon, Printer } from "lucide-react";
+import { ArrowLeft, User, Wallet, Calendar, FileText, CheckCircle2, Save, Video, Link as LinkIcon, Printer, Plus } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 

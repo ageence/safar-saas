@@ -18,7 +18,7 @@ export async function createVisaApplication(formData: FormData) {
       clientId: formData.get("clientId") as string,
       country: formData.get("country") as string,
       status: formData.get("status") as string,
-      missingDocs: formData.get("missingDocs") as string,
+      notes: formData.get("missingDocs") as string,
       appointmentDate,
     },
   });
