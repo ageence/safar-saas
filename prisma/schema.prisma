@@ -50,16 +50,20 @@ model Client {
   lastName  String
   phone     String
   email     String?
-  source    String   
-  status    String   @default("PROSPECT") 
+  source    String
+  status    String   @default("PROSPECT")
   notes     String?
+  
+  // 👇 AJOUTE CETTE LIGNE EXACTEMENT ICI 👇
+  passport  String?
+  // 👆 👆 👆 👆 👆
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   agencyId  String
   agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  bookings  Booking[] 
-  visas     VisaApplication[] 
+  bookings  Booking[]
+  visas     VisaApplication[]
 }
 
 model Offer {

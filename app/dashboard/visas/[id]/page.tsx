@@ -8,38 +8,44 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { VisaDocumentManager } from "./visa-document-manager";
 
-// ACTION : Modifier Client (Les infos restent affichées grâce au defaultValue en bas)
+// ACTION : Modifier Client
 async function editClientAction(formData: FormData) {
   "use server";
   const clientId = formData.get("clientId") as string;
   const visaId = formData.get("visaId") as string;
   
-  await prisma.client.update({
-    where: { id: clientId },
-    data: {
-      firstName: formData.get("firstName") as string,
-      lastName: formData.get("lastName") as string,
-      phone: formData.get("phone") as string,
-      passport: formData.get("passport") as string,
-    } as any
-  });
-  revalidatePath(`/dashboard/visas/${visaId}`);
+  try {
+    await prisma.client.update({
+      where: { id: clientId },
+      data: {
+        firstName: formData.get("firstName") as string,
+        lastName: formData.get("lastName") as string,
+        phone: formData.get("phone") as string,
+        passport: formData.get("passport") as string,
+      } as any
+    });
+    revalidatePath(`/dashboard/visas/${visaId}`);
+  } catch (error) { console.error(error); }
 }
 
 // ACTION : Modifier Visa
 async function updateVisaAction(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
-  await prisma.visaApplication.update({
-    where: { id },
-    data: {
-      price: Number(formData.get("price")),
-      status: formData.get("status") as string,
-      appointmentDate: formData.get("appointmentDate") ? new Date(formData.get("appointmentDate") as string) : null,
-      notes: formData.get("notes") as string,
-    } as any
-  });
-  revalidatePath(`/dashboard/visas/${id}`);
+  try {
+    await prisma.visaApplication.update({
+      where: { id },
+      data: {
+        price: Number(formData.get("price")),
+        status: formData.get("status") as string,
+        appointmentDate: formData.get("appointmentDate") ? new Date(formData.get("appointmentDate") as string) : null,
+        appointmentLink: formData.get("appointmentLink") as string,
+        videoUrl: formData.get("videoUrl") as string,
+        notes: formData.get("notes") as string,
+      } as any
+    });
+    revalidatePath(`/dashboard/visas/${id}`);
+  } catch (error) { console.error(error); }
 }
 
 // ACTION : Ajouter Paiement
@@ -48,18 +54,22 @@ async function addPaymentAction(formData: FormData) {
   const visaId = formData.get("visaId") as string;
   const amount = Number(formData.get("amount"));
   if (amount > 0) {
-    await prisma.payment.create({
-      data: { amount, agencyId: formData.get("agencyId") as string, clientId: formData.get("clientId") as string, visaId, method: "ESPÈCES" } as any
-    });
-    revalidatePath(`/dashboard/visas/${visaId}`);
+    try {
+      await prisma.payment.create({
+        data: { amount, agencyId: formData.get("agencyId") as string, clientId: formData.get("clientId") as string, visaId, method: "ESPÈCES" } as any
+      });
+      revalidatePath(`/dashboard/visas/${visaId}`);
+    } catch (error) { console.error(error); }
   }
 }
 
-// ACTION : Ajouter Document (Via le Document Manager)
+// ACTION : Ajouter Document
 async function addDocumentAction(visaId: string, name: string, fileData: string) {
   "use server";
-  await prisma.document.create({ data: { name, fileUrl: fileData, visaId } as any });
-  revalidatePath(`/dashboard/visas/${visaId}`);
+  try {
+    await prisma.document.create({ data: { name, fileUrl: fileData, visaId } as any });
+    revalidatePath(`/dashboard/visas/${visaId}`);
+  } catch (error) { console.error(error); }
 }
 
 export default async function VisaDossierPage({ params }: { params: Promise<{ id: string }> }) {
@@ -86,9 +96,12 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
           <p className="text-slate-500 font-medium mt-2">Client : {visa.client?.firstName} {visa.client?.lastName}</p>
         </div>
         <div className="flex gap-3">
-           <button className="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 opacity-50 cursor-not-allowed">
-              <Printer className="w-5 h-5" /> Générer Reçu
-           </button>
+           {/* BOUTON REÇU ACTIVÉ ! */}
+           <Link href={`/dashboard/visas/${visa.id}/recu`} target="_blank">
+             <button className="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 hover:bg-indigo-600 transition-all">
+                <Printer className="w-5 h-5" /> Générer Reçu
+             </button>
+           </Link>
            <Link href="/dashboard/visas">
             <button className="px-5 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl shadow-sm hover:bg-slate-50 flex items-center gap-2"><ArrowLeft className="w-5 h-5" /> Retour</button>
           </Link>
@@ -96,21 +109,17 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         <div className="space-y-8">
-          
-          {/* NOUVEAU : FORMULAIRE D'ÉDITION DU CLIENT */}
           <div className="glass-promax p-8 rounded-[2rem] bg-indigo-50 border-indigo-100">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-indigo-500 text-white rounded-xl"><User className="w-6 h-6" /></div>
-              <h2 className="text-2xl font-black text-slate-800">Infos Client (Modifiable)</h2>
+              <h2 className="text-2xl font-black text-slate-800">Infos Client</h2>
             </div>
             
             <form action={editClientAction} className="space-y-4">
               <input type="hidden" name="clientId" value={visa.clientId} />
               <input type="hidden" name="visaId" value={visa.id} />
 
-              {/* defaultValue est le secret pour garder les infos affichées ! */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase">Nom</label>
@@ -140,7 +149,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
         </div>
 
         <div className="lg:col-span-2 space-y-8">
-          
           <div className="glass-promax p-8 rounded-[2rem]">
             <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
               <div className="p-3 bg-orange-50 text-orange-500 rounded-xl"><Calendar className="w-6 h-6" /></div>
@@ -167,14 +175,25 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase">Date du RDV</label>
+                  <input name="appointmentDate" type="date" defaultValue={visa.appointmentDate ? new Date(visa.appointmentDate).toISOString().split('T')[0] : ""} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase">Lien RDV (TLS/VFS)</label>
+                  <input name="appointmentLink" defaultValue={visa.appointmentLink || ""} placeholder="Lien..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                </div>
+              </div>
+
               <div>
-                <label className="text-xs font-bold text-slate-400 uppercase">Date du Rendez-vous</label>
-                <input name="appointmentDate" type="date" defaultValue={visa.appointmentDate ? new Date(visa.appointmentDate).toISOString().split('T')[0] : ""} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                <label className="text-xs font-bold text-indigo-500 uppercase">Lien de la Vidéo (Drive / YouTube / TikTok)</label>
+                <input name="videoUrl" defaultValue={visa.videoUrl || ""} placeholder="Collez le lien de la vidéo ici..." className="w-full bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
               </div>
 
               <div>
                 <label className="text-xs font-bold text-slate-400 uppercase">Remarques & Notes</label>
-                <textarea name="notes" rows={2} defaultValue={visa.notes || ""} placeholder="Manque attestation de travail..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                <textarea name="notes" rows={2} defaultValue={visa.notes || ""} placeholder="Manque attestation..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
               </div>
 
               <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2">
@@ -183,7 +202,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
             </form>
           </div>
 
-          {/* LE GESTIONNAIRE DE DOCUMENTS (AVEC VIDÉO) */}
           <VisaDocumentManager visaId={visa.id} documents={visa.documents || []} onUpload={addDocumentAction} />
 
           <div className="glass-promax p-8 rounded-[2rem] bg-gradient-to-b from-white to-slate-50/50">
@@ -221,7 +239,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
