@@ -1,237 +1,119 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
-
 
 @custom-variant dark (&:is(.dark *));
 
-
-
 @theme {
-
   --color-background: hsl(var(--background));
-
   --color-foreground: hsl(var(--foreground));
-
   --color-primary: hsl(var(--primary));
-
   --color-primary-foreground: hsl(var(--primary-foreground));
-
   --color-border: hsl(var(--border));
-
 }
 
-
-
 @layer base {
-
   :root {
-
     --background: 210 40% 98%;
-
     --foreground: 222 47% 11%;
-
     --primary: 199 89% 48%; 
-
     --primary-foreground: 0 0% 100%;
-
     --border: 214 32% 91%;
-
     --radius: 1.5rem;
-
   }
-
 }
-
-
 
 @layer base {
-
   * { border-color: hsl(var(--border)); }
-
   body {
-
     background-color: hsl(var(--background));
-
     color: hsl(var(--foreground));
-
     -webkit-font-smoothing: antialiased;
-
     overflow-x: hidden;
-
   }
-
 }
-
-
 
 /* =========================================
-
    PRO MAX EXTRA LUXURY UI - LIGHT VIBE
-
    ========================================= */
 
-
-
 /* 1. Fond Vivant (Nuages Océan & Sable) - Très doux et VIP */
-
 .bg-promax-paradise {
-
   position: fixed;
-
   top: 0; left: 0; width: 100vw; height: 100vh;
-
   z-index: -2;
-
   background: 
-
     radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
-
     radial-gradient(circle at 90% 10%, rgba(249, 115, 22, 0.05) 0%, transparent 40%),
-
     radial-gradient(circle at 50% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 60%);
-
   background-color: #f8fafc;
-
   animation: floatClouds 20s ease-in-out infinite alternate;
-
 }
-
 @keyframes floatClouds {
-
   0% { transform: scale(1) translate(0px, 0px); }
-
   100% { transform: scale(1.05) translate(-30px, 15px); }
-
 }
-
-
 
 /* 2. Le Verre Ultra Luxe (Frosted Glass avec inner glow) */
-
 .glass-promax {
-
   background: rgba(255, 255, 255, 0.7);
-
   backdrop-filter: blur(30px);
-
   -webkit-backdrop-filter: blur(30px);
-
   border: 1px solid rgba(255, 255, 255, 0.9);
-
   box-shadow: 
-
     0 15px 35px -5px rgba(0, 0, 0, 0.03),
-
     inset 0 1px 0 rgba(255, 255, 255, 1),
-
     inset 0 -1px 0 rgba(255, 255, 255, 0.5);
-
   border-radius: 1.75rem;
-
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-
   position: relative;
-
   overflow: hidden;
-
 }
-
-
 
 /* 3. L'effet "Shimmer" (Lumière qui passe au survol) */
-
 .glass-promax::after {
-
   content: '';
-
   position: absolute;
-
   top: 0; left: -200%; width: 150%; height: 100%;
-
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-
   transform: skewX(-25deg);
-
   transition: 0.7s;
-
   pointer-events: none;
-
 }
-
 .glass-promax:hover::after { left: 200%; }
-
 .glass-promax:hover {
-
   transform: translateY(-8px);
-
   box-shadow: 
-
     0 30px 60px -10px rgba(14, 165, 233, 0.15),
-
     0 10px 20px -5px rgba(14, 165, 233, 0.05);
-
   border-color: rgba(14, 165, 233, 0.3);
-
 }
-
-
 
 /* 4. Flottaison Magnétique (Pour les icônes) */
-
 .animate-float {
-
   animation: floatIcon 4s ease-in-out infinite;
-
 }
-
 @keyframes floatIcon {
-
   0%, 100% { transform: translateY(0); }
-
   50% { transform: translateY(-8px); }
-
 }
-
-
 
 /* 5. Textes Royaux (Gradient Or & Océan) */
-
 .text-royal-ocean {
-
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-
   -webkit-background-clip: text;
-
   background-clip: text;
-
   color: transparent;
-
   text-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
-
 }
-
 .text-royal-gold {
-
   background: linear-gradient(135deg, #ea580c 0%, #fbbf24 100%);
-
   -webkit-background-clip: text;
-
   background-clip: text;
-
   color: transparent;
-
 }
-
-
 
 /* Scrollbar invisible luxe */
-
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-
 ::-webkit-scrollbar-track { background: transparent; }
-
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); } 
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
