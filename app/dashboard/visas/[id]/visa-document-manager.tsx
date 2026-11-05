@@ -1,11 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Eye, X, FileText, Loader2, UploadCloud, Video } from "lucide-react";
+import { Download, Eye, X, FileText, Loader2, UploadCloud, Video, Trash2 } from "lucide-react";
 
-export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: string, documents: any[], onUpload: (visaId: string, name: string, fileData: string) => Promise<void> }) {
+export function VisaDocumentManager({ 
+  visaId, 
+  documents, 
+  onUpload,
+  onDelete 
+}: { 
+  visaId: string, 
+  documents: any[], 
+  onUpload: (visaId: string, name: string, fileData: string) => Promise<void>,
+  onDelete: (docId: string, visaId: string) => Promise<void>
+}) {
   const [preview, setPreview] = useState<{ url: string, type: string, name: string } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,18 +32,18 @@ export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: s
       return;
     }
 
-    // 🛑 BLOQUEUR DE VIDÉOS : On empêche le crash du serveur !
+    // 🟢 AUTORISATION VIDÉO AVEC LIMITE VERCEL (4 Mo max)
     if (file.type.startsWith("video/")) {
-      alert("⚠️ ERREUR : Ne mettez JAMAIS de vidéo directement dans la base de données, le fichier est trop lourd ! Mettez votre vidéo sur Google Drive et collez le lien dans le champ 'Lien de la Vidéo' un peu plus haut.");
-      setUploading(false);
-      form.reset();
-      return;
+      if (file.size > 4 * 1024 * 1024) {
+        alert("⚠️ Vercel bloque les fichiers de plus de 4.5 Mo. Veuillez compresser votre vidéo pour qu'elle fasse moins de 4 Mo !");
+        setUploading(false);
+        return;
+      }
     }
 
     const reader = new FileReader();
     reader.onload = async (event) => {
       const base64 = event.target?.result as string;
-
       try {
         if (file.type.startsWith("image/")) {
           const img = new Image();
@@ -51,6 +62,7 @@ export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: s
             setUploading(false); form.reset();
           };
         } else {
+          // Pour les PDF et les VIDÉOS
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
@@ -62,11 +74,19 @@ export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: s
     reader.readAsDataURL(file);
   };
 
+  const handleDelete = async (docId: string) => {
+    if (confirm("Voulez-vous vraiment supprimer ce fichier définitivement ?")) {
+      setDeletingId(docId);
+      await onDelete(docId, visaId);
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="glass-promax p-8 rounded-[2rem]">
       <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
         <div className="p-3 bg-purple-50 text-purple-500 rounded-xl"><FileText className="w-6 h-6" /></div>
-        <h2 className="text-2xl font-black text-slate-800">Documents (Passeport, Photos, PDF)</h2>
+        <h2 className="text-2xl font-black text-slate-800">Documents & Médias</h2>
       </div>
 
       <div className="space-y-3 mb-6">
@@ -75,15 +95,22 @@ export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: s
         ) : (
           documents.map((doc) => {
             const isPdf = doc.fileUrl?.includes("pdf");
-            const type = isPdf ? "pdf" : "image";
+            const isVideo = doc.fileUrl?.includes("video");
+            const type = isPdf ? "pdf" : isVideo ? "video" : "image";
+            
             return (
               <div key={doc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <span className="font-bold text-slate-700 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-500" /> {doc.name}
+                  {isVideo ? <Video className="w-4 h-4 text-rose-500" /> : <FileText className="w-4 h-4 text-indigo-500" />} {doc.name}
                 </span>
-                <div className="flex gap-3">
-                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="flex items-center gap-2 text-indigo-600 font-bold hover:underline"><Eye className="w-4 h-4" /> Aperçu</button>
-                  <a href={doc.fileUrl} download={doc.name} className="flex items-center gap-2 text-cyan-600 font-bold hover:underline"><Download className="w-4 h-4" /> DL</a>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 font-bold hover:underline hidden sm:flex items-center gap-1"><Eye className="w-4 h-4" /> Aperçu</button>
+                  <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 font-bold hover:underline flex items-center gap-1"><Download className="w-4 h-4" /> DL</a>
+                  
+                  {/* BOUTON SUPPRIMER */}
+                  <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1 ml-2 transition-all">
+                    {deletingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                  </button>
                 </div>
               </div>
             );
@@ -92,21 +119,27 @@ export function VisaDocumentManager({ visaId, documents, onUpload }: { visaId: s
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter Image / PDF</h4>
-        <input required type="text" name="name" placeholder="Nom (Ex: Scan Passeport...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
-        <input required type="file" name="file" accept="image/*,application/pdf" className="text-slate-600" />
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -4Mo)</h4>
+        <input required type="text" name="name" placeholder="Nom (Ex: Vidéo présentation, Scan...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
           {uploading ? "Upload en cours..." : "Uploader le fichier"}
         </button>
       </form>
 
-      {/* MODAL APERÇU */}
+      {/* MODAL APERÇU (Prend en charge les vidéos !) */}
       {preview && (
         <div className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8" onClick={() => setPreview(null)}>
           <button onClick={() => setPreview(null)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"><X className="w-8 h-8" /></button>
           <div className="relative w-full max-w-6xl h-full max-h-[85vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            {preview.type === "pdf" ? <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl shadow-2xl" /> : <img src={preview.url} className="max-w-full max-h-full object-contain rounded-2xl" />}
+            {preview.type === "pdf" ? (
+               <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl shadow-2xl" />
+            ) : preview.type === "video" ? (
+               <video src={preview.url} controls autoPlay className="max-w-full max-h-full rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
+            ) : (
+               <img src={preview.url} alt={preview.name} className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
+            )}
           </div>
         </div>
       )}

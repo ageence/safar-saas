@@ -72,6 +72,15 @@ async function addDocumentAction(visaId: string, name: string, fileData: string)
   } catch (error) { console.error(error); }
 }
 
+// 🔴 NOUVELLE ACTION : Supprimer Document
+async function deleteDocumentAction(docId: string, visaId: string) {
+  "use server";
+  try {
+    await prisma.document.delete({ where: { id: docId } });
+    revalidatePath(`/dashboard/visas/${visaId}`);
+  } catch (error) { console.error(error); }
+}
+
 export default async function VisaDossierPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
@@ -96,7 +105,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
           <p className="text-slate-500 font-medium mt-2">Client : {visa.client?.firstName} {visa.client?.lastName}</p>
         </div>
         <div className="flex gap-3">
-           {/* BOUTON REÇU ACTIVÉ ! */}
            <Link href={`/dashboard/visas/${visa.id}/recu`} target="_blank">
              <button className="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 hover:bg-indigo-600 transition-all">
                 <Printer className="w-5 h-5" /> Générer Reçu
@@ -187,11 +195,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
               </div>
 
               <div>
-                <label className="text-xs font-bold text-indigo-500 uppercase">Lien de la Vidéo (Drive / YouTube / TikTok)</label>
-                <input name="videoUrl" defaultValue={visa.videoUrl || ""} placeholder="Collez le lien de la vidéo ici..." className="w-full bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
-              </div>
-
-              <div>
                 <label className="text-xs font-bold text-slate-400 uppercase">Remarques & Notes</label>
                 <textarea name="notes" rows={2} defaultValue={visa.notes || ""} placeholder="Manque attestation..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
               </div>
@@ -202,7 +205,8 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
             </form>
           </div>
 
-          <VisaDocumentManager visaId={visa.id} documents={visa.documents || []} onUpload={addDocumentAction} />
+          {/* LE NOUVEAU GESTIONNAIRE DE DOCUMENTS (AVEC BOUTON SUPPRIMER) */}
+          <VisaDocumentManager visaId={visa.id} documents={visa.documents || []} onUpload={addDocumentAction} onDelete={deleteDocumentAction} />
 
           <div className="glass-promax p-8 rounded-[2rem] bg-gradient-to-b from-white to-slate-50/50">
             <div className="flex items-center gap-4 mb-6">
