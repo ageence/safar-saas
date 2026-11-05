@@ -1,16 +1,10 @@
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-border: hsl(var(--border));
-}
-
+/* =========================================
+   CONFIGURATION TAILWIND DE BASE
+   (Sans les balises @theme qui font crasher Vercel)
+   ========================================= */
 @layer base {
   :root {
     --background: 210 40% 98%;
