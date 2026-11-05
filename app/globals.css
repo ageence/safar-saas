@@ -1,9 +1,16 @@
-/* On rallume Tailwind avec la syntaxe classique qui ne crashe jamais sur Vercel */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
 
-/* Configuration de base (Couleurs Shadcn) */
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-border: hsl(var(--border));
+}
+
 @layer base {
   :root {
     --background: 210 40% 98%;
@@ -46,7 +53,7 @@
   100% { transform: scale(1.05) translate(-30px, 15px); }
 }
 
-/* 2. Le Verre Ultra Luxe (Frosted Glass) */
+/* 2. Le Verre Ultra Luxe (Frosted Glass avec inner glow) */
 .glass-promax {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
@@ -62,7 +69,7 @@
   overflow: hidden;
 }
 
-/* 3. L'effet "Shimmer" au survol */
+/* 3. L'effet "Shimmer" (Lumière qui passe au survol) */
 .glass-promax::after {
   content: '';
   position: absolute;
@@ -81,7 +88,7 @@
   border-color: rgba(14, 165, 233, 0.3);
 }
 
-/* 4. Flottaison Magnétique */
+/* 4. Flottaison Magnétique (Pour les icônes) */
 .animate-float {
   animation: floatIcon 4s ease-in-out infinite;
 }
@@ -90,7 +97,7 @@
   50% { transform: translateY(-8px); }
 }
 
-/* 5. Textes Royaux (Gradients) */
+/* 5. Textes Royaux (Gradient Or & Océan) */
 .text-royal-ocean {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   -webkit-background-clip: text;
