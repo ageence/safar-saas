@@ -32,11 +32,13 @@ export function VisaDocumentManager({
       return;
     }
 
-    // Limite stricte pour Vercel Gratuit (3.5 Mo max)
-    if (file.type.startsWith("video/") && file.size > 3.5 * 1024 * 1024) {
-      alert("⚠️ Vidéo trop lourde ! Vercel bloque les fichiers de plus de 3.5 Mo. Compressez la vidéo avant de l'envoyer.");
-      setUploading(false);
-      return;
+    // 🟢 AUTORISATION VIDÉO AVEC LIMITE VERCEL (4 Mo max)
+    if (file.type.startsWith("video/")) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert("⚠️ Vercel bloque les fichiers de plus de 4.5 Mo. Veuillez compresser votre vidéo pour qu'elle fasse moins de 4 Mo !");
+        setUploading(false);
+        return;
+      }
     }
 
     const reader = new FileReader();
@@ -60,14 +62,12 @@ export function VisaDocumentManager({
             setUploading(false); form.reset();
           };
         } else {
-          // Si c'est une vidéo ou un PDF, on tente l'upload !
+          // Pour les PDF et les VIDÉOS
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
       } catch (error) {
-        // LE CORRECTIF EST ICI : Si Vercel plante, la roue s'arrête !
         console.error(error);
-        alert("Erreur réseau (500) : Vercel a bloqué l'upload car la vidéo est trop lourde ou la connexion a coupé.");
         setUploading(false);
       }
     };
@@ -77,11 +77,7 @@ export function VisaDocumentManager({
   const handleDelete = async (docId: string) => {
     if (confirm("Voulez-vous vraiment supprimer ce fichier définitivement ?")) {
       setDeletingId(docId);
-      try {
-        await onDelete(docId, visaId);
-      } catch (e) {
-        alert("Erreur lors de la suppression.");
-      }
+      await onDelete(docId, visaId);
       setDeletingId(null);
     }
   };
@@ -104,13 +100,14 @@ export function VisaDocumentManager({
             
             return (
               <div key={doc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-700 flex items-center gap-2 truncate">
-                  {isVideo ? <Video className="w-4 h-4 text-rose-500 flex-shrink-0" /> : <FileText className="w-4 h-4 text-indigo-500 flex-shrink-0" />} 
-                  <span className="truncate max-w-[150px]">{doc.name}</span>
+                <span className="font-bold text-slate-700 flex items-center gap-2">
+                  {isVideo ? <Video className="w-4 h-4 text-rose-500" /> : <FileText className="w-4 h-4 text-indigo-500" />} {doc.name}
                 </span>
-                <div className="flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-4">
                   <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 font-bold hover:underline hidden sm:flex items-center gap-1"><Eye className="w-4 h-4" /> Aperçu</button>
                   <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 font-bold hover:underline flex items-center gap-1"><Download className="w-4 h-4" /> DL</a>
+                  
+                  {/* BOUTON SUPPRIMER */}
                   <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1 ml-2 transition-all">
                     {deletingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-5 h-5" />}
                   </button>
@@ -122,16 +119,16 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -3.5Mo)</h4>
-        <input required type="text" name="name" placeholder="Nom du fichier..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -4Mo)</h4>
+        <input required type="text" name="name" placeholder="Nom (Ex: Vidéo présentation, Scan...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-          {uploading ? "Upload en cours..." : "Uploader"}
+          {uploading ? "Upload en cours..." : "Uploader le fichier"}
         </button>
       </form>
 
-      {/* MODAL APERÇU */}
+      {/* MODAL APERÇU (Prend en charge les vidéos !) */}
       {preview && (
         <div className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8" onClick={() => setPreview(null)}>
           <button onClick={() => setPreview(null)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"><X className="w-8 h-8" /></button>
