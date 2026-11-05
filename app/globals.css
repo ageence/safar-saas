@@ -1,10 +1,9 @@
-@import "tailwindcss";
-@import "shadcn/tailwind.css";
+/* On rallume Tailwind avec la syntaxe classique qui ne crashe jamais sur Vercel */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* =========================================
-   CONFIGURATION TAILWIND DE BASE
-   (Sans les balises @theme qui font crasher Vercel)
-   ========================================= */
+/* Configuration de base (Couleurs Shadcn) */
 @layer base {
   :root {
     --background: 210 40% 98%;
@@ -47,7 +46,7 @@
   100% { transform: scale(1.05) translate(-30px, 15px); }
 }
 
-/* 2. Le Verre Ultra Luxe (Frosted Glass avec inner glow) */
+/* 2. Le Verre Ultra Luxe (Frosted Glass) */
 .glass-promax {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
@@ -63,7 +62,7 @@
   overflow: hidden;
 }
 
-/* 3. L'effet "Shimmer" (Lumière qui passe au survol) */
+/* 3. L'effet "Shimmer" au survol */
 .glass-promax::after {
   content: '';
   position: absolute;
@@ -82,7 +81,7 @@
   border-color: rgba(14, 165, 233, 0.3);
 }
 
-/* 4. Flottaison Magnétique (Pour les icônes) */
+/* 4. Flottaison Magnétique */
 .animate-float {
   animation: floatIcon 4s ease-in-out infinite;
 }
@@ -91,7 +90,7 @@
   50% { transform: translateY(-8px); }
 }
 
-/* 5. Textes Royaux (Gradient Or & Océan) */
+/* 5. Textes Royaux (Gradients) */
 .text-royal-ocean {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   -webkit-background-clip: text;
