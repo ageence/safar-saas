@@ -1,15 +1,6 @@
-@import "tailwindcss";
-@import "shadcn/tailwind.css";
-
-@custom-variant dark (&:is(.dark *));
-
-@theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-border: hsl(var(--border));
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
@@ -36,7 +27,7 @@
    PRO MAX EXTRA LUXURY UI - LIGHT VIBE
    ========================================= */
 
-/* 1. Fond Vivant (Nuages Océan & Sable) - Très doux et VIP */
+/* 1. Fond Vivant (Nuages Océan & Sable) */
 .bg-promax-paradise {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -53,7 +44,7 @@
   100% { transform: scale(1.05) translate(-30px, 15px); }
 }
 
-/* 2. Le Verre Ultra Luxe (Frosted Glass avec inner glow) */
+/* 2. Le Verre Ultra Luxe */
 .glass-promax {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
@@ -69,7 +60,7 @@
   overflow: hidden;
 }
 
-/* 3. L'effet "Shimmer" (Lumière qui passe au survol) */
+/* 3. L'effet "Shimmer" */
 .glass-promax::after {
   content: '';
   position: absolute;
@@ -88,7 +79,7 @@
   border-color: rgba(14, 165, 233, 0.3);
 }
 
-/* 4. Flottaison Magnétique (Pour les icônes) */
+/* 4. Flottaison Magnétique */
 .animate-float {
   animation: floatIcon 4s ease-in-out infinite;
 }
@@ -97,7 +88,7 @@
   50% { transform: translateY(-8px); }
 }
 
-/* 5. Textes Royaux (Gradient Or & Océan) */
+/* 5. Textes Royaux */
 .text-royal-ocean {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   -webkit-background-clip: text;
