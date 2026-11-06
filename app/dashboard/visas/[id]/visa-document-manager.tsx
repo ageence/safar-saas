@@ -34,7 +34,6 @@ export function VisaDocumentManager({
 
     // 🟢 LA SÉCURITÉ ANTI-CRASH VERCEL (Limite stricte à 2.5 Mo)
     if (file.type.startsWith("video/")) {
-      // 2.5 Mo = 2.5 * 1024 * 1024
       if (file.size > 2.5 * 1024 * 1024) {
         alert("⚠️ VIDÉO TROP LOURDE ! \n\nPour éviter que le serveur ne plante (Erreur 500), la vidéo doit faire moins de 2.5 Mo. Veuillez la compresser sur internet (ex: compresser video mp4) ou faire une vidéo plus courte !");
         setUploading(false);
@@ -64,7 +63,6 @@ export function VisaDocumentManager({
             setUploading(false); form.reset();
           };
         } else {
-          // Pour les PDF et les petites VIDÉOS
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }

@@ -72,7 +72,7 @@ async function addDocumentAction(visaId: string, name: string, fileData: string)
   } catch (error) { console.error(error); }
 }
 
-// 🔴 NOUVELLE ACTION : Supprimer Document
+// ACTION : Supprimer Document
 async function deleteDocumentAction(docId: string, visaId: string) {
   "use server";
   try {
@@ -205,7 +205,6 @@ export default async function VisaDossierPage({ params }: { params: Promise<{ id
             </form>
           </div>
 
-          {/* LE NOUVEAU GESTIONNAIRE DE DOCUMENTS (AVEC BOUTON SUPPRIMER) */}
           <VisaDocumentManager visaId={visa.id} documents={visa.documents || []} onUpload={addDocumentAction} onDelete={deleteDocumentAction} />
 
           <div className="glass-promax p-8 rounded-[2rem] bg-gradient-to-b from-white to-slate-50/50">
