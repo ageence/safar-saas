@@ -31,10 +31,9 @@ export function VisaDocumentManager({
       return;
     }
 
-    // Limite sécurisée à 4 Mo pour tout le monde
-    if (file.size > 4 * 1024 * 1024) {
+    if (file.size > 4.5 * 1024 * 1024) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe système accepte un maximum de 4 Mo. Veuillez compresser votre fichier.`);
+      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe système accepte un maximum de 4.5 Mo. Veuillez compresser votre fichier.`);
       setUploading(false);
       form.reset();
       return;
@@ -43,7 +42,6 @@ export function VisaDocumentManager({
     try {
       formData.append("visaId", visaId);
       
-      // Si c'est une image, on la compresse côté client pour sauver de la place
       if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -59,7 +57,7 @@ export function VisaDocumentManager({
             const ctx = canvas.getContext("2d");
             ctx?.drawImage(img, 0, 0, width, height);
             
-            formData.set("file", canvas.toDataURL("image/jpeg", 0.75)); // On remplace par l'image Base64
+            formData.set("file", canvas.toDataURL("image/jpeg", 0.75)); 
             await onUpload(formData);
             setUploading(false);
             form.reset();
@@ -67,15 +65,13 @@ export function VisaDocumentManager({
         };
         reader.readAsDataURL(file);
       } else {
-        // 🟢 POUR LES VIDÉOS ET PDF : On envoie le fichier BINAIRE directement à l'action !
-        // Ça bypass le crash de React lié aux très gros textes JSON.
         await onUpload(formData);
         setUploading(false);
         form.reset();
       }
     } catch (error: any) {
       console.error("Upload Error: ", error);
-      alert("❌ Erreur : Impossible d'envoyer, le réseau a été coupé ou le fichier est illisible.");
+      alert("❌ Erreur de connexion ou fichier corrompu.");
       setUploading(false);
     }
   };
@@ -88,18 +84,21 @@ export function VisaDocumentManager({
     }
   };
 
+  // 🔴 CORRECTION POUR RECONNAITRE TOUTES LES VIDÉOS (ANCIENNES ET NOUVELLES)
   const getFileType = (url: string, fileName: string) => {
     if (!url) return "image";
-    const strUrl = url.toLowerCase();
+    const strUrl = url.substring(0, 50).toLowerCase(); 
     const strName = (fileName || "").toLowerCase();
     
-    if (strUrl.includes("pdf") || strName.endsWith(".pdf")) return "pdf";
+    if (strUrl.includes("pdf") || strName.endsWith(".pdf") || strUrl.includes("application/pdf")) return "pdf";
     if (
       strUrl.includes("video") || 
       strUrl.includes("mp4") || 
       strName.endsWith(".mp4") || 
       strName.endsWith(".mov") || 
-      strName.endsWith(".avi")
+      strName.endsWith(".avi") ||
+      strName.includes("vid") ||
+      strName.includes("cam")
     ) {
       return "video";
     }
@@ -142,7 +141,7 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo - Max 4 Mo)</h4>
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo - Max 4.5 Mo)</h4>
         <input required type="text" name="name" placeholder="Nom du fichier..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
@@ -151,7 +150,7 @@ export function VisaDocumentManager({
         </button>
       </form>
 
-      {/* MODAL APERÇU STABLE */}
+      {/* MODAL APERÇU : AVEC L'ATTRIBUT "KEY" POUR FIXER LE BUG REACT */}
       {preview && (
         <div 
           className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 sm:p-12" 
@@ -159,7 +158,7 @@ export function VisaDocumentManager({
         >
           <button 
             onClick={() => setPreview(null)} 
-            className="absolute top-4 right-4 sm:top-8 sm:right-8 p-3 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"
+            className="absolute top-4 right-4 sm:top-8 sm:right-8 p-3 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all z-50"
           >
             <X className="w-8 h-8" />
           </button>
@@ -168,22 +167,26 @@ export function VisaDocumentManager({
             className="w-full h-full flex flex-col items-center justify-center" 
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-white font-bold text-xl mb-4 text-center">{preview.name}</h3>
+            <h3 className="text-white font-bold text-xl mb-4 text-center z-50">{preview.name}</h3>
             
             <div className="w-full flex-1 max-h-[80vh] flex items-center justify-center relative overflow-hidden">
               {preview.type === "pdf" && (
-                 <iframe src={preview.url} className="w-full h-full bg-white rounded-xl shadow-2xl" />
+                 <iframe key={preview.url} src={preview.url} className="w-full h-full bg-white rounded-xl shadow-2xl" />
               )}
               {preview.type === "video" && (
+                 // 🟢 LE "key={preview.url}" FORCE REACT A RECHARGER LA VIDEO !
                  <video 
+                    key={preview.url} 
                     src={preview.url} 
                     controls 
                     playsInline 
-                    className="max-w-full max-h-full object-contain rounded-xl shadow-2xl" 
+                    autoPlay
+                    className="max-w-full max-h-full object-contain rounded-xl shadow-2xl bg-black" 
                  />
               )}
               {preview.type === "image" && (
                  <img 
+                    key={preview.url} 
                     src={preview.url} 
                     alt={preview.name} 
                     className="max-w-full max-h-full object-contain rounded-xl shadow-2xl" 

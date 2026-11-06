@@ -64,7 +64,7 @@ async function addPaymentAction(formData: FormData) {
   }
 }
 
-// 🟢 ACTION REFAITE : Ajouter Document via FormData (Évite le crash JSON !)
+// 🟢 ACTION : Ajouter Document via FormData (Avec forçage du format vidéo)
 async function addDocumentAction(formData: FormData) {
   "use server";
   try {
@@ -74,15 +74,27 @@ async function addDocumentAction(formData: FormData) {
     
     let fileData = "";
     
-    // Si c'est une image compressée côté client (Texte Base64)
     if (typeof rawFile === "string" && rawFile.startsWith("data:")) {
       fileData = rawFile;
     } 
-    // Si c'est une Vidéo ou un PDF (Fichier Binaire Brut) -> On convertit sur le serveur !
     else if (rawFile instanceof File) {
       const buffer = await rawFile.arrayBuffer();
       const base64String = Buffer.from(buffer).toString("base64");
-      fileData = `data:${rawFile.type};base64,${base64String}`;
+      
+      // FORCER LE FORMAT POUR QUE LA VIDÉO MARCHE SUR LE NAVIGATEUR
+      let mimeType = rawFile.type;
+      if (!mimeType || mimeType === "application/octet-stream") {
+        const lowName = name.toLowerCase();
+        if (lowName.endsWith(".mp4") || lowName.includes("vid") || lowName.endsWith(".mov")) {
+          mimeType = "video/mp4";
+        } else if (lowName.endsWith(".pdf")) {
+          mimeType = "application/pdf";
+        } else {
+          mimeType = "video/mp4"; // Par défaut, on assume que c'est une vidéo si ça plante
+        }
+      }
+
+      fileData = `data:${mimeType};base64,${base64String}`;
     }
 
     if (!fileData) return;
@@ -91,7 +103,7 @@ async function addDocumentAction(formData: FormData) {
     revalidatePath(`/dashboard/visas/${visaId}`);
   } catch (error) { 
     console.error(error); 
-    throw new Error("Erreur serveur lors de l'enregistrement du fichier");
+    throw new Error("Erreur serveur lors de l'enregistrement");
   }
 }
 
