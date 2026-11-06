@@ -1,5 +1,5 @@
 export const instant = false;
-export const maxDuration = 60; // 🟢 LE SECRET : Forcer Vercel à attendre 60 secondes au lieu de 10s !
+export const maxDuration = 60; 
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
@@ -64,13 +64,35 @@ async function addPaymentAction(formData: FormData) {
   }
 }
 
-// ACTION : Ajouter Document
-async function addDocumentAction(visaId: string, name: string, fileData: string) {
+// 🟢 ACTION REFAITE : Ajouter Document via FormData (Évite le crash JSON !)
+async function addDocumentAction(formData: FormData) {
   "use server";
   try {
+    const visaId = formData.get("visaId") as string;
+    const name = formData.get("name") as string;
+    const rawFile = formData.get("file");
+    
+    let fileData = "";
+    
+    // Si c'est une image compressée côté client (Texte Base64)
+    if (typeof rawFile === "string" && rawFile.startsWith("data:")) {
+      fileData = rawFile;
+    } 
+    // Si c'est une Vidéo ou un PDF (Fichier Binaire Brut) -> On convertit sur le serveur !
+    else if (rawFile instanceof File) {
+      const buffer = await rawFile.arrayBuffer();
+      const base64String = Buffer.from(buffer).toString("base64");
+      fileData = `data:${rawFile.type};base64,${base64String}`;
+    }
+
+    if (!fileData) return;
+
     await prisma.document.create({ data: { name, fileUrl: fileData, visaId } as any });
     revalidatePath(`/dashboard/visas/${visaId}`);
-  } catch (error) { console.error(error); }
+  } catch (error) { 
+    console.error(error); 
+    throw new Error("Erreur serveur lors de l'enregistrement du fichier");
+  }
 }
 
 // ACTION : Supprimer Document

@@ -11,7 +11,7 @@ export function VisaDocumentManager({
 }: { 
   visaId: string, 
   documents: any[], 
-  onUpload: (visaId: string, name: string, fileData: string) => Promise<void>,
+  onUpload: (formData: FormData) => Promise<void>,
   onDelete: (docId: string, visaId: string) => Promise<void>
 }) {
   const [preview, setPreview] = useState<{ url: string, type: string, name: string } | null>(null);
@@ -24,7 +24,6 @@ export function VisaDocumentManager({
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const name = formData.get("name") as string;
     const file = formData.get("file") as File;
 
     if (!file || file.size === 0) {
@@ -32,26 +31,26 @@ export function VisaDocumentManager({
       return;
     }
 
-    // 🟢 LIMITE AUGMENTÉE À 4.5 Mo (Pour laisser passer tes fichiers de 1.6 Mo)
-    const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5 Mo
-    if (file.size > MAX_FILE_SIZE) {
+    // Limite sécurisée à 4 Mo pour tout le monde
+    if (file.size > 4 * 1024 * 1024) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe serveur Vercel bloque les fichiers au-delà de 4.5 Mo.\n👉 Veuillez compresser votre fichier.`);
+      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe système accepte un maximum de 4 Mo. Veuillez compresser votre fichier.`);
       setUploading(false);
       form.reset();
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const base64 = event.target?.result as string;
-      try {
-        if (file.type.startsWith("image/")) {
+    try {
+      formData.append("visaId", visaId);
+      
+      // Si c'est une image, on la compresse côté client pour sauver de la place
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
           const img = new Image();
-          img.src = base64;
+          img.src = event.target?.result as string;
           img.onload = async () => {
             const canvas = document.createElement("canvas");
-            // Bonne qualité d'image sans dépasser les limites
             const MAX_WIDTH = 1200; 
             let width = img.width;
             let height = img.height;
@@ -60,21 +59,25 @@ export function VisaDocumentManager({
             const ctx = canvas.getContext("2d");
             ctx?.drawImage(img, 0, 0, width, height);
             
-            await onUpload(visaId, name, canvas.toDataURL("image/jpeg", 0.75));
-            setUploading(false); form.reset();
+            formData.set("file", canvas.toDataURL("image/jpeg", 0.75)); // On remplace par l'image Base64
+            await onUpload(formData);
+            setUploading(false);
+            form.reset();
           };
-        } else {
-          // Vidéos et PDF envoyés directement
-          await onUpload(visaId, name, base64);
-          setUploading(false); form.reset();
-        }
-      } catch (error: any) {
-        console.error("Upload Error: ", error);
-        alert("❌ Erreur : Impossible d'envoyer, le serveur a rejeté le fichier (trop volumineux ou connexion lente).");
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // 🟢 POUR LES VIDÉOS ET PDF : On envoie le fichier BINAIRE directement à l'action !
+        // Ça bypass le crash de React lié aux très gros textes JSON.
+        await onUpload(formData);
         setUploading(false);
+        form.reset();
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (error: any) {
+      console.error("Upload Error: ", error);
+      alert("❌ Erreur : Impossible d'envoyer, le réseau a été coupé ou le fichier est illisible.");
+      setUploading(false);
+    }
   };
 
   const handleDelete = async (docId: string) => {
@@ -139,16 +142,16 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Taille max: 4.5 Mo)</h4>
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo - Max 4 Mo)</h4>
         <input required type="text" name="name" placeholder="Nom du fichier..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-          {uploading ? "Envoi en cours..." : "Uploader le fichier"}
+          {uploading ? "Envoi en cours (Patientez...)" : "Uploader le fichier"}
         </button>
       </form>
 
-      {/* MODAL APERÇU FIXÉ (STABLE) */}
+      {/* MODAL APERÇU STABLE */}
       {preview && (
         <div 
           className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 sm:p-12" 
