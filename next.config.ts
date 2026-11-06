@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true, // <--- On le sort de "experimental"
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb", 
+      bodySizeLimit: "10mb", // On force Next.js à accepter jusqu'à 10Mo
     },
   },
 };
