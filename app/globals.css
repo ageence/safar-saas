@@ -1,17 +1,9 @@
-@import "tailwindcss";
-@import "tailwindcss-animate";
-@import "shadcn/tailwind.css";
+/* 1. Rallumer le moteur Tailwind (Syntaxe v3 qui marche) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@custom-variant dark (&:is(.dark *));
-
-@theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-border: hsl(var(--border));
-}
-
+/* 2. Variables Shadcn de base */
 @layer base {
   :root {
     --background: 210 40% 98%;
@@ -24,7 +16,9 @@
 }
 
 @layer base {
-  * { border-color: hsl(var(--border)); }
+  * { 
+    border-color: hsl(var(--border)); 
+  }
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -37,7 +31,7 @@
    PRO MAX EXTRA LUXURY UI - LIGHT VIBE
    ========================================= */
 
-/* 1. Fond Vivant (Nuages Océan & Sable) */
+/* 1. Fond Vivant */
 .bg-promax-paradise {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -54,7 +48,7 @@
   100% { transform: scale(1.05) translate(-30px, 15px); }
 }
 
-/* 2. Le Verre Ultra Luxe (Frosted Glass) */
+/* 2. Le Verre Ultra Luxe */
 .glass-promax {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
@@ -89,25 +83,9 @@
   border-color: rgba(14, 165, 233, 0.3);
 }
 
-/* 4. Flottaison Magnétique */
-.animate-float {
-  animation: floatIcon 4s ease-in-out infinite;
-}
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* 5. Textes Royaux */
+/* 4. Textes Royaux */
 .text-royal-ocean {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
-}
-.text-royal-gold {
-  background: linear-gradient(135deg, #ea580c 0%, #fbbf24 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
