@@ -3,10 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "10mb",
-    },
+  // 🟢 LA SOLUTION : On sort serverActions de "experimental" pour qu'il soit actif !
+  serverActions: {
+    bodySizeLimit: "10mb",
   },
 };
 
