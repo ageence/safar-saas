@@ -32,11 +32,11 @@ export function VisaDocumentManager({
       return;
     }
 
-    // 🟢 LIMITE STRICTE DE 900 Ko (0.9 Mo) POUR ÉVITER LE CRASH REACT 441
-    const MAX_FILE_SIZE = 900 * 1024; // 900 Ko
+    // 🟢 LIMITE AUGMENTÉE À 4.5 Mo (Pour laisser passer tes fichiers de 1.6 Mo)
+    const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5 Mo
     if (file.size > MAX_FILE_SIZE) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nL'architecture actuelle bloque les fichiers au-delà de 0.9 Mo (Erreur 441).\n👉 Compressez fortement votre fichier ou utilisez une image simple.`);
+      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe serveur Vercel bloque les fichiers au-delà de 4.5 Mo.\n👉 Veuillez compresser votre fichier.`);
       setUploading(false);
       form.reset();
       return;
@@ -51,8 +51,8 @@ export function VisaDocumentManager({
           img.src = base64;
           img.onload = async () => {
             const canvas = document.createElement("canvas");
-            // Compression TRÈS FORTE pour la Base de données
-            const MAX_WIDTH = 600; 
+            // Bonne qualité d'image sans dépasser les limites
+            const MAX_WIDTH = 1200; 
             let width = img.width;
             let height = img.height;
             if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
@@ -60,18 +60,17 @@ export function VisaDocumentManager({
             const ctx = canvas.getContext("2d");
             ctx?.drawImage(img, 0, 0, width, height);
             
-            // Qualité à 0.5 pour réduire le poids Base64 au maximum
-            await onUpload(visaId, name, canvas.toDataURL("image/jpeg", 0.5));
+            await onUpload(visaId, name, canvas.toDataURL("image/jpeg", 0.75));
             setUploading(false); form.reset();
           };
         } else {
-          // Vidéos et PDF (Doivent être très petits)
+          // Vidéos et PDF envoyés directement
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
       } catch (error: any) {
         console.error("Upload Error: ", error);
-        alert("❌ Erreur : Impossible d'envoyer, fichier trop grand pour le serveur.");
+        alert("❌ Erreur : Impossible d'envoyer, le serveur a rejeté le fichier (trop volumineux ou connexion lente).");
         setUploading(false);
       }
     };
@@ -140,7 +139,7 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Max 0.9 Mo pour éviter les erreurs)</h4>
+        <h4 className="font-bold text-slate-800">Ajouter (Taille max: 4.5 Mo)</h4>
         <input required type="text" name="name" placeholder="Nom du fichier..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
@@ -149,7 +148,7 @@ export function VisaDocumentManager({
         </button>
       </form>
 
-      {/* MODAL APERÇU FIXÉ (PLUS DE CLIGNOTEMENT) */}
+      {/* MODAL APERÇU FIXÉ (STABLE) */}
       {preview && (
         <div 
           className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 sm:p-12" 
