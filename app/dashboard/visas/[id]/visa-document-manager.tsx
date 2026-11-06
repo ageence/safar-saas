@@ -32,11 +32,13 @@ export function VisaDocumentManager({
       return;
     }
 
-    // 🟢 AUTORISATION VIDÉO AVEC LIMITE VERCEL (4 Mo max)
+    // 🟢 LA SÉCURITÉ ANTI-CRASH VERCEL (Limite stricte à 2.5 Mo)
     if (file.type.startsWith("video/")) {
-      if (file.size > 4 * 1024 * 1024) {
-        alert("⚠️ Vercel bloque les fichiers de plus de 4.5 Mo. Veuillez compresser votre vidéo pour qu'elle fasse moins de 4 Mo !");
+      // 2.5 Mo = 2.5 * 1024 * 1024
+      if (file.size > 2.5 * 1024 * 1024) {
+        alert("⚠️ VIDÉO TROP LOURDE ! \n\nPour éviter que le serveur ne plante (Erreur 500), la vidéo doit faire moins de 2.5 Mo. Veuillez la compresser sur internet (ex: compresser video mp4) ou faire une vidéo plus courte !");
         setUploading(false);
+        form.reset();
         return;
       }
     }
@@ -62,12 +64,13 @@ export function VisaDocumentManager({
             setUploading(false); form.reset();
           };
         } else {
-          // Pour les PDF et les VIDÉOS
+          // Pour les PDF et les petites VIDÉOS
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
       } catch (error) {
         console.error(error);
+        alert("Une erreur est survenue lors de l'envoi.");
         setUploading(false);
       }
     };
@@ -107,7 +110,6 @@ export function VisaDocumentManager({
                   <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 font-bold hover:underline hidden sm:flex items-center gap-1"><Eye className="w-4 h-4" /> Aperçu</button>
                   <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 font-bold hover:underline flex items-center gap-1"><Download className="w-4 h-4" /> DL</a>
                   
-                  {/* BOUTON SUPPRIMER */}
                   <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1 ml-2 transition-all">
                     {deletingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-5 h-5" />}
                   </button>
@@ -119,7 +121,7 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -4Mo)</h4>
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -2.5Mo)</h4>
         <input required type="text" name="name" placeholder="Nom (Ex: Vidéo présentation, Scan...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
@@ -128,7 +130,7 @@ export function VisaDocumentManager({
         </button>
       </form>
 
-      {/* MODAL APERÇU (Prend en charge les vidéos !) */}
+      {/* MODAL APERÇU */}
       {preview && (
         <div className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8" onClick={() => setPreview(null)}>
           <button onClick={() => setPreview(null)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"><X className="w-8 h-8" /></button>
