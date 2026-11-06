@@ -1,4 +1,5 @@
 export const instant = false;
+export const maxDuration = 60; // 🟢 LE SECRET : Forcer Vercel à attendre 60 secondes au lieu de 10s !
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
