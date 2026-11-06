@@ -32,10 +32,20 @@ export function VisaDocumentManager({
       return;
     }
 
-    // 🟢 LA SÉCURITÉ ANTI-CRASH VERCEL (Limite stricte à 2.5 Mo)
+    // 🟢 LA SÉCURITÉ ANTI-CRASH VERCEL (Limite stricte à 3 Mo)
     if (file.type.startsWith("video/")) {
-      if (file.size > 2.5 * 1024 * 1024) {
-        alert("⚠️ VIDÉO TROP LOURDE ! \n\nPour éviter que le serveur ne plante (Erreur 500), la vidéo doit faire moins de 2.5 Mo. Veuillez la compresser sur internet (ex: compresser video mp4) ou faire une vidéo plus courte !");
+      const MAX_VIDEO_SIZE = 3 * 1024 * 1024; // 3 Mo
+      if (file.size > MAX_VIDEO_SIZE) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        alert(`⚠️ VIDÉO TROP LOURDE ! (${sizeMb} Mo)\n\nL'espace Vercel bloque les fichiers au-delà de 3 Mo. Veuillez compresser votre vidéo ou envoyer une vidéo plus courte pour éviter que le serveur ne plante.`);
+        setUploading(false);
+        form.reset();
+        return;
+      }
+    } else {
+      // Limite pour les images/PDF (5 Mo max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("⚠️ Le fichier est trop lourd (Max 5 Mo).");
         setUploading(false);
         form.reset();
         return;
@@ -51,7 +61,7 @@ export function VisaDocumentManager({
           img.src = base64;
           img.onload = async () => {
             const canvas = document.createElement("canvas");
-            const MAX_WIDTH = 1500;
+            const MAX_WIDTH = 1200; // Légèrement réduit pour optimiser la BDD
             let width = img.width;
             let height = img.height;
             if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
@@ -59,16 +69,17 @@ export function VisaDocumentManager({
             const ctx = canvas.getContext("2d");
             ctx?.drawImage(img, 0, 0, width, height);
             
-            await onUpload(visaId, name, canvas.toDataURL("image/jpeg", 0.75));
+            await onUpload(visaId, name, canvas.toDataURL("image/jpeg", 0.70));
             setUploading(false); form.reset();
           };
         } else {
+          // Vidéos et PDFs
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
       } catch (error) {
         console.error(error);
-        alert("Une erreur est survenue lors de l'envoi.");
+        alert("❌ Erreur : Le fichier n'a pas pu être envoyé. Vérifiez votre connexion.");
         setUploading(false);
       }
     };
@@ -83,6 +94,14 @@ export function VisaDocumentManager({
     }
   };
 
+  // On vérifie le vrai type depuis le base64 s'il existe
+  const getFileType = (url: string) => {
+    if (!url) return "image";
+    if (url.includes("data:application/pdf") || url.includes(".pdf")) return "pdf";
+    if (url.includes("data:video/") || url.includes(".mp4")) return "video";
+    return "image";
+  };
+
   return (
     <div className="glass-promax p-8 rounded-[2rem]">
       <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
@@ -95,21 +114,20 @@ export function VisaDocumentManager({
           <p className="text-slate-500 font-medium">Aucun document uploadé.</p>
         ) : (
           documents.map((doc) => {
-            const isPdf = doc.fileUrl?.includes("pdf");
-            const isVideo = doc.fileUrl?.includes("video");
-            const type = isPdf ? "pdf" : isVideo ? "video" : "image";
+            const type = getFileType(doc.fileUrl);
             
             return (
-              <div key={doc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-700 flex items-center gap-2">
-                  {isVideo ? <Video className="w-4 h-4 text-rose-500" /> : <FileText className="w-4 h-4 text-indigo-500" />} {doc.name}
+              <div key={doc.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-50 rounded-xl border border-slate-100 gap-3">
+                <span className="font-bold text-slate-700 flex items-center gap-2 truncate max-w-full">
+                  {type === "video" ? <Video className="w-5 h-5 text-rose-500 flex-shrink-0" /> : <FileText className="w-5 h-5 text-indigo-500 flex-shrink-0" />} 
+                  <span className="truncate">{doc.name}</span>
                 </span>
-                <div className="flex items-center gap-4">
-                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 font-bold hover:underline hidden sm:flex items-center gap-1"><Eye className="w-4 h-4" /> Aperçu</button>
-                  <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 font-bold hover:underline flex items-center gap-1"><Download className="w-4 h-4" /> DL</a>
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all"><Eye className="w-4 h-4" /> Aperçu</button>
+                  <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 bg-cyan-50 px-3 py-1.5 rounded-lg font-bold hover:bg-cyan-100 flex items-center gap-1 transition-all"><Download className="w-4 h-4" /> DL</a>
                   
-                  <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1 ml-2 transition-all">
-                    {deletingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                  <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100 font-bold flex items-center transition-all ml-1">
+                    {deletingId === doc.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
@@ -119,27 +137,42 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo -2.5Mo)</h4>
-        <input required type="text" name="name" placeholder="Nom (Ex: Vidéo présentation, Scan...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
-        <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600" />
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo max 3Mo)</h4>
+        <input required type="text" name="name" placeholder="Nom du fichier (Ex: Passeport, Vidéo...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-          {uploading ? "Upload en cours..." : "Uploader le fichier"}
+          {uploading ? "Envoi en cours..." : "Uploader le fichier"}
         </button>
       </form>
 
-      {/* MODAL APERÇU */}
+      {/* MODAL APERÇU SÉCURISÉ & RESPONSIVE */}
       {preview && (
-        <div className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8" onClick={() => setPreview(null)}>
-          <button onClick={() => setPreview(null)} className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"><X className="w-8 h-8" /></button>
-          <div className="relative w-full max-w-6xl h-full max-h-[85vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            {preview.type === "pdf" ? (
-               <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl shadow-2xl" />
-            ) : preview.type === "video" ? (
-               <video src={preview.url} controls autoPlay className="max-w-full max-h-full rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
-            ) : (
-               <img src={preview.url} alt={preview.name} className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
-            )}
+        <div className="fixed inset-0 z-[99999] bg-slate-900/95 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8" onClick={() => setPreview(null)}>
+          <button onClick={() => setPreview(null)} className="absolute top-4 right-4 md:top-8 md:right-8 p-3 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all"><X className="w-6 h-6 md:w-8 md:h-8" /></button>
+          
+          <div className="relative w-full max-w-5xl h-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-white font-bold text-xl mb-4 truncate w-full text-center">{preview.name}</h3>
+            
+            <div className="w-full h-full max-h-[80vh] flex items-center justify-center bg-black/20 rounded-3xl p-2 md:p-4 overflow-hidden border border-white/10 shadow-2xl">
+              {preview.type === "pdf" ? (
+                 <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl" />
+              ) : preview.type === "video" ? (
+                 <video 
+                    src={preview.url} 
+                    controls 
+                    playsInline 
+                    autoPlay 
+                    className="w-full h-full max-h-[75vh] object-contain rounded-2xl" 
+                 />
+              ) : (
+                 <img 
+                    src={preview.url} 
+                    alt={preview.name} 
+                    className="max-w-full max-h-[75vh] object-contain rounded-2xl" 
+                 />
+              )}
+            </div>
           </div>
         </div>
       )}
