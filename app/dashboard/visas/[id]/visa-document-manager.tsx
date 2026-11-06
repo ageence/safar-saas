@@ -32,25 +32,14 @@ export function VisaDocumentManager({
       return;
     }
 
-    // 🟢 LA VRAIE SÉCURITÉ VERCEL (1.8 Mo MAX pour les vidéos)
-    // Au-delà, le Base64 va dépasser les 4.5Mo autorisés par Vercel et couper le serveur.
-    if (file.type.startsWith("video/")) {
-      const MAX_VIDEO_SIZE = 1.8 * 1024 * 1024; // 1.8 Mo
-      if (file.size > MAX_VIDEO_SIZE) {
-        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-        alert(`⚠️ VIDÉO TROP LOURDE ! (${sizeMb} Mo)\n\nVercel bloque strictement les gros fichiers (Erreur connexion).\nLa vidéo doit faire moins de 1.8 Mo. \n👉 Compressez-la sur internet ou prenez une vidéo plus courte.`);
-        setUploading(false);
-        form.reset();
-        return;
-      }
-    } else {
-      // Pour PDF et Images
-      if (file.size > 4 * 1024 * 1024) {
-        alert("⚠️ Le fichier est trop lourd (Max 4 Mo).");
-        setUploading(false);
-        form.reset();
-        return;
-      }
+    // 🟢 LIMITE STRICTE DE 2 Mo POUR TOUS LES FICHIERS (Vercel Gratuit)
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nL'hébergement gratuit (Vercel) bloque les envois au-delà de 2 Mo pour éviter les plantages.\n👉 Veuillez compresser la vidéo ou l'image avant de l'envoyer.`);
+      setUploading(false);
+      form.reset();
+      return;
     }
 
     const reader = new FileReader();
@@ -62,7 +51,7 @@ export function VisaDocumentManager({
           img.src = base64;
           img.onload = async () => {
             const canvas = document.createElement("canvas");
-            const MAX_WIDTH = 1200;
+            const MAX_WIDTH = 1000; // Plus petit = plus rapide sur Vercel
             let width = img.width;
             let height = img.height;
             if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
@@ -74,12 +63,13 @@ export function VisaDocumentManager({
             setUploading(false); form.reset();
           };
         } else {
+          // Vidéos et PDF directement en Base64
           await onUpload(visaId, name, base64);
           setUploading(false); form.reset();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Upload Error: ", error);
-        alert("❌ Erreur : Le fichier n'a pas pu être envoyé. Vérifiez votre connexion.");
+        alert(`❌ Erreur d'envoi : ${error.message || "Vérifiez votre connexion internet, le serveur a mis trop de temps à répondre."}`);
         setUploading(false);
       }
     };
@@ -94,14 +84,27 @@ export function VisaDocumentManager({
     }
   };
 
-  // 🔴 CORRECTION DE L'APERÇU : On vérifie aussi l'extension du nom !
+  // 🔴 DÉTECTION INTELLIGENTE (Même pour les vieux fichiers corrompus dans la BDD)
   const getFileType = (url: string, fileName: string) => {
     if (!url) return "image";
-    const lowerUrl = url.toLowerCase();
-    const lowerName = (fileName || "").toLowerCase();
+    const strUrl = url.toLowerCase();
+    const strName = (fileName || "").toLowerCase();
     
-    if (lowerUrl.includes("pdf") || lowerName.endsWith(".pdf")) return "pdf";
-    if (lowerUrl.includes("video") || lowerName.endsWith(".mp4") || lowerName.endsWith(".mov") || lowerName.endsWith(".avi") || lowerName.endsWith(".webm")) return "video";
+    if (strUrl.includes("pdf") || strName.endsWith(".pdf")) return "pdf";
+    
+    // Si le nom contient "vid" ou une extension vidéo, on force le mode Vidéo
+    if (
+      strUrl.includes("video") || 
+      strUrl.includes("mp4") || 
+      strUrl.includes("quicktime") ||
+      strName.endsWith(".mp4") || 
+      strName.endsWith(".mov") || 
+      strName.endsWith(".avi") ||
+      strName.includes("vid") ||
+      strName.includes("cam")
+    ) {
+      return "video";
+    }
     
     return "image";
   };
@@ -141,7 +144,7 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo max 1.8 Mo)</h4>
+        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo - Max 2 Mo)</h4>
         <input required type="text" name="name" placeholder="Nom du fichier (Ex: Passeport, Vidéo...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
@@ -158,17 +161,21 @@ export function VisaDocumentManager({
           <div className="relative w-full max-w-5xl h-full flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-white font-bold text-xl mb-4 truncate w-full text-center">{preview.name}</h3>
             
-            <div className="w-full h-full max-h-[80vh] flex items-center justify-center bg-black/40 rounded-3xl p-2 md:p-4 overflow-hidden border border-white/10 shadow-2xl">
+            <div className="w-full h-full max-h-[80vh] flex flex-col items-center justify-center bg-black/40 rounded-3xl p-2 md:p-4 overflow-hidden border border-white/10 shadow-2xl">
               {preview.type === "pdf" ? (
                  <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl" />
               ) : preview.type === "video" ? (
-                 <video 
-                    src={preview.url} 
-                    controls 
-                    playsInline 
-                    autoPlay 
-                    className="w-full h-full max-h-[75vh] object-contain rounded-2xl bg-black" 
-                 />
+                 <div className="flex flex-col items-center w-full">
+                   <video 
+                      src={preview.url} 
+                      controls 
+                      playsInline 
+                      className="max-w-full max-h-[65vh] object-contain rounded-2xl bg-black" 
+                   />
+                   <p className="text-white/60 text-sm mt-4 text-center">
+                     Si la vidéo ne s'affiche pas (format non supporté), <a href={preview.url} download={preview.name} className="text-indigo-400 font-bold underline">téléchargez-la ici</a>.
+                   </p>
+                 </div>
               ) : (
                  <img 
                     src={preview.url} 
