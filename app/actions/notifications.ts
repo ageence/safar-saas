@@ -2,15 +2,19 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { unstable_noStore as noStore } from "next/cache";
 
-export async function getUnreadNotifications() {
+// Le paramètre timestamp empêche le cache de Next.js !
+export async function getUnreadNotifications(timestamp?: number) {
+  noStore(); // 🟢 DÉSACTIVE LE CACHE OBLIGATOIREMENT
+  
   const session = await auth();
   if (!session?.user?.agencyId) return [];
 
   return await prisma.notification.findMany({
     where: { agencyId: session.user.agencyId, isRead: false },
     orderBy: { createdAt: "desc" },
-    take: 10 // On ramène les 10 dernières pour pas surcharger
+    take: 10
   });
 }
 

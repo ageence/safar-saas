@@ -10,61 +10,70 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Sonnerie (Un petit "Ding" professionnel)
-  const soundUrl = "https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3";
+  // Sonnerie claire et pro
+  const soundUrl = "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=success-1-6297.mp3";
 
   useEffect(() => {
     audioRef.current = new Audio(soundUrl);
+    
+    // 🟢 ASTUCE POUR DÉBLOQUER LE SON SUR CHROME : 
+    // Au premier clic n'importe où sur l'écran, le son est autorisé.
+    const unlockAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(() => {});
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      window.removeEventListener('click', unlockAudio);
+    };
+    window.addEventListener('click', unlockAudio);
 
     const fetchNotifs = async () => {
-      const data = await getUnreadNotifications();
+      const data = await getUnreadNotifications(Date.now()); // Date.now() casse le cache
       setNotifications((prev) => {
-        // Si on a une NOUVELLE notification (le nombre augmente), on joue le son !
         if (data.length > prev.length && prev.length > 0) {
-          audioRef.current?.play().catch(() => {}); // Le catch évite les erreurs du navigateur
+          audioRef.current?.play().catch(() => console.log("Son bloqué"));
         }
         return data;
       });
     };
 
-    fetchNotifs(); // 1er chargement
-    const interval = setInterval(fetchNotifs, 10000); // Vérifie chaque 10 secondes
-
+    fetchNotifs();
+    const interval = setInterval(fetchNotifs, 5000); // Vérifie chaque 5 secondes
     return () => clearInterval(interval);
   }, []);
 
   const handleRead = async (id: string) => {
     await markAsRead(id);
     setNotifications(notifications.filter((n) => n.id !== id));
-    setIsOpen(false); // Ferme le menu après le clic
   };
 
   return (
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-3 bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md transition-all text-slate-600 hover:text-indigo-600"
+        className="relative p-3 bg-white rounded-full border border-slate-200 shadow-md hover:shadow-lg transition-all text-slate-700 hover:text-indigo-600"
       >
         <Bell className="w-6 h-6" />
         {notifications.length > 0 && (
-          <span className="absolute top-0 right-0 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-bounce">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-pulse">
             {notifications.length}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-          <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
-            <h3 className="font-bold text-slate-800">Notifications</h3>
+        <div className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-[0_15px_60px_rgba(0,0,0,0.2)] border-2 border-slate-100 overflow-hidden z-[99999] opacity-100">
+          <div className="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center z-[99999]">
+            <h3 className="font-extrabold text-slate-800">Notifications</h3>
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded-full">{notifications.length}</span>
           </div>
           
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto bg-white relative z-[99999]">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 font-medium text-sm">
+              <div className="p-8 text-center text-slate-400 font-medium text-sm bg-white">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                Aucune nouvelle notification
+                Aucune notification
               </div>
             ) : (
               notifications.map((notif) => (
@@ -72,16 +81,16 @@ export function NotificationBell() {
                   key={notif.id} 
                   href={notif.link || "#"} 
                   onClick={() => handleRead(notif.id)}
-                  className="flex items-start gap-3 p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                  className="flex items-start gap-3 p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors bg-white"
                 >
                   <div className={`p-2 rounded-full flex-shrink-0 ${notif.type === "VISA" ? "bg-indigo-100 text-indigo-600" : "bg-orange-100 text-orange-600"}`}>
                     {notif.type === "VISA" ? <Globe className="w-4 h-4" /> : <PlaneTakeoff className="w-4 h-4" />}
                   </div>
-                  <div>
-                    <h4 className="font-bold text-slate-800 text-sm">{notif.title}</h4>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-slate-800 text-sm leading-tight">{notif.title}</h4>
                     <p className="text-slate-500 text-xs mt-1 line-clamp-2">{notif.message}</p>
-                    <span className="text-[10px] font-bold text-slate-400 mt-2 block flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Cliquer pour voir
+                    <span className="text-[10px] font-bold text-indigo-500 mt-2 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Marquer comme lu
                     </span>
                   </div>
                 </Link>
