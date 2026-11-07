@@ -3,6 +3,7 @@ export const instant = false;
 import prisma from "@/lib/prisma";
 import { CheckCircle2, Globe, Send, User, Phone, Briefcase, FileText, ShieldCheck, Clock, MapPin, Plane } from "lucide-react";
 import { redirect, notFound } from "next/navigation";
+import { revalidatePath } from "next/cache"; // 🟢 TRES IMPORTANT POUR L'ACTUALISATION
 
 export default async function DemandeVisaPremiumPage({ 
   params,
@@ -14,7 +15,6 @@ export default async function DemandeVisaPremiumPage({
   const { slug } = await params;
   const { success } = await searchParams;
 
-  // 🟢 CORRECTION : On a enlevé le "include: { agency: true }" pour éviter l'erreur TypeScript
   const offer = await prisma.visaOffer.findUnique({ where: { slug } });
   if (!offer) return notFound();
 
@@ -29,13 +29,26 @@ export default async function DemandeVisaPremiumPage({
     const history = formData.get("history") as string;
     const message = formData.get("message") as string;
     
-    const finalCountry = offer?.country || (formData.get("country") as string);
+    // Sécurité au cas où le pays est vide
+    const finalCountry = offer?.country || (formData.get("country") as string) || "Non Spécifié";
+
+    let isSuccess = false;
 
     try {
+      // 1. Création du client avec la source pour qu'il soit accepté par la BDD
       const client = await prisma.client.create({
-        data: { firstName, lastName, phone, passport: passport || "NON FOURNI", agencyId: offer!.agencyId } as any
+        data: { 
+          firstName, 
+          lastName, 
+          phone, 
+          passport: passport || "NON FOURNI", 
+          agencyId: offer!.agencyId,
+          source: "Lien Public Visa", // 🟢 OBLIGATOIRE POUR TA BASE DE DONNÉES
+          status: "EN_ATTENTE"
+        } as any
       });
 
+      // 2. Création du dossier Visa
       const notesPro = `[NOUVELLE DEMANDE EN LIGNE : ${offer!.title}]
       📌 Situation : ${situation}
       ✈️ Historique de voyage : ${history}
@@ -52,8 +65,16 @@ export default async function DemandeVisaPremiumPage({
         } as any
       });
 
+      isSuccess = true;
+    } catch (error) { 
+      console.error("Erreur serveur Prisma : ", error); 
+    }
+
+    // 🟢 LA REDIRECTION DOIT ÊTRE ICI POUR NE PAS CRASHER NEXT.JS
+    if (isSuccess) {
+      revalidatePath("/dashboard/visas"); // Forcer le rafraichissement du dashboard
       redirect(`/demande-visa/${slug}?success=true`);
-    } catch (error) { console.error(error); }
+    }
   }
 
   // ÉCRAN DE SUCCÈS
