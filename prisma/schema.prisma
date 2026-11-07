@@ -178,3 +178,12 @@ model Document {
   visaId      String?
   visa        VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
 }
+// TABLE POUR LES OFFRES DE VISA (CAMPAGNES PUBLIQUES)
+model VisaOffer {
+  id          String   @id @default(cuid())
+  title       String   // Ex: "Visa Étude", "Visa Touristique"
+  country     String?  // Optionnel : Si vide, le client choisit le pays
+  slug        String   @unique // Le lien public (ex: mon-agence-visa-etude)
+  agencyId    String
+  createdAt   DateTime @default(now())
+}
