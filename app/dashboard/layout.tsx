@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { NotificationBell } from "@/components/notification-bell"; // 🟢 IMPORT DE LA CLOCHE
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -35,8 +36,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             {/* Décor abstrait dans le coin de la sidebar */}
             <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-cyan-100/50 to-transparent rounded-t-[1.75rem] pointer-events-none"></div>
 
-            {/* Logo Area */}
-            <div className="h-28 flex items-center px-8 relative z-10">
+            {/* Logo Area + CLOCHE NOTIFICATION (VERSION PC) */}
+            <div className="h-28 flex items-center justify-between px-8 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-white rounded-2xl shadow-[0_8px_15px_rgba(14,165,233,0.2)]">
                   <Compass className="h-7 w-7 text-cyan-500 animate-[spin_12s_linear_infinite]" />
@@ -44,6 +45,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <span className="font-extrabold text-2xl tracking-tighter text-slate-800">
                   SAFAR<span className="text-cyan-500 font-light">.PRO</span>
                 </span>
+              </div>
+              
+              {/* 🟢 LA CLOCHE ICI DANS LE MENU PC (A DROITE DU LOGO) */}
+              <div className="ml-2">
+                <NotificationBell />
               </div>
             </div>
 
@@ -87,25 +93,31 @@ export default async function DashboardLayout({ children }: { children: React.Re
           
           {/* Header Mobile (Ultra Luxe) */}
           <header className="md:hidden flex h-20 items-center justify-between px-6 glass-promax m-4 relative z-50">
-             <span className="font-extrabold text-xl text-slate-800 flex items-center gap-2">
-               <Compass className="h-6 w-6 text-cyan-500" /> SAFAR.PRO
-             </span>
-            <Sheet>
-              <SheetTrigger className="p-2.5 bg-white text-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all">
-                <Menu className="h-6 w-6" />
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] bg-white/90 backdrop-blur-3xl border-none p-0 text-slate-800 m-2 h-[calc(100vh-16px)] rounded-3xl shadow-2xl">
-                 <div className="p-8"><span className="text-2xl font-extrabold text-royal-ocean">Menu</span></div>
-                 <nav className="px-4 space-y-3">
+            <span className="font-extrabold text-xl text-slate-800 flex items-center gap-2">
+              <Compass className="h-6 w-6 text-cyan-500" /> SAFAR.PRO
+            </span>
+            
+            <div className="flex items-center gap-3">
+              {/* 🟢 LA CLOCHE ICI DANS LE HEADER MOBILE (A GAUCHE DU MENU) */}
+              <NotificationBell />
+
+              <Sheet>
+                <SheetTrigger className="p-2.5 bg-white text-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all">
+                  <Menu className="h-6 w-6" />
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[85vw] bg-white/90 backdrop-blur-3xl border-none p-0 text-slate-800 m-2 h-[calc(100vh-16px)] rounded-3xl shadow-2xl">
+                  <div className="p-8"><span className="text-2xl font-extrabold text-royal-ocean">Menu</span></div>
+                  <nav className="px-4 space-y-3">
                     {navLinks.map((link) => (
                       <Link key={link.href} href={link.href} className="flex items-center gap-4 p-4 hover:bg-white rounded-2xl font-bold text-slate-600 shadow-sm border border-transparent hover:border-slate-100 transition-all">
                         <div className={`p-2 rounded-xl ${link.bg}`}><link.icon className={`h-6 w-6 ${link.color}`}/></div>
                         {link.name}
                       </Link>
                     ))}
-                 </nav>
-              </SheetContent>
-            </Sheet>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            </div>
           </header>
 
           <div className="flex-1 overflow-y-auto p-4 md:p-6 xl:p-8 w-full">
