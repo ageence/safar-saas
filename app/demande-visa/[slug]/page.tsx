@@ -14,7 +14,8 @@ export default async function DemandeVisaPremiumPage({
   const { slug } = await params;
   const { success } = await searchParams;
 
-  const offer = await prisma.visaOffer.findUnique({ where: { slug }, include: { agency: true } });
+  // 🟢 CORRECTION : On a enlevé le "include: { agency: true }" pour éviter l'erreur TypeScript
+  const offer = await prisma.visaOffer.findUnique({ where: { slug } });
   if (!offer) return notFound();
 
   async function submitLeadAction(formData: FormData) {
@@ -24,7 +25,6 @@ export default async function DemandeVisaPremiumPage({
     const phone = formData.get("phone") as string;
     const passport = formData.get("passport") as string;
     
-    // NOUVELLES QUESTIONS PRO
     const situation = formData.get("situation") as string;
     const history = formData.get("history") as string;
     const message = formData.get("message") as string;
@@ -32,12 +32,10 @@ export default async function DemandeVisaPremiumPage({
     const finalCountry = offer?.country || (formData.get("country") as string);
 
     try {
-      // 1. Création du client
       const client = await prisma.client.create({
         data: { firstName, lastName, phone, passport: passport || "NON FOURNI", agencyId: offer!.agencyId } as any
       });
 
-      // 2. Création du Dossier avec TOUTES les infos dans les notes
       const notesPro = `[NOUVELLE DEMANDE EN LIGNE : ${offer!.title}]
       📌 Situation : ${situation}
       ✈️ Historique de voyage : ${history}
@@ -58,7 +56,7 @@ export default async function DemandeVisaPremiumPage({
     } catch (error) { console.error(error); }
   }
 
-  // ÉCRAN DE SUCCÈS (MERCI)
+  // ÉCRAN DE SUCCÈS
   if (success) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -68,7 +66,7 @@ export default async function DemandeVisaPremiumPage({
           </div>
           <h1 className="text-4xl font-black text-slate-800 mb-4">Dossier Reçu !</h1>
           <p className="text-slate-500 font-medium mb-8 text-lg">
-            Merci. Votre demande a été enregistrée avec succès. Un expert de <b>{offer.agency?.name || "notre agence"}</b> va analyser votre profil et vous appeler très rapidement.
+            Merci. Votre demande a été enregistrée avec succès. Un expert de <b>notre agence</b> va analyser votre profil et vous appeler très rapidement.
           </p>
           <div className="inline-flex items-center gap-2 text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-xl">
             <Clock className="w-5 h-5" /> Réponse sous 24h/48h
@@ -78,19 +76,17 @@ export default async function DemandeVisaPremiumPage({
     );
   }
 
-  // ÉCRAN DU FORMULAIRE PREMIUM (100% Cliquable et Pro)
+  // ÉCRAN DU FORMULAIRE PREMIUM
   return (
     <div className="min-h-screen bg-slate-50 relative">
-      {/* HEADER SIMPLE */}
       <div className="absolute top-0 w-full p-6 text-center z-0">
         <div className="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-200 font-black text-slate-800 tracking-tight">
-          <Globe className="w-5 h-5 text-indigo-600" /> {offer.agency?.name || "Service Visa Premium"}
+          <Globe className="w-5 h-5 text-indigo-600" /> Service Visa Premium
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen relative z-10">
         
-        {/* CÔTÉ GAUCHE : ARGUMENTS MARKETING (SaaS Design) */}
         <div className="space-y-8 hidden lg:block">
           <h1 className="text-5xl font-black text-slate-900 leading-tight">
             Votre <span className="text-indigo-600">Visa</span> n'a jamais été aussi simple.
@@ -117,7 +113,6 @@ export default async function DemandeVisaPremiumPage({
           </div>
         </div>
 
-        {/* CÔTÉ DROIT : LE FORMULAIRE INTERACTIF */}
         <div className="bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-2xl shadow-indigo-100 border border-slate-100 w-full relative z-20">
           <div className="mb-8 lg:hidden text-center">
             <h2 className="text-3xl font-black text-slate-900 mb-2">{offer.title}</h2>
