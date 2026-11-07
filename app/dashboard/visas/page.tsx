@@ -41,6 +41,7 @@ export default async function VisasPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
+      {/* 🟢 HEADER AVEC LE NOUVEAU BOUTON "CAMPAGNES & LIENS" */}
       <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div className="flex items-center gap-5">
           <div className="p-4 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20 text-white animate-float">
@@ -52,7 +53,16 @@ export default async function VisasPage() {
           </div>
         </div>
         
-        <AddVisaDialog clients={clients} />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {/* NOUVEAU BOUTON MARKETING */}
+          <Link href="/dashboard/visas/campagnes">
+            <button className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-all w-full sm:w-auto border border-indigo-400/50">
+              <Globe className="w-5 h-5" /> Campagnes & Liens
+            </button>
+          </Link>
+          
+          <AddVisaDialog clients={clients} />
+        </div>
       </div>
 
       <div className="glass-promax rounded-[2rem] p-8 overflow-hidden">
