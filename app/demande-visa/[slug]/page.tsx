@@ -3,7 +3,7 @@ export const instant = false;
 import prisma from "@/lib/prisma";
 import { CheckCircle2, Globe, Send, User, Phone, Briefcase, FileText, ShieldCheck, Clock, MapPin, Plane } from "lucide-react";
 import { redirect, notFound } from "next/navigation";
-import { revalidatePath } from "next/cache"; // 🟢 TRES IMPORTANT POUR L'ACTUALISATION
+import { revalidatePath } from "next/cache";
 
 export default async function DemandeVisaPremiumPage({ 
   params,
@@ -29,13 +29,12 @@ export default async function DemandeVisaPremiumPage({
     const history = formData.get("history") as string;
     const message = formData.get("message") as string;
     
-    // Sécurité au cas où le pays est vide
     const finalCountry = offer?.country || (formData.get("country") as string) || "Non Spécifié";
 
     let isSuccess = false;
 
     try {
-      // 1. Création du client avec la source pour qu'il soit accepté par la BDD
+      // 1. Création du client
       const client = await prisma.client.create({
         data: { 
           firstName, 
@@ -43,7 +42,7 @@ export default async function DemandeVisaPremiumPage({
           phone, 
           passport: passport || "NON FOURNI", 
           agencyId: offer!.agencyId,
-          source: "Lien Public Visa", // 🟢 OBLIGATOIRE POUR TA BASE DE DONNÉES
+          source: "Lien Public Visa", 
           status: "EN_ATTENTE"
         } as any
       });
@@ -55,15 +54,6 @@ export default async function DemandeVisaPremiumPage({
       💬 Message : ${message || "Aucun message particulier."}`;
 
       await prisma.visaApplication.create({
-await prisma.notification.create({
-        data: {
-          title: "Nouveau Lead Visa 🌍",
-          message: `${firstName} ${lastName} a fait une demande pour ${finalCountry}.`,
-          type: "VISA",
-          link: "/dashboard/visas",
-          agencyId: offer!.agencyId,
-        } as any
-      });
         data: {
           clientId: client.id,
           agencyId: offer!.agencyId,
@@ -74,14 +64,24 @@ await prisma.notification.create({
         } as any
       });
 
+      // 3. Création de la notification (Bien séparé des blocs précédents)
+      await prisma.notification.create({
+        data: {
+          title: "Nouveau Lead Visa 🌍",
+          message: `${firstName} ${lastName} a fait une demande pour ${finalCountry}.`,
+          type: "VISA",
+          link: "/dashboard/visas",
+          agencyId: offer!.agencyId,
+        } as any
+      });
+
       isSuccess = true;
     } catch (error) { 
       console.error("Erreur serveur Prisma : ", error); 
     }
 
-    // 🟢 LA REDIRECTION DOIT ÊTRE ICI POUR NE PAS CRASHER NEXT.JS
     if (isSuccess) {
-      revalidatePath("/dashboard/visas"); // Forcer le rafraichissement du dashboard
+      revalidatePath("/dashboard/visas");
       redirect(`/demande-visa/${slug}?success=true`);
     }
   }
