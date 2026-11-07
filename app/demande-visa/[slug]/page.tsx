@@ -55,6 +55,15 @@ export default async function DemandeVisaPremiumPage({
       💬 Message : ${message || "Aucun message particulier."}`;
 
       await prisma.visaApplication.create({
+await prisma.notification.create({
+        data: {
+          title: "Nouveau Lead Visa 🌍",
+          message: `${firstName} ${lastName} a fait une demande pour ${finalCountry}.`,
+          type: "VISA",
+          link: "/dashboard/visas",
+          agencyId: offer!.agencyId,
+        } as any
+      });
         data: {
           clientId: client.id,
           agencyId: offer!.agencyId,

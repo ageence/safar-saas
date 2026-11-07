@@ -187,3 +187,13 @@ model VisaOffer {
   agencyId    String
   createdAt   DateTime @default(now())
 }
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   // "VISA" ou "VOYAGE"
+  isRead    Boolean  @default(false)
+  link      String?  // Le lien vers le dossier
+  agencyId  String
+  createdAt DateTime @default(now())
+}
