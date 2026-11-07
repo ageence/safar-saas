@@ -40,15 +40,6 @@ export async function submitBooking(offerId: string, formData: FormData) {
 
   // 3. Créer la réservation
   await prisma.booking.create({
-await prisma.notification.create({
-    data: {
-      title: "Nouvelle Réservation Voyage ✈️",
-      message: `${firstName} ${lastName} a réservé ${passengers} place(s).`,
-      type: "VOYAGE",
-      link: "/dashboard/offres",
-      agencyId: offer.agencyId,
-    } as any
-  });
     data: {
       offerId: offer.id,
       clientId: client.id,
@@ -64,6 +55,17 @@ await prisma.notification.create({
       data: { availableSeats: offer.availableSeats - passengers }
     });
   }
+
+  // 5. Créer la notification (BIEN SÉPARÉ)
+  await prisma.notification.create({
+    data: {
+      title: "Nouvelle Réservation Voyage ✈️",
+      message: `${firstName} ${lastName} a réservé ${passengers} place(s).`,
+      type: "VOYAGE",
+      link: "/dashboard/offres",
+      agencyId: offer.agencyId,
+    } as any
+  });
 
   // Rafraîchir les données pour le dashboard
   revalidatePath("/dashboard/offres");
