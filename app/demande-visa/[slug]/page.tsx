@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { CheckCircle2, Globe, Send, User, Phone, FileText } from "lucide-react";
 import { redirect, notFound } from "next/navigation";
 
-export default async function PageOffrePublique({ 
+export default async function DemandeVisaPubliquePage({ 
   params,
   searchParams 
 }: { 
@@ -14,9 +14,8 @@ export default async function PageOffrePublique({
   const { slug } = await params;
   const { success } = await searchParams;
 
-  // Récupérer l'offre depuis la base de données
   const offer = await prisma.visaOffer.findUnique({ where: { slug } });
-  if (!offer) return notFound(); // Si le lien est faux, page 404
+  if (!offer) return notFound();
 
   async function submitLeadAction(formData: FormData) {
     "use server";
@@ -26,10 +25,11 @@ export default async function PageOffrePublique({
     const passport = formData.get("passport") as string;
     const message = formData.get("message") as string;
     
-    // Si l'admin a fixé le pays, on l'utilise. Sinon, on prend celui tapé par le client.
+    // Le pays final est celui de l'offre (s'il existe), sinon celui tapé par le client
     const finalCountry = offer?.country || (formData.get("country") as string);
 
     try {
+      // Création du client + Dossier Visa (En attente) dans le CRM de l'agence
       const client = await prisma.client.create({
         data: { firstName, lastName, phone, passport: passport || "NON FOURNI", agencyId: offer!.agencyId } as any
       });
@@ -45,11 +45,10 @@ export default async function PageOffrePublique({
         } as any
       });
 
-      redirect(`/offre/${slug}?success=true`);
+      redirect(`/demande-visa/${slug}?success=true`);
     } catch (error) { console.error(error); }
   }
 
-  // ÉCRAN DE REMERCIEMENT
   if (success) {
     return (
       <div className="min-h-screen bg-promax-paradise flex items-center justify-center p-4">
@@ -59,14 +58,13 @@ export default async function PageOffrePublique({
           </div>
           <h1 className="text-3xl font-black text-slate-800 mb-4">Demande Reçue !</h1>
           <p className="text-slate-600 font-medium mb-8">
-            Merci. Votre demande d'accompagnement pour <b>{offer.title}</b> a bien été enregistrée. Notre équipe va vous contacter très vite !
+            Merci. Votre demande d'accompagnement pour <b>{offer.title}</b> a bien été enregistrée. Notre agence va vous contacter très vite pour ouvrir votre dossier.
           </p>
         </div>
       </div>
     );
   }
 
-  // ÉCRAN DU FORMULAIRE
   return (
     <div className="min-h-screen bg-promax-paradise flex items-center justify-center p-4 py-12">
       <div className="glass-promax p-8 sm:p-10 rounded-[2.5rem] max-w-xl w-full animate-in fade-in duration-700">
@@ -77,7 +75,7 @@ export default async function PageOffrePublique({
           </div>
           <h1 className="text-3xl font-black text-slate-800 mb-2">{offer.title}</h1>
           <p className="text-slate-500 font-medium">
-            {offer.country ? `Procédure pour : ${offer.country}` : "Remplissez ce formulaire pour démarrer la procédure."}
+            {offer.country ? `Procédure pour : ${offer.country}` : "Remplissez ce formulaire pour démarrer votre procédure de Visa."}
           </p>
         </div>
 
@@ -98,7 +96,6 @@ export default async function PageOffrePublique({
             <input required name="phone" type="tel" placeholder="0550 00 00 00" className="w-full bg-white/80 border border-white focus:border-indigo-300 rounded-2xl px-5 py-4 font-bold text-slate-800 outline-none" />
           </div>
 
-          {/* SI LE PAYS N'EST PAS DÉFINI PAR L'ADMIN, LE CLIENT CHOISIT */}
           {!offer.country && (
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase ml-1 flex items-center gap-2"><Globe className="w-3 h-3" /> Destination (Pays du Visa)</label>
