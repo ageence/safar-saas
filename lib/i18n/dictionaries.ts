@@ -20,7 +20,14 @@ export const dictionaries = {
     tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
     // Visas
     visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
-  },
+travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "Générer Reçu", back: "Retour",
+    clientInfo: "Informations Client", fullName: "Nom Complet", phone: "Téléphone", passport: "Passeport", notProvided: "Non renseigné",
+    stayDetails: "Détails du Séjour", offer: "Offre", pricePerPerson: "Tarif par personne",
+    finances: "Finances", total: "Total", alreadyPaid: "Déjà payé", remaining: "Reste",
+    paymentHistory: "Historique des versements", newPayment: "Nouveau versement",
+    // Pour document-manager (si besoin)
+    documents: "Documents", uploadFile: "Uploader un fichier"  
+},
   en: {
     // Menu & Accueil
     dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu", welcome: "Hello", whatsHappening: "Here is what's happening in your agency today.", prestigeEdition: "Prestige Edition", excellence: "The excellence of", travel: "Travel.", welcomeDesc: "Welcome to your command center", welcomeDesc2: "Manage your clients and finances with absolute fluidity.", certified: "Certified Agency", cloudActive: "Cloud system operational and 100% synchronized.", treasury: "Treasury", departures: "Departures", currentYear: "Current Year", financialFlow: "Financial Flow", liveFeed: "Live Feed", noDepartures: "No departures", new: "New", discoverAI: "Discover Safar AI", aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.", consultAssistant: "Consult Assistant",
@@ -42,7 +49,14 @@ export const dictionaries = {
     tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
     // Visas
     visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
-  },
+// ... Garde ce que tu as déjà, et AJOUTE CECI :
+    travelerFile: "Traveler File", reference: "Reference", generateReceipt: "Generate Receipt", back: "Back",
+    clientInfo: "Client Information", fullName: "Full Name", phone: "Phone", passport: "Passport", notProvided: "Not provided",
+    stayDetails: "Stay Details", offer: "Offer", pricePerPerson: "Price per person",
+    finances: "Finances", total: "Total", alreadyPaid: "Already paid", remaining: "Remaining",
+    paymentHistory: "Payment History", newPayment: "New payment",
+    documents: "Documents", uploadFile: "Upload a file"  
+},
   ar: {
     // Menu & Accueil
     dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة", welcome: "مرحباً", whatsHappening: "إليك ما يحدث في وكالتك اليوم.", prestigeEdition: "النسخة المرموقة", excellence: "امتياز", travel: "السفر.", welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك", welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.", certified: "وكالة معتمدة", cloudActive: "النظام السحابي يعمل ومتزامن 100%.", treasury: "الخزينة", departures: "المغادرين", currentYear: "السنة الحالية", financialFlow: "التدفق المالي", liveFeed: "أحدث النشاطات", noDepartures: "لا توجد رحلات", new: "جديد", discoverAI: "اكتشف ذكاء سفر", aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.", consultAssistant: "استشارة المساعد",
@@ -64,7 +78,14 @@ export const dictionaries = {
     tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
     // Visas
     visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
-  }
+// ... Garde ce que tu as déjà, et AJOUTE CECI :
+    travelerFile: "ملف المسافر", reference: "المرجع", generateReceipt: "إنشاء إيصال", back: "رجوع",
+    clientInfo: "معلومات العميل", fullName: "الاسم الكامل", phone: "الهاتف", passport: "جواز السفر", notProvided: "غير متوفر",
+    stayDetails: "تفاصيل الإقامة", offer: "العرض", pricePerPerson: "السعر للشخص",
+    finances: "المالية", total: "الإجمالي", alreadyPaid: "تم الدفع", remaining: "المتبقي",
+    paymentHistory: "سجل المدفوعات", newPayment: "دفعة جديدة",
+    documents: "المستندات", uploadFile: "رفع ملف"  
+}
 };
 
 export type Language = "fr" | "en" | "ar";
