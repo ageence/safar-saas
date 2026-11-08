@@ -27,3 +27,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     </html>
   );
 }
+// Dans app/layout.tsx
+import { LanguageProvider } from "@/components/language-provider";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="fr">
+      <body>
+        {/* ON ENGLOBE TOUT AVEC LE MOTEUR DE LANGUE */}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
+    </html>
+  );
+}
