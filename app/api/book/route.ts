@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const phone = formData.get("phone") as string;
+    const passengers = parseInt((formData.get("passengers") as string) || "1");
 
     // 1. Gérer le client
     let client = await prisma.client.findFirst({
@@ -26,14 +27,14 @@ export async function POST(request: Request) {
       data: { offerId, clientId: client.id, agencyId, status: "EN_ATTENTE" }
     });
 
-    // 3. 🟢 LA NOTIFICATION VOYAGE QUI MANQUAIT !
+    // 3. 🟢 LA NOTIFICATION EXACTE POUR LE VOYAGE
     try {
       await prisma.notification.create({
         data: {
-          title: "Nouvelle Réservation ✈️",
-          message: `${firstName} ${lastName} a réservé un voyage.`,
+          title: "Nouvelle Réservation Voyage ✈️",
+          message: `${firstName} ${lastName} a réservé pour ${passengers} personne(s).`,
           type: "VOYAGE",
-          link: "/dashboard/offres",
+          link: "/dashboard/clients", // 🟢 REDIRECTION VERS L'ONGLET CLIENTS KIMA TLABT
           agencyId: agencyId,
         } as any
       });
@@ -41,10 +42,12 @@ export async function POST(request: Request) {
       console.error("Erreur Notification Voyage :", notifError);
     }
 
-    // 4. Redirection vers la page succès
-    return NextResponse.redirect(new URL(`/offre/${offerId}?success=true`, request.url));
+    // 4. 🟢 LA REDIRECTION 303 (OBLIGATOIRE POUR AFFICHER LA PAGE MERCI !)
+    return NextResponse.redirect(new URL(`/offre/${offerId}?success=true`, request.url), 303);
+
   } catch (error) {
     console.error("Erreur API Book:", error);
-    return NextResponse.redirect(new URL(`/`, request.url));
+    // Si y a un problème, on le renvoie à l'accueil
+    return NextResponse.redirect(new URL(`/`, request.url), 303);
   }
 }
