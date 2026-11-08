@@ -6,8 +6,20 @@ export const dictionaries = {
     settingsTitle: "Paramètres", settingsDesc: "Gérez votre agence, votre équipe et vos intégrations.", tabGeneral: "Général", tabLang: "Langues", tabTeam: "Équipe", tabAuto: "Automatisations", agencyProfile: "Profil de l'agence", agencyDesc: "Les informations publiques de votre agence.", agencyName: "Nom de l'agence", phoneMain: "Téléphone Principal", address: "Adresse physique", update: "Mettre à jour", languageTitle: "Langue de l'interface", languageDesc: "Choisissez la langue d'affichage.", teamMembers: "Membres de l'équipe", colName: "Nom", colEmail: "Email", colRole: "Rôle", roleAdmin: "Gérant", roleEmp: "Employé", addEmp: "Ajouter un employé", addEmpDesc: "Créez un accès pour un nouveau membre.", fullName: "Nom complet", tempPass: "Mot de passe provisoire", createAccount: "Créer le compte", waIntegration: "Intégration WhatsApp Business", waDesc: "Configuration du Webhook pour WhatsApp.", waUrl: "URL du Webhook", waToken: "Jeton de vérification (Token)", waInfo: "Ces informations doivent être collées dans votre tableau de bord Meta.",
     // Notifications & Graphique
     yourNotifs: "Vos Notifications", upToDate: "Vous êtes à jour !", days7: "7 Jours", thisMonth: "Ce Mois", thisYear: "Cette Année", custom: "Personnalisé", generatedRevenue: "DA générés sur cette période.", to: "À", noData: "Aucune donnée financière pour cette période.",
-    // Clients
-    clientsTitle: "Gestion des Clients", clientsDesc: "Gérez la base de données de vos voyageurs et prospects.", searchClient: "Rechercher un client...", addClient: "Ajouter un Client", noClients: "Aucun client trouvé.", edit: "Modifier", delete: "Supprimer", dateJoined: "Inscrit le", phone: "Téléphone", source: "Source"
+    // Anciens Clients (Recherche)
+    clientsTitle: "Gestion des Clients", clientsDesc: "Gérez la base de données de vos voyageurs et prospects.", searchClient: "Rechercher un client...", addClient: "Ajouter un Client", noClients: "Aucun client trouvé.", edit: "Modifier", delete: "Supprimer", dateJoined: "Inscrit le", phone: "Téléphone", source: "Source",
+    // Vrais Clients (Dossiers)
+    crmReservations: "CRM & Réservations", crmDesc: "Gérez vos clients, dossiers et paiements.", lastBookings: "Dernières Réservations", demands: "Demandes", thClient: "Client", thPhone: "Téléphone", thTrip: "Voyage / Omra", thDate: "Date de Demande", thFile: "Dossier", noBookings: "Aucune réservation pour le moment.", openFile: "Ouvrir",
+    // Safar AI
+    aiCopilot: "Copilot", aiAnalysis: "L'intelligence artificielle analyse les données de votre agence en temps réel.", stratRecs: "Recommandations Stratégiques", salesSpeed: "Vitesse de Vente", noSalesData: "Aucune donnée de vente pour le moment.", almostFull: "Presque complet", seatsAvailable: "Places disponibles",
+    // AI Insights (Dynamiques)
+    strongTrend: "Tendance Forte Détectée", trendMsg: "génère le plus de trafic. Pensez à augmenter le prix ou lancer une campagne.", imminentDepletion: "Épuisement imminent", depletionMsg1: "Il ne reste que", depletionMsg2: "places pour", depletionMsg3: "L'IA estime une clôture sous peu.", underperfOffer: "Offre sous-performante", underperfMsg: "n'a généré aucun client. Créez un lien public pour booster l'engagement.", visaBottleneck: "Goulot d'étranglement Visa", visaMsg1: "Vous avez", visaMsg2: "dossiers Visa en attente. Contactez rapidement vos clients.", learningInProgress: "Apprentissage en cours", learningMsg: "L'IA analyse actuellement votre agence. Continuez d'ajouter des clients et des offres.",
+    // Finances (Page complète)
+    totalCashed: "Total Encaissé", profitSplit: "Répartition des gains", remainingToCollect: "Reste à recouvrer (Dettes)", transactionDetails: "Détail des Transactions", filteredPeriod: "(Période Filtrée)", pending: "En attente", approved: "Approuvé", paid: "Payé",
+    // Voyages
+    tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
+    // Visas
+    visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
   },
   en: {
     // Menu & Accueil
@@ -16,8 +28,20 @@ export const dictionaries = {
     settingsTitle: "Settings", settingsDesc: "Manage your agency, team and integrations.", tabGeneral: "General", tabLang: "Languages", tabTeam: "Team", tabAuto: "Automations", agencyProfile: "Agency Profile", agencyDesc: "Public info of your agency.", agencyName: "Agency Name", phoneMain: "Main Phone", address: "Physical Address", update: "Update", languageTitle: "Interface Language", languageDesc: "Choose display language.", teamMembers: "Team Members", colName: "Name", colEmail: "Email", colRole: "Role", roleAdmin: "Manager", roleEmp: "Employee", addEmp: "Add Employee", addEmpDesc: "Create access for a new member.", fullName: "Full Name", tempPass: "Temp Password", createAccount: "Create Account", waIntegration: "WhatsApp Business Integration", waDesc: "Webhook configuration for WhatsApp.", waUrl: "Webhook URL", waToken: "Verification Token", waInfo: "Paste this into your Meta dashboard.",
     // Notifications & Graphique
     yourNotifs: "Your Notifications", upToDate: "You are up to date!", days7: "7 Days", thisMonth: "This Month", thisYear: "This Year", custom: "Custom", generatedRevenue: "DA generated in this period.", to: "To", noData: "No financial data for this period.",
-    // Clients
-    clientsTitle: "Client Management", clientsDesc: "Manage your travelers and prospects database.", searchClient: "Search for a client...", addClient: "Add a Client", noClients: "No clients found.", edit: "Edit", delete: "Delete", dateJoined: "Joined on", phone: "Phone", source: "Source"
+    // Anciens Clients
+    clientsTitle: "Client Management", clientsDesc: "Manage your travelers and prospects database.", searchClient: "Search for a client...", addClient: "Add a Client", noClients: "No clients found.", edit: "Edit", delete: "Delete", dateJoined: "Joined on", phone: "Phone", source: "Source",
+    // Vrais Clients (Dossiers)
+    crmReservations: "CRM & Bookings", crmDesc: "Manage your clients, files and payments.", lastBookings: "Latest Bookings", demands: "Requests", thClient: "Client", thPhone: "Phone", thTrip: "Trip / Umrah", thDate: "Request Date", thFile: "File", noBookings: "No bookings at the moment.", openFile: "Open",
+    // Safar AI
+    aiCopilot: "Copilot", aiAnalysis: "Artificial intelligence analyzes your agency's data in real time.", stratRecs: "Strategic Recommendations", salesSpeed: "Sales Velocity", noSalesData: "No sales data at the moment.", almostFull: "Almost full", seatsAvailable: "Seats available",
+    // AI Insights
+    strongTrend: "Strong Trend Detected", trendMsg: "generates the most traffic. Consider a price increase or ad campaign.", imminentDepletion: "Imminent Depletion", depletionMsg1: "Only", depletionMsg2: "seats left for", depletionMsg3: "AI estimates closing soon.", underperfOffer: "Underperforming Offer", underperfMsg: "generated no clients. Create a public link to boost engagement.", visaBottleneck: "Visa Bottleneck", visaMsg1: "You have", visaMsg2: "pending visa files. Contact your clients quickly.", learningInProgress: "Learning in progress", learningMsg: "AI is currently analyzing your agency. Keep adding clients and offers.",
+    // Finances
+    totalCashed: "Total Cashed", profitSplit: "Profit Split", remainingToCollect: "Remaining to Collect (Debts)", transactionDetails: "Transaction Details", filteredPeriod: "(Filtered Period)", pending: "Pending", approved: "Approved", paid: "Paid",
+    // Voyages
+    tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
+    // Visas
+    visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
   },
   ar: {
     // Menu & Accueil
@@ -26,8 +50,21 @@ export const dictionaries = {
     settingsTitle: "الإعدادات", settingsDesc: "إدارة وكالتك، فريقك والتكاملات.", tabGeneral: "عام", tabLang: "اللغات", tabTeam: "الفريق", tabAuto: "الأتمتة", agencyProfile: "ملف الوكالة", agencyDesc: "المعلومات العامة لوكالتك.", agencyName: "اسم الوكالة", phoneMain: "الهاتف الرئيسي", address: "العنوان الفعلي", update: "تحديث", languageTitle: "لغة الواجهة", languageDesc: "اختر لغة العرض.", teamMembers: "أعضاء الفريق", colName: "الاسم", colEmail: "البريد", colRole: "الدور", roleAdmin: "مدير", roleEmp: "موظف", addEmp: "إضافة موظف", addEmpDesc: "إنشاء وصول لعضو جديد.", fullName: "الاسم الكامل", tempPass: "كلمة مرور مؤقتة", createAccount: "إنشاء حساب", waIntegration: "دمج واتساب", waDesc: "إعداد Webhook لواتساب.", waUrl: "رابط Webhook", waToken: "رمز التحقق", waInfo: "الصق هذا في لوحة تحكم Meta.",
     // Notifications & Graphique
     yourNotifs: "إشعاراتك", upToDate: "أنت على اطلاع دائم!", days7: "7 أيام", thisMonth: "هذا الشهر", thisYear: "هذا العام", custom: "مخصص", generatedRevenue: "دج تم تحقيقها في هذه الفترة.", to: "إلى", noData: "لا توجد بيانات مالية لهذه الفترة.",
-    // Clients
-    clientsTitle: "إدارة العملاء", clientsDesc: "إدارة قاعدة بيانات المسافرين والعملاء المحتملين.", searchClient: "البحث عن عميل...", addClient: "إضافة عميل", noClients: "لم يتم العثور على عملاء.", edit: "تعديل", delete: "حذف", dateJoined: "انضم في", phone: "رقم الهاتف", source: "المصدر"
+    // Anciens Clients
+    clientsTitle: "إدارة العملاء", clientsDesc: "إدارة قاعدة بيانات المسافرين والعملاء المحتملين.", searchClient: "البحث عن عميل...", addClient: "إضافة عميل", noClients: "لم يتم العثور على عملاء.", edit: "تعديل", delete: "حذف", dateJoined: "انضم في", phone: "رقم الهاتف", source: "المصدر",
+    // Vrais Clients (Dossiers)
+    crmReservations: "إدارة العملاء والحجوزات", crmDesc: "إدارة عملائك، ملفاتك ومدفوعاتك.", lastBookings: "أحدث الحجوزات", demands: "طلبات", thClient: "العميل", thPhone: "الهاتف", thTrip: "الرحلة / العمرة", thDate: "تاريخ الطلب", thFile: "الملف", noBookings: "لا توجد حجوزات في الوقت الحالي.", openFile: "فتح",
+    // Safar AI
+    aiCopilot: "المساعد", aiAnalysis: "يقوم الذكاء الاصطناعي بتحليل بيانات وكالتك في الوقت الفعلي.", stratRecs: "توصيات استراتيجية", salesSpeed: "سرعة المبيعات", noSalesData: "لا توجد بيانات مبيعات حالياً.", almostFull: "شبه مكتمل", seatsAvailable: "أماكن متاحة",
+    // AI Insights
+    strongTrend: "تم اكتشاف اتجاه قوي", trendMsg: "يولد أكبر عدد من الزيارات. فكر في زيادة السعر أو إطلاق حملة إعلانية.", imminentDepletion: "نفاد وشيك", depletionMsg1: "لم يتبق سوى", depletionMsg2: "مقاعد لـ", depletionMsg3: "الذكاء الاصطناعي يتوقع الإغلاق قريباً.", underperfOffer: "عرض ضعيف الأداء", underperfMsg: "لم يجلب أي عميل. قم بإنشاء رابط عام لتعزيز التفاعل.", visaBottleneck: "عنق زجاجة في التأشيرات", visaMsg1: "لديك", visaMsg2: "ملفات تأشيرة قيد الانتظار. اتصل بعملائك بسرعة.", learningInProgress: "التعلم قيد التقدم", learningMsg: "الذكاء الاصطناعي يحلل وكالتك حالياً. استمر في إضافة العملاء والعروض.",
+    // Finances
+    totalCashed: "إجمالي المقبوضات", profitSplit: "توزيع الأرباح", remainingToCollect: "المتبقي للتحصيل (الديون)", transactionDetails: "تفاصيل المعاملات", filteredPeriod: "(فترة مصفاة)", pending: "قيد الانتظار", approved: "مقبول", paid: "مدفوع",
+    // Voyages
+    tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
+    // Visas
+    visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
   }
 };
+
 export type Language = "fr" | "en" | "ar";
