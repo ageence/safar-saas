@@ -5,34 +5,21 @@ import { CheckCircle2, Globe, Send, Phone, Briefcase, FileText, ShieldCheck, Clo
 import { redirect, notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export default async function DemandeVisaPremiumPage({ 
-  params,
-  searchParams 
-}: { 
-  params: Promise<{ slug: string }>,
-  searchParams: Promise<{ success?: string }>
-}) {
+export default async function DemandeVisaPremiumPage({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ success?: string }> }) {
   const { slug } = await params;
   const { success } = await searchParams;
 
   const offer = await prisma.visaOffer.findUnique({ where: { slug } });
   if (!offer) return notFound();
 
-  // 🟢 LA PAGE DE SUCCÈS EST PLACÉE TOUT EN HAUT POUR ÊTRE PRIORITAIRE
   if (success === "true") {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white p-12 rounded-[3rem] max-w-lg w-full text-center border border-slate-100 shadow-2xl animate-in zoom-in-95 duration-500">
-          <div className="w-28 h-28 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner border border-emerald-100">
-            <CheckCircle2 className="w-14 h-14" />
-          </div>
+          <div className="w-28 h-28 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner border border-emerald-100"><CheckCircle2 className="w-14 h-14" /></div>
           <h1 className="text-4xl font-black text-slate-800 mb-4">Dossier Reçu !</h1>
-          <p className="text-slate-500 font-medium mb-8 text-lg">
-            Merci. Votre demande a été enregistrée avec succès. Un expert va analyser votre profil et vous appeler très rapidement.
-          </p>
-          <div className="inline-flex items-center gap-2 text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-xl">
-            <Clock className="w-5 h-5" /> Réponse sous 24h/48h
-          </div>
+          <p className="text-slate-500 font-medium mb-8 text-lg">Merci. Votre demande a été enregistrée avec succès. Un expert va analyser votre profil et vous appeler très rapidement.</p>
+          <div className="inline-flex items-center gap-2 text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-xl"><Clock className="w-5 h-5" /> Réponse sous 24h/48h</div>
         </div>
       </div>
     );
@@ -49,77 +36,51 @@ export default async function DemandeVisaPremiumPage({
     const message = formData.get("message") as string;
     
     const finalCountry = offer?.country || (formData.get("country") as string) || "Non Spécifié";
-    let isSuccess = false;
 
-    try {
-      const client = await prisma.client.create({
-        data: { 
-          firstName, lastName, phone, 
-          passport: passport || "NON FOURNI", 
-          agencyId: offer!.agencyId,
-          source: "Lien Public Visa", 
-          status: "EN_ATTENTE"
-        } as any
-      });
+    // 🟢 PAS DE TRY CATCH SILENCIEUX, SI ÇA CRASHE, VERCEL VA LE LOGGUER CLAIREMENT
+    // 🟢 ET ON MET "Site Web" POUR LA SOURCE CAR C'EST CE QUI EXISTE DEJA DANS TA BDD
+    const client = await prisma.client.create({
+      data: { 
+        firstName, lastName, phone, 
+        passport: passport || "NON FOURNI", 
+        agencyId: offer!.agencyId,
+        source: "Site Web", // <--- C'ÉTAIT ÇA LE PROBLEME
+        status: "EN_ATTENTE"
+      } as any
+    });
 
-      const notesPro = `[NOUVELLE DEMANDE EN LIGNE : ${offer!.title}]\n📌 Situation : ${situation}\n✈️ Historique : ${history}\n💬 Message : ${message || "Aucun message particulier."}`;
+    const notesPro = `[NOUVELLE DEMANDE : ${offer!.title}]\n📌 Situation : ${situation}\n✈️ Historique : ${history}\n💬 Message : ${message || "-"}`;
 
-      await prisma.visaApplication.create({
-        data: {
-          clientId: client.id, agencyId: offer!.agencyId, country: finalCountry,
-          status: "EN_ATTENTE", price: 0, notes: notesPro,
-        } as any
-      });
+    await prisma.visaApplication.create({
+      data: {
+        clientId: client.id, agencyId: offer!.agencyId, country: finalCountry,
+        status: "EN_ATTENTE", price: 0, notes: notesPro,
+      } as any
+    });
 
-      await prisma.notification.create({
-        data: {
-          title: "Nouveau Lead Visa 🌍",
-          message: `${firstName} ${lastName} a fait une demande pour ${finalCountry}.`,
-          type: "VISA", link: "/dashboard/visas", agencyId: offer!.agencyId,
-        } as any
-      });
+    await prisma.notification.create({
+      data: {
+        title: "Nouveau Lead Visa 🌍",
+        message: `${firstName} ${lastName} a fait une demande.`,
+        type: "VISA", link: "/dashboard/visas", agencyId: offer!.agencyId,
+      } as any
+    });
 
-      isSuccess = true;
-    } catch (error) { console.error("Erreur Prisma : ", error); }
-
-    if (isSuccess) {
-      revalidatePath("/dashboard/visas");
-      redirect(`/demande-visa/${slug}?success=true`);
-    }
+    revalidatePath("/dashboard/visas");
+    redirect(`/demande-visa/${slug}?success=true`);
   }
 
   return (
     <div className="min-h-screen bg-slate-50 relative">
-      <div className="absolute top-0 w-full p-6 text-center z-0">
-        <div className="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-200 font-black text-slate-800 tracking-tight">
-          <Globe className="w-5 h-5 text-indigo-600" /> Service Visa Premium
-        </div>
-      </div>
+      <div className="absolute top-0 w-full p-6 text-center z-0"><div className="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-200 font-black text-slate-800 tracking-tight"><Globe className="w-5 h-5 text-indigo-600" /> Service Visa Premium</div></div>
 
       <div className="max-w-6xl mx-auto px-4 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen relative z-10">
         <div className="space-y-8 hidden lg:block">
-          <h1 className="text-5xl font-black text-slate-900 leading-tight">
-            Votre <span className="text-indigo-600">Visa</span> n'a jamais été aussi simple.
-          </h1>
-          <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-md">
-            Remplissez ce formulaire pour démarrer votre procédure <b>{offer.title}</b>. Notre équipe s'occupe de tout le reste.
-          </p>
-
+          <h1 className="text-5xl font-black text-slate-900 leading-tight">Votre <span className="text-indigo-600">Visa</span> n'a jamais été aussi simple.</h1>
+          <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-md">Remplissez ce formulaire pour démarrer votre procédure <b>{offer.title}</b>. Notre équipe s'occupe de tout le reste.</p>
           <div className="space-y-6 mt-12">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white shadow-md rounded-2xl text-emerald-500"><ShieldCheck className="w-7 h-7" /></div>
-              <div>
-                <h3 className="font-bold text-slate-800 text-lg">Analyse Gratuite</h3>
-                <p className="text-slate-500">Nous étudions vos chances de réussite avant de commencer.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white shadow-md rounded-2xl text-indigo-500"><FileText className="w-7 h-7" /></div>
-              <div>
-                <h3 className="font-bold text-slate-800 text-lg">Dossier Blindé</h3>
-                <p className="text-slate-500">Accompagnement complet pour une demande solide.</p>
-              </div>
-            </div>
+            <div className="flex items-start gap-4"><div className="p-3 bg-white shadow-md rounded-2xl text-emerald-500"><ShieldCheck className="w-7 h-7" /></div><div><h3 className="font-bold text-slate-800 text-lg">Analyse Gratuite</h3><p className="text-slate-500">Nous étudions vos chances de réussite.</p></div></div>
+            <div className="flex items-start gap-4"><div className="p-3 bg-white shadow-md rounded-2xl text-indigo-500"><FileText className="w-7 h-7" /></div><div><h3 className="font-bold text-slate-800 text-lg">Dossier Blindé</h3><p className="text-slate-500">Accompagnement complet pour une demande solide.</p></div></div>
           </div>
         </div>
 
