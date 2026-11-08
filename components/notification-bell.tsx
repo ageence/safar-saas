@@ -8,16 +8,38 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  // 🟢 DÉBLOCAGE DU SON PAR LE NAVIGATEUR (IMPORTANT)
+  useEffect(() => {
+    const unlockAudio = () => {
+      const audio = document.getElementById("notif-audio") as HTMLAudioElement;
+      if (audio) {
+        // On joue et on met en pause instantanément pour dire au navigateur "C'est bon, l'utilisateur a interagi"
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(() => {});
+      }
+      // On retire l'écouteur après le premier clic
+      window.removeEventListener('click', unlockAudio);
+    };
+    
+    // N'importe quel clic sur le dashboard débloquera le son
+    window.addEventListener('click', unlockAudio);
+    return () => window.removeEventListener('click', unlockAudio);
+  }, []);
+
+  // 🟢 VÉRIFICATION DES NOUVELLES NOTIFICATIONS
   useEffect(() => {
     const fetchNotifs = async () => {
       try {
         const data = await getUnreadNotifications(Date.now());
         setNotifications((prev) => {
-          // Si nouvelle notification, on force le lecteur audio HTML à jouer !
-          if (data.length > prev.length && prev.length > 0) {
+          // Si le nombre de notifications augmente (nouveau client)
+          if (data.length > prev.length && prev.length !== 0) {
             const audio = document.getElementById("notif-audio") as HTMLAudioElement;
             if (audio) {
-              audio.play().catch((e) => console.log("Son bloqué par le navigateur", e));
+              audio.currentTime = 0;
+              audio.play().catch((e) => console.log("Le son a été bloqué. Cliquez sur la page pour le débloquer.", e));
             }
           }
           return data;
@@ -28,7 +50,7 @@ export function NotificationBell() {
     };
 
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 5000); // Polling chaque 5 secondes
+    const interval = setInterval(fetchNotifs, 5000); // Vérifie chaque 5 secondes
     return () => clearInterval(interval);
   }, []);
 
@@ -42,13 +64,11 @@ export function NotificationBell() {
   const unreadCount = notifications.length;
 
   return (
-    // 🟢 POSITION FIXE GLOBALE : En bas à droite, échappe à tout le reste du site !
     <div className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-[999999]">
       
-      {/* 🟢 LECTEUR AUDIO CACHÉ (Méthode la plus fiable pour le son) */}
-      <audio id="notif-audio" preload="auto" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3"></audio>
+      {/* 🟢 FICHIER AUDIO SÉCURISÉ ET FIABLE */}
+      <audio id="notif-audio" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2574/2574-preview.mp3"></audio>
 
-      {/* 🟢 LE MENU DÉROULANT (100% OPAQUE, BORDURES VISIBLES, NON TRANSPARENT) */}
       {isOpen && (
         <div className="absolute bottom-24 right-0 w-[320px] sm:w-[400px] bg-slate-50 rounded-2xl shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-4 border-slate-900 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           
@@ -86,7 +106,6 @@ export function NotificationBell() {
         </div>
       )}
 
-      {/* 🟢 LE GROS BOUTON FLOTTANT */}
       <button 
         onClick={() => setIsOpen(!isOpen)} 
         className="relative p-5 bg-slate-900 hover:bg-indigo-600 text-white rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.4)] transition-all hover:scale-110 border-4 border-white active:scale-95"

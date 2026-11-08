@@ -12,36 +12,62 @@ export async function submitBooking(offerId: string, formData: FormData) {
 
   const offer = await prisma.offer.findUnique({ where: { id: offerId } });
   if (!offer) return { error: "Offre introuvable" };
-  if (offer.availableSeats !== null && offer.availableSeats < passengers) return { error: `Places insuffisantes.` };
-
-  let client = await prisma.client.findFirst({ where: { phone, agencyId: offer.agencyId } });
-
-  if (!client) {
-    client = await prisma.client.create({
-      data: { firstName, lastName, phone, email, source: "Site Web", status: "EN_ATTENTE", agencyId: offer.agencyId }
-    });
+  
+  if (offer.availableSeats !== null && offer.availableSeats < passengers) {
+    return { error: `Il ne reste que ${offer.availableSeats} places.` };
   }
 
-  await prisma.booking.create({
-    data: { offerId: offer.id, clientId: client.id, agencyId: offer.agencyId, status: "EN_ATTENTE" }
-  });
+  let isSuccess = false;
 
-  if (offer.availableSeats !== null) {
-    await prisma.offer.update({
-      where: { id: offer.id }, data: { availableSeats: offer.availableSeats - passengers }
-    });
-  }
-
-  // 🟢 ON SÉPARE LA NOTIFICATION POUR ÉVITER LES CRASHES
   try {
-    await prisma.notification.create({
-      data: {
-        title: "Nouvelle Réservation Voyage ✈️",
-        message: `${firstName} ${lastName} a réservé ${passengers} place(s).`,
-        type: "VOYAGE", link: "/dashboard/offres", agencyId: offer.agencyId,
-      } as any
+    let client = await prisma.client.findFirst({
+      where: { phone, agencyId: offer.agencyId }
     });
-  } catch (error) { console.error("Notification échouée", error); }
+
+    if (!client) {
+      client = await prisma.client.create({
+        data: {
+          firstName, lastName, phone, email,
+          source: "Site Web", // 🟢 OBLIGATOIRE POUR PRISMA
+          status: "EN_ATTENTE",
+          agencyId: offer.agencyId
+        }
+      });
+    }
+
+    await prisma.booking.create({
+      data: {
+        offerId: offer.id, clientId: client.id, agencyId: offer.agencyId, status: "EN_ATTENTE"
+      }
+    });
+
+    if (offer.availableSeats !== null) {
+      await prisma.offer.update({
+        where: { id: offer.id }, data: { availableSeats: offer.availableSeats - passengers }
+      });
+    }
+    isSuccess = true;
+  } catch (error) {
+    console.error("Erreur Création Réservation :", error);
+    return { error: "Erreur lors de la réservation." };
+  }
+
+  // 🟢 CRÉATION DE LA NOTIFICATION (Isolée pour garantir le fonctionnement)
+  if (isSuccess) {
+    try {
+      await prisma.notification.create({
+        data: {
+          title: "Nouvelle Réservation Voyage ✈️",
+          message: `${firstName} ${lastName} a réservé ${passengers} place(s).`,
+          type: "VOYAGE",
+          link: "/dashboard/offres",
+          agencyId: offer.agencyId,
+        } as any
+      });
+    } catch (e) {
+      console.error("Erreur création notification voyage (Ignorée) :", e);
+    }
+  }
 
   revalidatePath("/dashboard/offres");
   revalidatePath("/dashboard/clients");
