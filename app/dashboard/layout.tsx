@@ -1,5 +1,5 @@
 export const instant = false;
-
+export const instant = false;
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -9,6 +9,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { LanguageSwitcher } from "@/components/language-switcher"; // 🟢 IMPORT DU BOUTON DE LANGUE
 
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import LayoutClient from "./layout-client";
+
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  return <LayoutClient session={session}>{children}</LayoutClient>;
+}
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
