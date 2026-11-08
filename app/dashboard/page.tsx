@@ -1,7 +1,10 @@
+export const instant = false;
+
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { Users, FileText, Wallet, PlaneTakeoff, TrendingUp, Activity, MapPin, Sparkles, Star } from "lucide-react";
+import { Users, FileText, Wallet, PlaneTakeoff, TrendingUp, Activity, MapPin, Sparkles, Star, BrainCircuit } from "lucide-react";
 import { Overview } from "./overview";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -43,7 +46,6 @@ export default async function DashboardPage() {
           </p>
         </div>
         
-        {/* Badge VIP droite */}
         <div className="w-full md:w-1/3 flex justify-end">
           <div className="p-8 bg-white/80 rounded-[2rem] border border-white shadow-xl shadow-cyan-500/10 text-center w-full max-w-sm relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-[40px] group-hover:bg-orange-400/20 transition-colors duration-700"></div>
@@ -54,10 +56,9 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* 2. BENTO GRID 12 COLONNES (Zéro espace vide) */}
+      {/* 2. BENTO GRID 12 COLONNES */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
         
-        {/* CARTE REVENUE (6 COLONNES = 50% écran) */}
         <div className="glass-promax col-span-1 md:col-span-6 lg:col-span-6 p-8 md:p-10 flex flex-col justify-between group">
           <div className="flex justify-between items-start mb-10">
             <div>
@@ -77,7 +78,6 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* CARTE CLIENTS (2 COLONNES) */}
         <div className="glass-promax col-span-1 md:col-span-3 lg:col-span-2 p-8 flex flex-col items-center justify-center text-center group">
           <div className="p-4 bg-emerald-50 rounded-2xl mb-4 group-hover:bg-emerald-100 transition-colors">
             <Users className="h-8 w-8 text-emerald-500 animate-float" />
@@ -86,7 +86,6 @@ export default async function DashboardPage() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Clients</p>
         </div>
 
-        {/* CARTE VISAS (2 COLONNES) */}
         <div className="glass-promax col-span-1 md:col-span-3 lg:col-span-2 p-8 flex flex-col items-center justify-center text-center group">
           <div className="p-4 bg-purple-50 rounded-2xl mb-4 group-hover:bg-purple-100 transition-colors">
             <FileText className="h-8 w-8 text-purple-500 animate-float" />
@@ -95,7 +94,6 @@ export default async function DashboardPage() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Visas</p>
         </div>
 
-        {/* CARTE RESERVATIONS (2 COLONNES) */}
         <div className="glass-promax col-span-1 md:col-span-6 lg:col-span-2 p-8 flex flex-col items-center justify-center text-center group bg-gradient-to-b from-transparent to-orange-50/30">
           <div className="p-4 bg-orange-50 rounded-2xl mb-4 group-hover:bg-orange-100 transition-colors">
             <PlaneTakeoff className="h-8 w-8 text-orange-500 animate-float" />
@@ -104,7 +102,7 @@ export default async function DashboardPage() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Départs</p>
         </div>
 
-        {/* GRAPHIQUE (8 COLONNES) */}
+        {/* GRAPHIQUE */}
         <div className="glass-promax col-span-1 md:col-span-8 p-8">
           <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
             <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3">
@@ -117,7 +115,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* DERNIERS DEPARTS (4 COLONNES) */}
+        {/* LIVE FEED (VIP RETIRÉ) */}
         <div className="glass-promax col-span-1 md:col-span-4 p-8 flex flex-col bg-white/40">
           <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-5">
             <h3 className="text-2xl font-black text-slate-800">Live Feed</h3>
@@ -144,13 +142,40 @@ export default async function DashboardPage() {
                     <p className="text-xs font-bold text-slate-500 truncate mt-0.5">{booking.offer.title}</p>
                   </div>
                   <div className="text-right pr-2">
-                    <span className="text-lg font-black text-cyan-600">VIP</span>
+                    {/* 🟢 LE VIP A ÉTÉ REMPLACÉ PAR UN BADGE DISCRET */}
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                      Nouveau
+                    </span>
                   </div>
                 </div>
               ))
             )}
           </div>
         </div>
+
+        {/* 🟢 NOUVELLE SECTION SAFAR AI (PLEINE LARGEUR 12 COLONNES) */}
+        <div className="col-span-1 md:col-span-12 p-8 md:p-10 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl mt-2 border border-indigo-500/20">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+            <div className="p-5 bg-white/10 rounded-3xl backdrop-blur-md border border-white/20 shadow-inner flex-shrink-0">
+              <Sparkles className="h-10 w-10 text-indigo-300 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">Découvrez Safar AI <span className="text-sm align-top bg-indigo-500 text-white px-2 py-0.5 rounded-full ml-1">BETA</span></h3>
+              <p className="text-indigo-100/80 font-medium text-lg max-w-2xl leading-relaxed">
+                L'intelligence artificielle analyse vos offres, détecte les tendances de vos clients et vous fournit des recommandations stratégiques pour maximiser votre chiffre d'affaires.
+              </p>
+            </div>
+          </div>
+          <div className="relative z-10 w-full lg:w-auto flex-shrink-0">
+            <Link href="/dashboard/ai">
+              <button className="w-full lg:w-auto bg-white hover:bg-indigo-50 text-indigo-700 font-black px-8 py-4 rounded-2xl shadow-[0_10px_40px_rgba(255,255,255,0.2)] hover:shadow-[0_10px_60px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all text-lg flex items-center justify-center gap-3">
+                <BrainCircuit className="w-6 h-6" /> Consulter l'Assistant
+              </button>
+            </Link>
+          </div>
+        </div>
+
       </div>
     </div>
   );
