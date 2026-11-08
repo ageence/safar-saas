@@ -8,7 +8,6 @@ export function Overview({ data }: { data: { date: string, amount: number }[] })
   const { t } = useLanguage();
   const [timeframe, setTimeframe] = useState<"week" | "month" | "year" | "custom">("year");
   
-  // 🟢 HOUWA L'BOUTON TA3EK (A3mida wela Mon7ana)
   const [chartType, setChartType] = useState<"area" | "bar">("area"); 
   
   const [customStart, setCustomStart] = useState<string>("");
@@ -61,7 +60,6 @@ export function Overview({ data }: { data: { date: string, amount: number }[] })
 
   const totalPeriod = chartData.reduce((sum, item) => sum + item.total, 0);
 
-  // 🟢 TOOLTIP VIP : Y'affichi l'chiffre kamel ki t7ot l'souris 3lih
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -81,23 +79,22 @@ export function Overview({ data }: { data: { date: string, amount: number }[] })
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-8 pb-6 border-b border-slate-100 gap-4">
         <div>
           <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-            <Activity className="h-6 w-6 text-cyan-500" /> {t("financialFlow")}
+            <Activity className="h-6 w-6 text-cyan-500"/> {t("financialFlow")}
           </h3>
           <p className="text-slate-500 font-bold text-sm mt-1 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-500" /> 
+            <TrendingUp className="w-4 h-4 text-emerald-500"/> 
             {new Intl.NumberFormat("fr-DZ").format(totalPeriod)} {t("generatedRevenue")}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           
-          {/* 🟢 LES BOUTONS POUR CHANGER LE TYPE DE GRAPHE */}
           <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-200">
             <button onClick={() => setChartType("area")} className={`p-2 rounded-lg transition-all ${chartType === 'area' ? 'bg-white shadow-sm text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`} title="Courbe">
-              <LineChart className="w-4 h-4" />
+              <LineChart className="w-4 h-4"/>
             </button>
             <button onClick={() => setChartType("bar")} className={`p-2 rounded-lg transition-all ${chartType === 'bar' ? 'bg-white shadow-sm text-cyan-600' : 'text-slate-400 hover:text-slate-600'}`} title="Barres">
-              <BarChart3 className="w-4 h-4" />
+              <BarChart3 className="w-4 h-4"/>
             </button>
           </div>
 
@@ -124,29 +121,28 @@ export function Overview({ data }: { data: { date: string, amount: number }[] })
             {t("noData")}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer height="100%" width="100%">
             {chartType === "bar" ? (
-              {/* 🟢 RECHARTS : width={60} w left={30} bach les chiffres kbar maytghatawch */}
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 30, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : value} width={60} />
-                <Tooltip content={<CustomTooltip />} cursor={{fill: '#f8fafc'}} />
-                <Bar dataKey="total" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
+              <BarChart 0 10, 30, bottom: data="{chartData}" left: margin="{{" right: top: }}>
+                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical="{false}"/>
+                <XAxis axisLine="{false}" dataKey="name" fontSize="{11}" stroke="#94a3b8" tickLine="{false}"/>
+                <YAxis axisLine="{false}" fontSize="{11}" stroke="#94a3b8" tickFormatter="{(value)" tickLine="{false}"> value >= 1000 ? `${value / 1000}k` : value} width={60} />
+                <Tooltip content="{<CustomTooltip"/>} cursor={{fill: '#f8fafc'}} />
+                <Bar 0, 0]} 6, dataKey="total" fill="#0ea5e9" maxBarSize="{40}" radius="{[6,"/>
               </BarChart>
             ) : (
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 30, bottom: 0 }}>
+              <AreaChart 0 10, 30, bottom: data="{chartData}" left: margin="{{" right: top: }}>
                 <defs>
                   <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : value} width={60} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="total" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
+                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical="{false}"/>
+                <XAxis axisLine="{false}" dataKey="name" fontSize="{11}" stroke="#94a3b8" tickLine="{false}"/>
+                <YAxis axisLine="{false}" fontSize="{11}" stroke="#94a3b8" tickFormatter="{(value)" tickLine="{false}"> value >= 1000 ? `${value / 1000}k` : value} width={60} />
+                <Tooltip content="{<CustomTooltip"/>} />
+                <Area dataKey="total" fill="url(#colorTotal)" fillOpacity="{1}" stroke="#0ea5e9" strokeWidth="{3}" type="monotone"/>
               </AreaChart>
             )}
           </ResponsiveContainer>
