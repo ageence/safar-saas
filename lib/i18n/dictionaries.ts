@@ -11,6 +11,8 @@ export const dictionaries = {
     crmReservations: "CRM & Réservations", crmDesc: "Gérez vos clients, dossiers et paiements.", lastBookings: "Dernières Réservations", demands: "Demandes", thClient: "Client", thPhone: "Téléphone", thTrip: "Voyage / Omra", thDate: "Date de Demande", thFile: "Dossier", noBookings: "Aucune réservation pour le moment.", openFile: "Ouvrir",
     // Dossier Client Interne
     travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "Générer Reçu", back: "Retour", clientInfo: "Informations Client", passport: "Passeport", notProvided: "Non renseigné", stayDetails: "Détails du Séjour", offer: "Offre", pricePerPerson: "Tarif par personne", total: "Total", alreadyPaid: "Déjà payé", remaining: "Reste", paymentHistory: "Historique des versements", newPayment: "Nouveau versement", documents: "Documents", uploadFile: "Uploader un fichier",
+    // Document Manager
+    clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été ajouté pour le moment.", dropFileHere: "Glissez le fichier ici, ou cliquez pour sélectionner.", dragToUpload: "Relâchez pour uploader", fileLimit: "Max 5Mo. PNG, JPG, PDF.",
     // Safar AI
     aiCopilot: "Copilot", aiAnalysis: "L'intelligence artificielle analyse les données de votre agence en temps réel.", stratRecs: "Recommandations Stratégiques", salesSpeed: "Vitesse de Vente", noSalesData: "Aucune donnée de vente pour le moment.", almostFull: "Presque complet", seatsAvailable: "Places disponibles", strongTrend: "Tendance Forte Détectée", trendMsg: "génère le plus de trafic.", imminentDepletion: "Épuisement imminent", depletionMsg1: "Il ne reste que", depletionMsg2: "places pour", depletionMsg3: "L'IA estime une clôture sous peu.", underperfOffer: "Offre sous-performante", underperfMsg: "n'a généré aucun client.", visaBottleneck: "Goulot d'étranglement Visa", visaMsg1: "Vous avez", visaMsg2: "dossiers Visa en attente.", learningInProgress: "Apprentissage en cours", learningMsg: "L'IA analyse actuellement votre agence.",
     // Finances
@@ -19,8 +21,7 @@ export const dictionaries = {
     tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
     // Visas
     visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
-clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été ajouté pour le moment.", dropFileHere: "Glissez le fichier ici, ou cliquez pour sélectionner.", dragToUpload: "Relâchez pour uploader", fileLimit: "Max 5Mo. PNG, JPG, PDF.",  
-},
+  },
   en: {
     // Menu & Accueil
     dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu", welcome: "Hello", whatsHappening: "Here is what's happening in your agency today.", prestigeEdition: "Prestige Edition", excellence: "The excellence of", travel: "Travel.", welcomeDesc: "Welcome to your command center", welcomeDesc2: "Manage your clients and finances with absolute fluidity.", certified: "Certified Agency", cloudActive: "Cloud system operational and 100% synchronized.", treasury: "Treasury", departures: "Departures", currentYear: "Current Year", financialFlow: "Financial Flow", liveFeed: "Live Feed", noDepartures: "No departures", new: "New", discoverAI: "Discover Safar AI", aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.", consultAssistant: "Consult Assistant",
@@ -33,6 +34,8 @@ clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été a
     crmReservations: "CRM & Bookings", crmDesc: "Manage your clients, files and payments.", lastBookings: "Latest Bookings", demands: "Requests", thClient: "Client", thPhone: "Phone", thTrip: "Trip / Umrah", thDate: "Request Date", thFile: "File", noBookings: "No bookings at the moment.", openFile: "Open",
     // Dossier Client Interne
     travelerFile: "Traveler File", reference: "Reference", generateReceipt: "Generate Receipt", back: "Back", clientInfo: "Client Information", passport: "Passport", notProvided: "Not provided", stayDetails: "Stay Details", offer: "Offer", pricePerPerson: "Price per person", total: "Total", alreadyPaid: "Already paid", remaining: "Remaining", paymentHistory: "Payment History", newPayment: "New payment", documents: "Documents", uploadFile: "Upload a file",
+    // Document Manager
+    clientDocuments: "Client Documents", noDocuments: "No documents have been added yet.", dropFileHere: "Drop the file here, or click to select.", dragToUpload: "Release to upload", fileLimit: "Max 5MB. PNG, JPG, PDF.",
     // Safar AI
     aiCopilot: "Copilot", aiAnalysis: "Artificial intelligence analyzes your agency's data in real time.", stratRecs: "Strategic Recommendations", salesSpeed: "Sales Velocity", noSalesData: "No sales data at the moment.", almostFull: "Almost full", seatsAvailable: "Seats available", strongTrend: "Strong Trend Detected", trendMsg: "generates the most traffic.", imminentDepletion: "Imminent Depletion", depletionMsg1: "Only", depletionMsg2: "seats left for", depletionMsg3: "AI estimates closing soon.", underperfOffer: "Underperforming Offer", underperfMsg: "generated no clients.", visaBottleneck: "Visa Bottleneck", visaMsg1: "You have", visaMsg2: "pending visa files.", learningInProgress: "Learning in progress", learningMsg: "AI is currently analyzing your agency.",
     // Finances
@@ -41,8 +44,7 @@ clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été a
     tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
     // Visas
     visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
-  clientDocuments: "Client Documents", noDocuments: "No documents have been added yet.", dropFileHere: "Drop the file here, or click to select.", dragToUpload: "Release to upload", fileLimit: "Max 5MB. PNG, JPG, PDF.",
-},
+  },
   ar: {
     // Menu & Accueil
     dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة", welcome: "مرحباً", whatsHappening: "إليك ما يحدث في وكالتك اليوم.", prestigeEdition: "النسخة المرموقة", excellence: "امتياز", travel: "السفر.", welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك", welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.", certified: "وكالة معتمدة", cloudActive: "النظام السحابي يعمل ومتزامن 100%.", treasury: "الخزينة", departures: "المغادرين", currentYear: "السنة الحالية", financialFlow: "التدفق المالي", liveFeed: "أحدث النشاطات", noDepartures: "لا توجد رحلات", new: "جديد", discoverAI: "اكتشف ذكاء سفر", aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.", consultAssistant: "استشارة المساعد",
@@ -55,6 +57,8 @@ clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été a
     crmReservations: "إدارة العملاء والحجوزات", crmDesc: "إدارة عملائك، ملفاتك ومدفوعاتك.", lastBookings: "أحدث الحجوزات", demands: "طلبات", thClient: "العميل", thPhone: "الهاتف", thTrip: "الرحلة / العمرة", thDate: "تاريخ الطلب", thFile: "الملف", noBookings: "لا توجد حجوزات في الوقت الحالي.", openFile: "فتح",
     // Dossier Client Interne
     travelerFile: "ملف المسافر", reference: "المرجع", generateReceipt: "إنشاء إيصال", back: "رجوع", clientInfo: "معلومات العميل", passport: "جواز السفر", notProvided: "غير متوفر", stayDetails: "تفاصيل الإقامة", offer: "العرض", pricePerPerson: "السعر للشخص", total: "الإجمالي", alreadyPaid: "تم الدفع", remaining: "المتبقي", paymentHistory: "سجل المدفوعات", newPayment: "دفعة جديدة", documents: "المستندات", uploadFile: "رفع ملف",
+    // Document Manager
+    clientDocuments: "مستندات العميل", noDocuments: "لم يتم إضافة أي مستندات بعد.", dropFileHere: "اسحب الملف هنا، أو انقر للتحديد.", dragToUpload: "أفلت للرفع", fileLimit: "الحد الأقصى 5 ميغابايت. PNG, JPG, PDF.",
     // Safar AI
     aiCopilot: "المساعد", aiAnalysis: "يقوم الذكاء الاصطناعي بتحليل بيانات وكالتك في الوقت الفعلي.", stratRecs: "توصيات استراتيجية", salesSpeed: "سرعة المبيعات", noSalesData: "لا توجد بيانات مبيعات حالياً.", almostFull: "شبه مكتمل", seatsAvailable: "أماكن متاحة", strongTrend: "تم اكتشاف اتجاه قوي", trendMsg: "يولد أكبر عدد من الزيارات.", imminentDepletion: "نفاد وشيك", depletionMsg1: "لم يتبق سوى", depletionMsg2: "مقاعد لـ", depletionMsg3: "الذكاء الاصطناعي يتوقع الإغلاق قريباً.", underperfOffer: "عرض ضعيف الأداء", underperfMsg: "لم يجلب أي عميل.", visaBottleneck: "عنق زجاجة في التأشيرات", visaMsg1: "لديك", visaMsg2: "ملفات تأشيرة قيد الانتظار.", learningInProgress: "التعلم قيد التقدم", learningMsg: "الذكاء الاصطناعي يحلل وكالتك حالياً.",
     // Finances
@@ -63,7 +67,6 @@ clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été a
     tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
     // Visas
     visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
-clientDocuments: "مستندات العميل", noDocuments: "لم يتم إضافة أي مستندات بعد.", dropFileHere: "اسحب الملف هنا، أو انقر للتحديد.", dragToUpload: "أفلت للرفع", fileLimit: "الحد الأقصى 5 ميغابايت. PNG, JPG, PDF.",  
-}
+  }
 };
 export type Language = "fr" | "en" | "ar";
