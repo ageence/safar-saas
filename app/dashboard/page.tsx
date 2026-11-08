@@ -14,16 +14,16 @@ export default async function DashboardPage() {
   const clientsCount = await prisma.client.count({ where: { agencyId } });
   const visasCount = await prisma.visaApplication.count({ where: { agencyId, status: { not: "APPROUVE" } } });
   const bookingsCount = await prisma.booking.count({ where: { agencyId } });
+  
+  // 🟢 On ramène tous les paiements bruts
   const payments = await prisma.payment.findMany({ where: { agencyId } });
   const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
 
-  const monthlyData: Record<string, number> = {};
-  const moisNoms = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"];
-  payments.forEach((p) => {
-    const monthName = moisNoms[p.createdAt.getMonth()];
-    monthlyData[monthName] = (monthlyData[monthName] || 0) + p.amount;
-  });
-  const chartData = Object.keys(monthlyData).map(key => ({ name: key, total: monthlyData[key] }));
+  // 🟢 On formate l'intégralité des datas pour le nouveau graphique intelligent
+  const rawChartData = payments.map(p => ({
+    date: p.createdAt.toISOString(),
+    amount: p.amount
+  }));
 
   const recentBookings = await prisma.booking.findMany({
     where: { agencyId }, include: { client: true, offer: true }, orderBy: { createdAt: "desc" }, take: 5
@@ -102,20 +102,12 @@ export default async function DashboardPage() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Départs</p>
         </div>
 
-        {/* GRAPHIQUE */}
-        <div className="glass-promax col-span-1 md:col-span-8 p-8">
-          <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
-            <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-              <Activity className="h-6 w-6 text-cyan-500" /> Flux Financier
-            </h3>
-            <span className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500">Année en cours</span>
-          </div>
-          <div className="h-[320px] w-full">
-            <Overview data={chartData} />
-          </div>
+        {/* 🟢 LE NOUVEAU GRAPHIQUE INTELLIGENT */}
+        <div className="glass-promax col-span-1 md:col-span-8 p-8 flex flex-col justify-between">
+          <Overview data={rawChartData} />
         </div>
 
-        {/* LIVE FEED (VIP RETIRÉ) */}
+        {/* LIVE FEED */}
         <div className="glass-promax col-span-1 md:col-span-4 p-8 flex flex-col bg-white/40">
           <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-5">
             <h3 className="text-2xl font-black text-slate-800">Live Feed</h3>
@@ -142,7 +134,6 @@ export default async function DashboardPage() {
                     <p className="text-xs font-bold text-slate-500 truncate mt-0.5">{booking.offer.title}</p>
                   </div>
                   <div className="text-right pr-2">
-                    {/* 🟢 LE VIP A ÉTÉ REMPLACÉ PAR UN BADGE DISCRET */}
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                       Nouveau
                     </span>
@@ -153,7 +144,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* 🟢 NOUVELLE SECTION SAFAR AI (PLEINE LARGEUR 12 COLONNES) */}
+        {/* SAFAR AI */}
         <div className="col-span-1 md:col-span-12 p-8 md:p-10 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl mt-2 border border-indigo-500/20">
           <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
           <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
