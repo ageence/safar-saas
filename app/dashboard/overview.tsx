@@ -123,26 +123,26 @@ export function Overview({ data }: { data: { date: string, amount: number }[] })
         ) : (
           <ResponsiveContainer height="100%" width="100%">
             {chartType === "bar" ? (
-              <BarChart 0 10, 30, bottom: data="{chartData}" left: margin="{{" right: top: }}>
-                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical="{false}"/>
-                <XAxis axisLine="{false}" dataKey="name" fontSize="{11}" stroke="#94a3b8" tickLine="{false}"/>
-                <YAxis axisLine="{false}" fontSize="{11}" stroke="#94a3b8" tickFormatter="{(value)" tickLine="{false}"> value >= 1000 ? `${value / 1000}k` : value} width={60} />
-                <Tooltip content="{<CustomTooltip"/>} cursor={{fill: '#f8fafc'}} />
-                <Bar 0, 0]} 6, dataKey="total" fill="#0ea5e9" maxBarSize="{40}" radius="{[6,"/>
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 30, bottom: 0 }}>
+                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : value} width={60} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
+                <Bar dataKey="total" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>
             ) : (
-              <AreaChart 0 10, 30, bottom: data="{chartData}" left: margin="{{" right: top: }}>
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 30, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical="{false}"/>
-                <XAxis axisLine="{false}" dataKey="name" fontSize="{11}" stroke="#94a3b8" tickLine="{false}"/>
-                <YAxis axisLine="{false}" fontSize="{11}" stroke="#94a3b8" tickFormatter="{(value)" tickLine="{false}"> value >= 1000 ? `${value / 1000}k` : value} width={60} />
-                <Tooltip content="{<CustomTooltip"/>} />
-                <Area dataKey="total" fill="url(#colorTotal)" fillOpacity="{1}" stroke="#0ea5e9" strokeWidth="{3}" type="monotone"/>
+                <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => value >= 1000 ? `${value / 1000}k` : value} width={60} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area type="monotone" dataKey="total" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
               </AreaChart>
             )}
           </ResponsiveContainer>
