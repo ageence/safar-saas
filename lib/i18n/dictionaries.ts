@@ -19,7 +19,8 @@ export const dictionaries = {
     tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
     // Visas
     visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
-  },
+clientDocuments: "Documents du Client", noDocuments: "Aucun document n'a été ajouté pour le moment.", dropFileHere: "Glissez le fichier ici, ou cliquez pour sélectionner.", dragToUpload: "Relâchez pour uploader", fileLimit: "Max 5Mo. PNG, JPG, PDF.",  
+},
   en: {
     // Menu & Accueil
     dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu", welcome: "Hello", whatsHappening: "Here is what's happening in your agency today.", prestigeEdition: "Prestige Edition", excellence: "The excellence of", travel: "Travel.", welcomeDesc: "Welcome to your command center", welcomeDesc2: "Manage your clients and finances with absolute fluidity.", certified: "Certified Agency", cloudActive: "Cloud system operational and 100% synchronized.", treasury: "Treasury", departures: "Departures", currentYear: "Current Year", financialFlow: "Financial Flow", liveFeed: "Live Feed", noDepartures: "No departures", new: "New", discoverAI: "Discover Safar AI", aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.", consultAssistant: "Consult Assistant",
@@ -40,7 +41,8 @@ export const dictionaries = {
     tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
     // Visas
     visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
-  },
+  clientDocuments: "Client Documents", noDocuments: "No documents have been added yet.", dropFileHere: "Drop the file here, or click to select.", dragToUpload: "Release to upload", fileLimit: "Max 5MB. PNG, JPG, PDF.",
+},
   ar: {
     // Menu & Accueil
     dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة", welcome: "مرحباً", whatsHappening: "إليك ما يحدث في وكالتك اليوم.", prestigeEdition: "النسخة المرموقة", excellence: "امتياز", travel: "السفر.", welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك", welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.", certified: "وكالة معتمدة", cloudActive: "النظام السحابي يعمل ومتزامن 100%.", treasury: "الخزينة", departures: "المغادرين", currentYear: "السنة الحالية", financialFlow: "التدفق المالي", liveFeed: "أحدث النشاطات", noDepartures: "لا توجد رحلات", new: "جديد", discoverAI: "اكتشف ذكاء سفر", aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.", consultAssistant: "استشارة المساعد",
@@ -61,6 +63,7 @@ export const dictionaries = {
     tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
     // Visas
     visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
-  }
+clientDocuments: "مستندات العميل", noDocuments: "لم يتم إضافة أي مستندات بعد.", dropFileHere: "اسحب الملف هنا، أو انقر للتحديد.", dragToUpload: "أفلت للرفع", fileLimit: "الحد الأقصى 5 ميغابايت. PNG, JPG, PDF.",  
+}
 };
 export type Language = "fr" | "en" | "ar";

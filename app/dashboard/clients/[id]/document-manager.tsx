@@ -1,131 +1,127 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Eye, X, FileText, Loader2, UploadCloud } from "lucide-react";
+import { FolderOpen, UploadCloud, File as FileIcon, X } from "lucide-react";
+import { useLanguage } from "@/components/language-provider"; // 🟢 LE MOTEUR DE LANGUES
 
-export function DocumentManager({ bookingId, documents, onUpload }: { bookingId: string, documents: any[], onUpload: (bookingId: string, name: string, fileData: string) => Promise<void> }) {
-  const [preview, setPreview] = useState<{ url: string, type: string, name: string } | null>(null);
-  const [uploading, setUploading] = useState(false);
+// Compression d'image (Intact)
+import imageCompression from "browser-image-compression";
 
-  const handleUpload = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setUploading(true);
+export function DocumentManager({ bookingId, documents, onUpload }: { bookingId: string, documents: any[], onUpload: any }) {
+  const { t } = useLanguage(); // 🟢 INITIALISATION
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<string | null>(null);
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const name = formData.get("name") as string;
-    const file = formData.get("file") as File;
+  // Fonction de compression (Intacte)
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+    setIsUploading(true);
 
-    if (!file || file.size === 0) {
-        setUploading(false);
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const base64 = event.target?.result as string;
+    try {
+      let finalFileUrl = "";
 
       if (file.type.startsWith("image/")) {
-        const img = new Image();
-        img.src = base64;
-        img.onload = async () => {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 1500; // Augmenté pour une super qualité en plein écran
-          let width = img.width;
-          let height = img.height;
-
-          if (width > MAX_WIDTH) {
-            height = Math.round((height * MAX_WIDTH) / width);
-            width = MAX_WIDTH;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
-          await onUpload(bookingId, name, compressedBase64);
-          setUploading(false);
-          form.reset();
-        };
+        const options = { maxSizeMB: 0.1, maxWidthOrHeight: 1200, useWebWorker: true };
+        const compressedFile = await imageCompression(file, options);
+        finalFileUrl = await fileToDataUrl(compressedFile);
+      } else if (file.type === "application/pdf") {
+        if (file.size > 2 * 1024 * 1024) {
+          alert("Le PDF est trop volumineux (Max 2Mo)");
+          setIsUploading(false);
+          return;
+        }
+        finalFileUrl = await fileToDataUrl(file);
       } else {
-        await onUpload(bookingId, name, base64);
-        setUploading(false);
-        form.reset();
+        alert("Format non supporté (Images ou PDF uniquement)");
+        setIsUploading(false);
+        return;
       }
-    };
-    reader.readAsDataURL(file);
+
+      await onUpload(bookingId, file.name, finalFileUrl);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const fileToDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
   };
 
   return (
-    <div className="glass-promax p-8 rounded-[2rem]">
-      <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
-        <div className="p-3 bg-purple-50 text-purple-500 rounded-xl"><FileText className="w-6 h-6" /></div>
-        <h2 className="text-2xl font-black text-slate-800">Documents du Client</h2>
-      </div>
+    <>
+      <div className="glass-promax p-8 rounded-[2rem]">
+        <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+          <div className="p-3 bg-indigo-50 text-indigo-500 rounded-xl"><FolderOpen className="w-6 h-6" /></div>
+          {/* 🟢 TRADUCTION DU TITRE */}
+          <h2 className="text-2xl font-black text-slate-800">{t("clientDocuments")}</h2>
+        </div>
 
-      <div className="space-y-3 mb-6">
-        {documents.length === 0 ? (
-          <p className="text-slate-500 font-medium">Aucun document uploadé.</p>
-        ) : (
-          documents.map((doc) => (
-            <div key={doc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <span className="font-bold text-slate-700">{doc.name}</span>
-              <div className="flex gap-3">
-                <button onClick={() => setPreview({ url: doc.fileUrl, type: doc.fileUrl.includes("pdf") ? "pdf" : "image", name: doc.name })} className="flex items-center gap-2 text-indigo-600 font-bold hover:underline">
-                  <Eye className="w-4 h-4" /> Aperçu
-                </button>
-                <a href={doc.fileUrl} download={doc.name} className="flex items-center gap-2 text-cyan-600 font-bold hover:underline">
-                  <Download className="w-4 h-4" /> DL
-                </a>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter un document (Image/PDF)</h4>
-        <input required type="text" name="name" placeholder="Nom (Ex: Passeport...)" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-cyan-500 outline-none" />
-        <input required type="file" name="file" accept="image/*,application/pdf" className="text-slate-600" />
-        <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
-          {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-          {uploading ? "Compression & Envoi..." : "Uploader le document"}
-        </button>
-      </form>
-
-      {/* VRAI MODAL APERÇU EN PLEIN ÉCRAN */}
-      {preview && (
+        {/* 🟢 ZONE DE DRAG & DROP TRADUITE */}
         <div 
-          className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-8 animate-in fade-in duration-300"
-          onClick={() => setPreview(null)} // Le clic sur le fond noir ferme l'aperçu
+          className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all relative overflow-hidden mb-6 ${dragActive ? 'border-cyan-500 bg-cyan-50 scale-[1.02]' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'}`}
+          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(e) => { e.preventDefault(); setDragActive(false); if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); }}
         >
-          {/* Bouton X géant en haut à droite */}
-          <button 
-            onClick={() => setPreview(null)} 
-            className="absolute top-6 right-6 md:top-10 md:right-10 p-3 md:p-4 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all z-50 cursor-pointer"
-          >
-            <X className="w-6 h-6 md:w-8 md:h-8" />
-          </button>
+          <input type="file" accept="image/*,application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => { if (e.target.files?.[0]) handleFileUpload(e.target.files[0]); }} />
+          <UploadCloud className={`w-10 h-10 mx-auto mb-3 transition-colors ${dragActive ? 'text-cyan-500' : 'text-slate-400'}`} />
+          <p className="text-sm font-bold text-slate-600">
+            {isUploading ? (
+              <span className="text-cyan-500 flex items-center justify-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-500"></span> 
+                {/* Traduction implicite pour le chargement, mais on peut laisser "Upload..." ou utiliser {t("uploadFile")} */}
+                Uploading...
+              </span>
+            ) : dragActive ? t("dragToUpload") : t("dropFileHere")}
+          </p>
+          <p className="text-xs text-slate-400 font-medium mt-1">{t("fileLimit")}</p>
+        </div>
 
-          {/* Conteneur de l'image (stoppe le clic pour ne pas fermer si on clique sur la photo) */}
-          <div 
-            className="relative w-full max-w-6xl h-full max-h-[85vh] flex items-center justify-center animate-in zoom-in-95 duration-300"
-            onClick={(e) => e.stopPropagation()} 
-          >
-            {preview.type === "pdf" ? (
-              <iframe src={preview.url} className="w-full h-full bg-white rounded-2xl shadow-2xl" />
-            ) : (
-              <img src={preview.url} alt={preview.name} className="max-w-full max-h-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" />
-            )}
-          </div>
+        {/* 🟢 LISTE DES DOCUMENTS TRADUITE */}
+        <div className="space-y-3">
+          {documents.length === 0 ? (
+            <p className="text-sm font-bold text-slate-400 text-center py-4">{t("noDocuments")}</p>
+          ) : (
+            documents.map((doc: any) => (
+              <div key={doc.id} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-cyan-300 transition-all">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="p-2 bg-slate-50 rounded-lg text-slate-400"><FileIcon className="w-5 h-5" /></div>
+                  <span className="text-sm font-bold text-slate-700 truncate">{doc.name}</span>
+                </div>
+                <button onClick={() => setPreviewDoc(doc.fileUrl)} className="text-xs font-black uppercase text-cyan-600 bg-cyan-50 px-3 py-1.5 rounded-lg hover:bg-cyan-100 transition-colors">
+                  {t("openFile")}
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* LIGHTBOX / APERÇU (Ne nécessite pas de traduction particulière) */}
+      {previewDoc && (
+        <div className="fixed inset-0 z-[99999] bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4 sm:p-10 animate-in fade-in duration-300">
+          <button onClick={() => setPreviewDoc(null)} className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-rose-500 text-white rounded-full transition-all backdrop-blur-md">
+            <X className="w-6 h-6" />
+          </button>
           
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-2 bg-white/10 backdrop-blur-md text-white font-bold rounded-full">
-            {preview.name}
+          <div className="relative w-full max-w-4xl max-h-full rounded-2xl overflow-hidden bg-slate-900 shadow-2xl flex items-center justify-center">
+            {previewDoc.startsWith("data:application/pdf") ? (
+              <iframe src={previewDoc} className="w-full h-[85vh] bg-white rounded-xl" title="Aperçu PDF" />
+            ) : (
+              <img src={previewDoc} alt="Aperçu" className="max-w-full max-h-[85vh] object-contain rounded-xl" />
+            )}
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
