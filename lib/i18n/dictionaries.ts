@@ -6,28 +6,21 @@ export const dictionaries = {
     settingsTitle: "Paramètres", settingsDesc: "Gérez votre agence, votre équipe et vos intégrations.", tabGeneral: "Général", tabLang: "Langues", tabTeam: "Équipe", tabAuto: "Automatisations", agencyProfile: "Profil de l'agence", agencyDesc: "Les informations publiques de votre agence.", agencyName: "Nom de l'agence", phoneMain: "Téléphone Principal", address: "Adresse physique", update: "Mettre à jour", languageTitle: "Langue de l'interface", languageDesc: "Choisissez la langue d'affichage.", teamMembers: "Membres de l'équipe", colName: "Nom", colEmail: "Email", colRole: "Rôle", roleAdmin: "Gérant", roleEmp: "Employé", addEmp: "Ajouter un employé", addEmpDesc: "Créez un accès pour un nouveau membre.", fullName: "Nom complet", tempPass: "Mot de passe provisoire", createAccount: "Créer le compte", waIntegration: "Intégration WhatsApp Business", waDesc: "Configuration du Webhook pour WhatsApp.", waUrl: "URL du Webhook", waToken: "Jeton de vérification (Token)", waInfo: "Ces informations doivent être collées dans votre tableau de bord Meta.",
     // Notifications & Graphique
     yourNotifs: "Vos Notifications", upToDate: "Vous êtes à jour !", days7: "7 Jours", thisMonth: "Ce Mois", thisYear: "Cette Année", custom: "Personnalisé", generatedRevenue: "DA générés sur cette période.", to: "À", noData: "Aucune donnée financière pour cette période.",
-    // Anciens Clients (Recherche)
+    // Anciens Clients
     clientsTitle: "Gestion des Clients", clientsDesc: "Gérez la base de données de vos voyageurs et prospects.", searchClient: "Rechercher un client...", addClient: "Ajouter un Client", noClients: "Aucun client trouvé.", edit: "Modifier", delete: "Supprimer", dateJoined: "Inscrit le", phone: "Téléphone", source: "Source",
-    // Vrais Clients (Dossiers)
+    // Vrais Clients (Liste)
     crmReservations: "CRM & Réservations", crmDesc: "Gérez vos clients, dossiers et paiements.", lastBookings: "Dernières Réservations", demands: "Demandes", thClient: "Client", thPhone: "Téléphone", thTrip: "Voyage / Omra", thDate: "Date de Demande", thFile: "Dossier", noBookings: "Aucune réservation pour le moment.", openFile: "Ouvrir",
+    // Dossier Client Interne
+    travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "Générer Reçu", back: "Retour", clientInfo: "Informations Client", fullName: "Nom Complet", passport: "Passeport", notProvided: "Non renseigné", stayDetails: "Détails du Séjour", offer: "Offre", pricePerPerson: "Tarif par personne", total: "Total", alreadyPaid: "Déjà payé", remaining: "Reste", paymentHistory: "Historique des versements", newPayment: "Nouveau versement", documents: "Documents", uploadFile: "Uploader un fichier",
     // Safar AI
-    aiCopilot: "Copilot", aiAnalysis: "L'intelligence artificielle analyse les données de votre agence en temps réel.", stratRecs: "Recommandations Stratégiques", salesSpeed: "Vitesse de Vente", noSalesData: "Aucune donnée de vente pour le moment.", almostFull: "Presque complet", seatsAvailable: "Places disponibles",
-    // AI Insights (Dynamiques)
-    strongTrend: "Tendance Forte Détectée", trendMsg: "génère le plus de trafic. Pensez à augmenter le prix ou lancer une campagne.", imminentDepletion: "Épuisement imminent", depletionMsg1: "Il ne reste que", depletionMsg2: "places pour", depletionMsg3: "L'IA estime une clôture sous peu.", underperfOffer: "Offre sous-performante", underperfMsg: "n'a généré aucun client. Créez un lien public pour booster l'engagement.", visaBottleneck: "Goulot d'étranglement Visa", visaMsg1: "Vous avez", visaMsg2: "dossiers Visa en attente. Contactez rapidement vos clients.", learningInProgress: "Apprentissage en cours", learningMsg: "L'IA analyse actuellement votre agence. Continuez d'ajouter des clients et des offres.",
-    // Finances (Page complète)
-    totalCashed: "Total Encaissé", profitSplit: "Répartition des gains", remainingToCollect: "Reste à recouvrer (Dettes)", transactionDetails: "Détail des Transactions", filteredPeriod: "(Période Filtrée)", pending: "En attente", approved: "Approuvé", paid: "Payé",
+    aiCopilot: "Copilot", aiAnalysis: "L'intelligence artificielle analyse les données de votre agence en temps réel.", stratRecs: "Recommandations Stratégiques", salesSpeed: "Vitesse de Vente", noSalesData: "Aucune donnée de vente pour le moment.", almostFull: "Presque complet", seatsAvailable: "Places disponibles", strongTrend: "Tendance Forte Détectée", trendMsg: "génère le plus de trafic.", imminentDepletion: "Épuisement imminent", depletionMsg1: "Il ne reste que", depletionMsg2: "places pour", depletionMsg3: "L'IA estime une clôture sous peu.", underperfOffer: "Offre sous-performante", underperfMsg: "n'a généré aucun client.", visaBottleneck: "Goulot d'étranglement Visa", visaMsg1: "Vous avez", visaMsg2: "dossiers Visa en attente.", learningInProgress: "Apprentissage en cours", learningMsg: "L'IA analyse actuellement votre agence.",
+    // Finances
+    totalCashed: "Total Encaissé", profitSplit: "Répartition des gains", remainingToCollect: "Reste à recouvrer", transactionDetails: "Détail des Transactions", filteredPeriod: "(Période Filtrée)", pending: "En attente", approved: "Approuvé", paid: "Payé",
     // Voyages
     tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
     // Visas
     visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
-travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "Générer Reçu", back: "Retour",
-    clientInfo: "Informations Client", fullName: "Nom Complet", phone: "Téléphone", passport: "Passeport", notProvided: "Non renseigné",
-    stayDetails: "Détails du Séjour", offer: "Offre", pricePerPerson: "Tarif par personne",
-    finances: "Finances", total: "Total", alreadyPaid: "Déjà payé", remaining: "Reste",
-    paymentHistory: "Historique des versements", newPayment: "Nouveau versement",
-    // Pour document-manager (si besoin)
-    documents: "Documents", uploadFile: "Uploader un fichier"  
-},
+  },
   en: {
     // Menu & Accueil
     dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu", welcome: "Hello", whatsHappening: "Here is what's happening in your agency today.", prestigeEdition: "Prestige Edition", excellence: "The excellence of", travel: "Travel.", welcomeDesc: "Welcome to your command center", welcomeDesc2: "Manage your clients and finances with absolute fluidity.", certified: "Certified Agency", cloudActive: "Cloud system operational and 100% synchronized.", treasury: "Treasury", departures: "Departures", currentYear: "Current Year", financialFlow: "Financial Flow", liveFeed: "Live Feed", noDepartures: "No departures", new: "New", discoverAI: "Discover Safar AI", aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.", consultAssistant: "Consult Assistant",
@@ -37,26 +30,19 @@ travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "G�
     yourNotifs: "Your Notifications", upToDate: "You are up to date!", days7: "7 Days", thisMonth: "This Month", thisYear: "This Year", custom: "Custom", generatedRevenue: "DA generated in this period.", to: "To", noData: "No financial data for this period.",
     // Anciens Clients
     clientsTitle: "Client Management", clientsDesc: "Manage your travelers and prospects database.", searchClient: "Search for a client...", addClient: "Add a Client", noClients: "No clients found.", edit: "Edit", delete: "Delete", dateJoined: "Joined on", phone: "Phone", source: "Source",
-    // Vrais Clients (Dossiers)
+    // Vrais Clients (Liste)
     crmReservations: "CRM & Bookings", crmDesc: "Manage your clients, files and payments.", lastBookings: "Latest Bookings", demands: "Requests", thClient: "Client", thPhone: "Phone", thTrip: "Trip / Umrah", thDate: "Request Date", thFile: "File", noBookings: "No bookings at the moment.", openFile: "Open",
+    // Dossier Client Interne
+    travelerFile: "Traveler File", reference: "Reference", generateReceipt: "Generate Receipt", back: "Back", clientInfo: "Client Information", fullName: "Full Name", passport: "Passport", notProvided: "Not provided", stayDetails: "Stay Details", offer: "Offer", pricePerPerson: "Price per person", total: "Total", alreadyPaid: "Already paid", remaining: "Remaining", paymentHistory: "Payment History", newPayment: "New payment", documents: "Documents", uploadFile: "Upload a file",
     // Safar AI
-    aiCopilot: "Copilot", aiAnalysis: "Artificial intelligence analyzes your agency's data in real time.", stratRecs: "Strategic Recommendations", salesSpeed: "Sales Velocity", noSalesData: "No sales data at the moment.", almostFull: "Almost full", seatsAvailable: "Seats available",
-    // AI Insights
-    strongTrend: "Strong Trend Detected", trendMsg: "generates the most traffic. Consider a price increase or ad campaign.", imminentDepletion: "Imminent Depletion", depletionMsg1: "Only", depletionMsg2: "seats left for", depletionMsg3: "AI estimates closing soon.", underperfOffer: "Underperforming Offer", underperfMsg: "generated no clients. Create a public link to boost engagement.", visaBottleneck: "Visa Bottleneck", visaMsg1: "You have", visaMsg2: "pending visa files. Contact your clients quickly.", learningInProgress: "Learning in progress", learningMsg: "AI is currently analyzing your agency. Keep adding clients and offers.",
+    aiCopilot: "Copilot", aiAnalysis: "Artificial intelligence analyzes your agency's data in real time.", stratRecs: "Strategic Recommendations", salesSpeed: "Sales Velocity", noSalesData: "No sales data at the moment.", almostFull: "Almost full", seatsAvailable: "Seats available", strongTrend: "Strong Trend Detected", trendMsg: "generates the most traffic.", imminentDepletion: "Imminent Depletion", depletionMsg1: "Only", depletionMsg2: "seats left for", depletionMsg3: "AI estimates closing soon.", underperfOffer: "Underperforming Offer", underperfMsg: "generated no clients.", visaBottleneck: "Visa Bottleneck", visaMsg1: "You have", visaMsg2: "pending visa files.", learningInProgress: "Learning in progress", learningMsg: "AI is currently analyzing your agency.",
     // Finances
-    totalCashed: "Total Cashed", profitSplit: "Profit Split", remainingToCollect: "Remaining to Collect (Debts)", transactionDetails: "Transaction Details", filteredPeriod: "(Filtered Period)", pending: "Pending", approved: "Approved", paid: "Paid",
+    totalCashed: "Total Cashed", profitSplit: "Profit Split", remainingToCollect: "Remaining to Collect", transactionDetails: "Transaction Details", filteredPeriod: "(Filtered Period)", pending: "Pending", approved: "Approved", paid: "Paid",
     // Voyages
     tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
     // Visas
     visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
-// ... Garde ce que tu as déjà, et AJOUTE CECI :
-    travelerFile: "Traveler File", reference: "Reference", generateReceipt: "Generate Receipt", back: "Back",
-    clientInfo: "Client Information", fullName: "Full Name", phone: "Phone", passport: "Passport", notProvided: "Not provided",
-    stayDetails: "Stay Details", offer: "Offer", pricePerPerson: "Price per person",
-    finances: "Finances", total: "Total", alreadyPaid: "Already paid", remaining: "Remaining",
-    paymentHistory: "Payment History", newPayment: "New payment",
-    documents: "Documents", uploadFile: "Upload a file"  
-},
+  },
   ar: {
     // Menu & Accueil
     dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة", welcome: "مرحباً", whatsHappening: "إليك ما يحدث في وكالتك اليوم.", prestigeEdition: "النسخة المرموقة", excellence: "امتياز", travel: "السفر.", welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك", welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.", certified: "وكالة معتمدة", cloudActive: "النظام السحابي يعمل ومتزامن 100%.", treasury: "الخزينة", departures: "المغادرين", currentYear: "السنة الحالية", financialFlow: "التدفق المالي", liveFeed: "أحدث النشاطات", noDepartures: "لا توجد رحلات", new: "جديد", discoverAI: "اكتشف ذكاء سفر", aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.", consultAssistant: "استشارة المساعد",
@@ -66,26 +52,18 @@ travelerFile: "Dossier Voyageur", reference: "Référence", generateReceipt: "G�
     yourNotifs: "إشعاراتك", upToDate: "أنت على اطلاع دائم!", days7: "7 أيام", thisMonth: "هذا الشهر", thisYear: "هذا العام", custom: "مخصص", generatedRevenue: "دج تم تحقيقها في هذه الفترة.", to: "إلى", noData: "لا توجد بيانات مالية لهذه الفترة.",
     // Anciens Clients
     clientsTitle: "إدارة العملاء", clientsDesc: "إدارة قاعدة بيانات المسافرين والعملاء المحتملين.", searchClient: "البحث عن عميل...", addClient: "إضافة عميل", noClients: "لم يتم العثور على عملاء.", edit: "تعديل", delete: "حذف", dateJoined: "انضم في", phone: "رقم الهاتف", source: "المصدر",
-    // Vrais Clients (Dossiers)
+    // Vrais Clients (Liste)
     crmReservations: "إدارة العملاء والحجوزات", crmDesc: "إدارة عملائك، ملفاتك ومدفوعاتك.", lastBookings: "أحدث الحجوزات", demands: "طلبات", thClient: "العميل", thPhone: "الهاتف", thTrip: "الرحلة / العمرة", thDate: "تاريخ الطلب", thFile: "الملف", noBookings: "لا توجد حجوزات في الوقت الحالي.", openFile: "فتح",
+    // Dossier Client Interne
+    travelerFile: "ملف المسافر", reference: "المرجع", generateReceipt: "إنشاء إيصال", back: "رجوع", clientInfo: "معلومات العميل", fullName: "الاسم الكامل", passport: "جواز السفر", notProvided: "غير متوفر", stayDetails: "تفاصيل الإقامة", offer: "العرض", pricePerPerson: "السعر للشخص", total: "الإجمالي", alreadyPaid: "تم الدفع", remaining: "المتبقي", paymentHistory: "سجل المدفوعات", newPayment: "دفعة جديدة", documents: "المستندات", uploadFile: "رفع ملف",
     // Safar AI
-    aiCopilot: "المساعد", aiAnalysis: "يقوم الذكاء الاصطناعي بتحليل بيانات وكالتك في الوقت الفعلي.", stratRecs: "توصيات استراتيجية", salesSpeed: "سرعة المبيعات", noSalesData: "لا توجد بيانات مبيعات حالياً.", almostFull: "شبه مكتمل", seatsAvailable: "أماكن متاحة",
-    // AI Insights
-    strongTrend: "تم اكتشاف اتجاه قوي", trendMsg: "يولد أكبر عدد من الزيارات. فكر في زيادة السعر أو إطلاق حملة إعلانية.", imminentDepletion: "نفاد وشيك", depletionMsg1: "لم يتبق سوى", depletionMsg2: "مقاعد لـ", depletionMsg3: "الذكاء الاصطناعي يتوقع الإغلاق قريباً.", underperfOffer: "عرض ضعيف الأداء", underperfMsg: "لم يجلب أي عميل. قم بإنشاء رابط عام لتعزيز التفاعل.", visaBottleneck: "عنق زجاجة في التأشيرات", visaMsg1: "لديك", visaMsg2: "ملفات تأشيرة قيد الانتظار. اتصل بعملائك بسرعة.", learningInProgress: "التعلم قيد التقدم", learningMsg: "الذكاء الاصطناعي يحلل وكالتك حالياً. استمر في إضافة العملاء والعروض.",
+    aiCopilot: "المساعد", aiAnalysis: "يقوم الذكاء الاصطناعي بتحليل بيانات وكالتك في الوقت الفعلي.", stratRecs: "توصيات استراتيجية", salesSpeed: "سرعة المبيعات", noSalesData: "لا توجد بيانات مبيعات حالياً.", almostFull: "شبه مكتمل", seatsAvailable: "أماكن متاحة", strongTrend: "تم اكتشاف اتجاه قوي", trendMsg: "يولد أكبر عدد من الزيارات.", imminentDepletion: "نفاد وشيك", depletionMsg1: "لم يتبق سوى", depletionMsg2: "مقاعد لـ", depletionMsg3: "الذكاء الاصطناعي يتوقع الإغلاق قريباً.", underperfOffer: "عرض ضعيف الأداء", underperfMsg: "لم يجلب أي عميل.", visaBottleneck: "عنق زجاجة في التأشيرات", visaMsg1: "لديك", visaMsg2: "ملفات تأشيرة قيد الانتظار.", learningInProgress: "التعلم قيد التقدم", learningMsg: "الذكاء الاصطناعي يحلل وكالتك حالياً.",
     // Finances
     totalCashed: "إجمالي المقبوضات", profitSplit: "توزيع الأرباح", remainingToCollect: "المتبقي للتحصيل (الديون)", transactionDetails: "تفاصيل المعاملات", filteredPeriod: "(فترة مصفاة)", pending: "قيد الانتظار", approved: "مقبول", paid: "مدفوع",
     // Voyages
     tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
     // Visas
     visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
-// ... Garde ce que tu as déjà, et AJOUTE CECI :
-    travelerFile: "ملف المسافر", reference: "المرجع", generateReceipt: "إنشاء إيصال", back: "رجوع",
-    clientInfo: "معلومات العميل", fullName: "الاسم الكامل", phone: "الهاتف", passport: "جواز السفر", notProvided: "غير متوفر",
-    stayDetails: "تفاصيل الإقامة", offer: "العرض", pricePerPerson: "السعر للشخص",
-    finances: "المالية", total: "الإجمالي", alreadyPaid: "تم الدفع", remaining: "المتبقي",
-    paymentHistory: "سجل المدفوعات", newPayment: "دفعة جديدة",
-    documents: "المستندات", uploadFile: "رفع ملف"  
-}
+  }
 };
-
 export type Language = "fr" | "en" | "ar";
