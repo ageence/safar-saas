@@ -2,130 +2,145 @@ export const instant = false;
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { Wallet, TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownRight, CreditCard, Activity, CalendarDays } from "lucide-react";
+import Link from "next/link";
 
-export default async function FinancesPage() {
+export default async function FinancesPage({ searchParams }: { searchParams: Promise<{ period?: string }> }) {
   const session = await auth();
-  const agencyId = session?.user?.agencyId;
-  if (!agencyId) return null;
+  if (!session?.user?.agencyId) return null;
+  const sParams = await searchParams;
+  const period = sParams.period || "month";
 
-  // 1. Récupérer tous les paiements (Entrées d'argent)
-  const rawPayments = await prisma.payment.findMany({
-    where: { agencyId },
-    include: { booking: { include: { client: true, offer: true } } },
-    orderBy: { createdAt: "desc" },
+  // Configuration des filtres de dates
+  const now = new Date();
+  let startDate = new Date(0); // All time par défaut
+  
+  if (period === "today") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  } else if (period === "month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  } else if (period === "year") {
+    startDate = new Date(now.getFullYear(), 0, 1);
+  }
+
+  // Requêtes filtrées
+  const bookings = await prisma.booking.findMany({
+    where: { agencyId: session.user.agencyId, createdAt: { gte: startDate } },
+    include: { offer: true, client: true },
+    orderBy: { createdAt: "desc" }
   });
 
-  // 2. Récupérer toutes les dépenses (Sorties d'argent)
-  const rawExpenses = await prisma.expense.findMany({
-    where: { agencyId },
-    orderBy: { createdAt: "desc" },
+  const visas = await prisma.visaApplication.findMany({
+    where: { agencyId: session.user.agencyId, createdAt: { gte: startDate } },
+    include: { client: true },
+    orderBy: { createdAt: "desc" }
   });
 
-  // On force le type "as any[]" pour faire taire TypeScript définitivement
-  const payments = rawPayments as any[];
-  const expenses = rawExpenses as any[];
+  // Calculs Financiers
+  let caTotal = 0;
+  let caEnAttente = 0;
 
-  // Calcul des totaux de la caisse
-  const totalIncome = payments.reduce((acc, p) => acc + (p.amount || 0), 0);
-  const totalExpense = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
-  const netBalance = totalIncome - totalExpense;
+  const transactions = [];
+
+  bookings.forEach(b => {
+    const price = b.offer?.price || 0;
+    if (b.status === "CONFIRME" || b.status === "PAYE") caTotal += price;
+    else caEnAttente += price;
+    
+    transactions.push({ id: b.id, type: "Voyage", client: `${b.client.firstName} ${b.client.lastName}`, amount: price, status: b.status, date: b.createdAt });
+  });
+
+  visas.forEach(v => {
+    const price = v.price || 0;
+    if (v.status === "APPROUVE" || v.status === "PAYE") caTotal += price;
+    else caEnAttente += price;
+    
+    transactions.push({ id: v.id, type: "Visa", client: `${v.client.firstName} ${v.client.lastName}`, amount: price, status: v.status, date: v.createdAt });
+  });
+
+  // Trier les transactions par date
+  transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      {/* HEADER VIP */}
-      <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-        <div className="flex items-center gap-5">
-          <div className="p-4 bg-gradient-to-tr from-emerald-400 to-teal-500 rounded-2xl shadow-lg shadow-teal-500/20 text-white animate-float">
-            <Wallet className="h-8 w-8" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tighter">Gestion <span className="text-emerald-500">Financière</span></h1>
-            <p className="text-slate-500 font-medium text-sm mt-1">Caisse, paiements des clients et dépenses.</p>
-          </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 flex items-center gap-3"><Wallet className="w-10 h-10 text-rose-500" /> Flux Financier</h1>
+          <p className="text-slate-500 font-medium mt-1">Supervisez la trésorerie et les encaissements de l'agence.</p>
+        </div>
+        
+        {/* 🟢 LES FILTRES PROFESSIONNELS */}
+        <div className="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1">
+          <FilterButton current={period} value="today" label="Aujourd'hui" />
+          <FilterButton current={period} value="month" label="Ce Mois" />
+          <FilterButton current={period} value="year" label="Cette Année" />
+          <FilterButton current={period} value="all" label="Tout" />
         </div>
       </div>
 
-      {/* CARTES STATISTIQUES (Bénéfices et Dépenses) */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Total Revenus */}
-        <div className="glass-promax p-6 rounded-[2rem] border-l-4 border-emerald-500">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Encaissements</p>
-              <p className="text-3xl font-black text-slate-800 mt-2">{new Intl.NumberFormat("fr-DZ").format(totalIncome)} <span className="text-sm text-slate-500">DA</span></p>
-            </div>
-            <div className="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><TrendingUp className="w-5 h-5" /></div>
-          </div>
-        </div>
-        
-        {/* Total Dépenses */}
-        <div className="glass-promax p-6 rounded-[2rem] border-l-4 border-rose-500">
-           <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Dépenses</p>
-              <p className="text-3xl font-black text-slate-800 mt-2">{new Intl.NumberFormat("fr-DZ").format(totalExpense)} <span className="text-sm text-slate-500">DA</span></p>
-            </div>
-            <div className="p-3 bg-rose-50 text-rose-500 rounded-xl"><TrendingDown className="w-5 h-5" /></div>
-          </div>
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
+          <p className="text-sm font-extrabold text-slate-500 uppercase flex items-center gap-2 mb-2"><Activity className="w-4 h-4 text-emerald-500" /> CA Réalisé</p>
+          <h2 className="text-4xl font-black text-slate-900">{new Intl.NumberFormat('fr-DZ').format(caTotal)} <span className="text-xl text-slate-400">DA</span></h2>
         </div>
 
-        {/* Solde (Bénéfice Net) */}
-        <div className="glass-promax p-6 rounded-[2rem] border-l-4 border-cyan-500">
-           <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Bénéfice Net</p>
-              <p className="text-3xl font-black text-slate-800 mt-2">{new Intl.NumberFormat("fr-DZ").format(netBalance)} <span className="text-sm text-slate-500">DA</span></p>
-            </div>
-            <div className="p-3 bg-cyan-50 text-cyan-500 rounded-xl"><Wallet className="w-5 h-5" /></div>
-          </div>
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition-all"></div>
+          <p className="text-sm font-extrabold text-slate-500 uppercase flex items-center gap-2 mb-2"><CalendarDays className="w-4 h-4 text-orange-500" /> En Attente de Paiement</p>
+          <h2 className="text-4xl font-black text-slate-900">{new Intl.NumberFormat('fr-DZ').format(caEnAttente)} <span className="text-xl text-slate-400">DA</span></h2>
+        </div>
+
+        <div className="bg-slate-900 p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-transparent"></div>
+          <p className="text-sm font-extrabold text-slate-400 uppercase flex items-center gap-2 mb-2 relative z-10"><CreditCard className="w-4 h-4 text-indigo-400" /> Total Global Estimé</p>
+          <h2 className="text-4xl font-black text-white relative z-10">{new Intl.NumberFormat('fr-DZ').format(caTotal + caEnAttente)} <span className="text-xl text-slate-500">DA</span></h2>
         </div>
       </div>
 
-      {/* TABLEAU DES PAIEMENTS CLIENTS */}
-      <div className="glass-promax rounded-[2rem] p-8">
-        <h3 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Historique des Paiements (Clients)</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 text-slate-400 text-xs uppercase tracking-widest">
-                <th className="pb-4 font-bold">Date</th>
-                <th className="pb-4 font-bold">Client</th>
-                <th className="pb-4 font-bold">Voyage</th>
-                <th className="pb-4 font-bold text-right">Montant</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {payments.length === 0 ? (
-                <tr><td colSpan={4} className="py-10 text-center text-slate-400 font-medium">Aucun paiement enregistré pour le moment.</td></tr>
-              ) : (
-                payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-4 text-slate-500 font-medium">{new Date(payment.createdAt).toLocaleDateString("fr-FR")}</td>
-                    <td className="py-4">
-                      <span className="font-extrabold text-slate-800">
-                        {/* VOILÀ LE CORRECTIF : Les points d'interrogation (?) pour sécuriser TypeScript */}
-                        {payment.booking?.client?.firstName || "Client"} {payment.booking?.client?.lastName || "Inconnu"}
-                      </span>
-                    </td>
-                    <td className="py-4 text-slate-600 font-medium">
-                      {payment.booking?.offer?.title || "Voyage non spécifié"}
-                    </td>
-                    <td className="py-4 text-right">
-                      <span className="inline-flex items-center gap-1 font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">
-                        <ArrowUpRight className="w-4 h-4" /> {new Intl.NumberFormat("fr-DZ").format(payment.amount)} DA
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+      {/* Table des transactions */}
+      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-8">
+        <h3 className="text-xl font-black text-slate-800 mb-6">Détail des Transactions ({period === 'today' ? "Aujourd'hui" : period === 'month' ? "Ce mois" : period === 'year' ? "Cette année" : "Tout l'historique"})</h3>
+        
+        {transactions.length === 0 ? (
+          <div className="text-center py-12 text-slate-400 font-bold">Aucune transaction pour cette période.</div>
+        ) : (
+          <div className="space-y-4">
+            {transactions.map((t, idx) => (
+              <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-100">
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className={`p-3 rounded-xl ${t.type === 'Visa' ? 'bg-purple-100 text-purple-600' : 'bg-orange-100 text-orange-600'}`}>
+                    {t.type === 'Visa' ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownRight className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">{t.client}</h4>
+                    <p className="text-xs font-bold text-slate-400">{t.type} • {t.date.toLocaleDateString('fr-FR')} à {t.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6 mt-4 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black ${t.status === 'EN_ATTENTE' ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-600'}`}>
+                    {t.status}
+                  </span>
+                  <span className="font-black text-lg text-slate-900">{new Intl.NumberFormat('fr-DZ').format(t.amount)} DA</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
     </div>
+  );
+}
+
+function FilterButton({ current, value, label }: { current: string, value: string, label: string }) {
+  const isActive = current === value;
+  return (
+    <Link href={`/dashboard/finances?period=${value}`}>
+      <button className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${isActive ? 'bg-rose-50 text-rose-600 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}`}>
+        {label}
+      </button>
+    </Link>
   );
 }

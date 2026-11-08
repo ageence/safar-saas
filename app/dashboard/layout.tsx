@@ -3,10 +3,10 @@ export const instant = false;
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Users, PlaneTakeoff, FileText, Wallet, Settings, LogOut, Compass, Menu } from "lucide-react";
+import { LayoutDashboard, Users, PlaneTakeoff, FileText, Wallet, Settings, LogOut, Compass, Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { NotificationBell } from "@/components/notification-bell"; // 🟢 IMPORT 
+import { NotificationBell } from "@/components/notification-bell";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -17,6 +17,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { name: "Clients", href: "/dashboard/clients", icon: Users, color: "text-emerald-500", bg: "bg-emerald-50" },
     { name: "Voyages", href: "/dashboard/offres", icon: PlaneTakeoff, color: "text-orange-500", bg: "bg-orange-50" },
     { name: "Visas", href: "/dashboard/visas", icon: FileText, color: "text-purple-500", bg: "bg-purple-50" },
+    // 🟢 LE NOUVEL ONGLET AI PREMIUM
+    { name: "Safar AI", href: "/dashboard/ai", icon: Sparkles, color: "text-indigo-600", bg: "bg-indigo-50" },
     { name: "Finances", href: "/dashboard/finances", icon: Wallet, color: "text-rose-500", bg: "bg-rose-50" },
     { name: "Paramètres", href: "/dashboard/parametres", icon: Settings, color: "text-slate-500", bg: "bg-slate-100" },
   ];
@@ -24,20 +26,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <>
       <div className="bg-promax-paradise"></div>
-
       <div className="flex h-screen w-full overflow-hidden text-slate-800 selection:bg-cyan-100 relative">
+        
         <aside className="hidden md:flex flex-col w-[300px] h-full py-6 pl-6">
           <div className="glass-promax flex-1 flex flex-col relative z-20">
             <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-cyan-100/50 to-transparent rounded-t-[1.75rem] pointer-events-none"></div>
-
             <div className="h-28 flex items-center px-8 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-white rounded-2xl shadow-[0_8px_15px_rgba(14,165,233,0.2)]">
                   <Compass className="h-7 w-7 text-cyan-500 animate-[spin_12s_linear_infinite]" />
                 </div>
-                <span className="font-extrabold text-2xl tracking-tighter text-slate-800">
-                  SAFAR<span className="text-cyan-500 font-light">.PRO</span>
-                </span>
+                <span className="font-extrabold text-2xl tracking-tighter text-slate-800">SAFAR<span className="text-cyan-500 font-light">.PRO</span></span>
               </div>
             </div>
 
@@ -46,6 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <Link key={link.href} href={link.href} className="flex items-center gap-4 px-4 py-3.5 text-[15px] font-bold text-slate-500 rounded-2xl transition-all duration-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)] group border border-transparent hover:border-white">
                   <div className={`p-2.5 rounded-xl ${link.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm`}><link.icon className={`h-5 w-5 ${link.color}`} /></div>
                   {link.name}
+                  {link.name === "Safar AI" && <span className="ml-auto flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>}
                 </Link>
               ))}
             </nav>
@@ -67,7 +67,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <main className="flex-1 flex flex-col h-full overflow-hidden relative">
           <header className="md:hidden flex h-20 items-center justify-between px-6 glass-promax m-4 relative z-50">
             <span className="font-extrabold text-xl text-slate-800 flex items-center gap-2"><Compass className="h-6 w-6 text-cyan-500" /> SAFAR.PRO</span>
-            
             <Sheet>
               <SheetTrigger className="p-2.5 bg-white text-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all"><Menu className="h-6 w-6" /></SheetTrigger>
               <SheetContent side="left" className="w-[85vw] bg-white/90 backdrop-blur-3xl border-none p-0 text-slate-800 m-2 h-[calc(100vh-16px)] rounded-3xl shadow-2xl">
@@ -82,15 +81,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </SheetContent>
             </Sheet>
           </header>
-
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 xl:p-8 w-full">
-            <div className="max-w-[1600px] mx-auto w-full h-full">
-              {children}
-            </div>
-          </div>
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 xl:p-8 w-full"><div className="max-w-[1600px] mx-auto w-full h-full">{children}</div></div>
         </main>
-
-        {/* 🟢 LA CLOCHE UNIQUE EST APPELÉE ICI, TOUT EN BAS */}
         <NotificationBell />
       </div>
     </>
