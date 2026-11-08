@@ -4,18 +4,23 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { unstable_noStore as noStore } from "next/cache";
 
-// Le paramètre timestamp empêche le cache de Next.js !
 export async function getUnreadNotifications(timestamp?: number) {
-  noStore(); // 🟢 DÉSACTIVE LE CACHE OBLIGATOIREMENT
+  noStore();
   
-  const session = await auth();
-  if (!session?.user?.agencyId) return [];
+  try {
+    const session = await auth();
+    if (!session?.user?.agencyId) return [];
 
-  return await prisma.notification.findMany({
-    where: { agencyId: session.user.agencyId, isRead: false },
-    orderBy: { createdAt: "desc" },
-    take: 10
-  });
+    return await prisma.notification.findMany({
+      where: { agencyId: session.user.agencyId, isRead: false },
+      orderBy: { createdAt: "desc" },
+      take: 10
+    });
+  } catch (error) {
+    // 🟢 SI LA TABLE N'EXISTE PAS ENCORE, ON NE BLOQUE PAS LE DASHBOARD
+    console.error("Erreur Notifications (Vérifiez la BDD):", error);
+    return [];
+  }
 }
 
 export async function markAsRead(notificationId: string) {
