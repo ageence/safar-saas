@@ -40,7 +40,8 @@ export default async function FinancesPage({ searchParams }: { searchParams: Pro
   let caTotal = 0;
   let caEnAttente = 0;
 
-  const transactions = [];
+  // 🟢 LA CORRECTION EST ICI : On déclare le type exact pour que TypeScript soit content !
+  const transactions: { id: string; type: string; client: string; amount: number; status: string; date: Date }[] = [];
 
   bookings.forEach(b => {
     const price = b.offer?.price || 0;
@@ -70,7 +71,7 @@ export default async function FinancesPage({ searchParams }: { searchParams: Pro
           <p className="text-slate-500 font-medium mt-1">Supervisez la trésorerie et les encaissements de l'agence.</p>
         </div>
         
-        {/* 🟢 LES FILTRES PROFESSIONNELS */}
+        {/* LES FILTRES PROFESSIONNELS */}
         <div className="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1">
           <FilterButton current={period} value="today" label="Aujourd'hui" />
           <FilterButton current={period} value="month" label="Ce Mois" />
