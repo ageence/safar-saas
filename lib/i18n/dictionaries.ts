@@ -1,87 +1,33 @@
 export const dictionaries = {
   fr: {
-    // Menu
-    dashboard: "Vue d'ensemble", clients: "Clients", voyages: "Voyages", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Paramètres", logout: "Déconnexion", menu: "Menu",
-    
-    // Dashboard Accueil
-    welcome: "Bonjour",
-    whatsHappening: "Voici ce qui se passe dans votre agence aujourd'hui.",
-    prestigeEdition: "Édition Prestige",
-    excellence: "L'excellence du",
-    travel: "Voyage.",
-    welcomeDesc: "Bienvenue dans votre centre de commandement",
-    welcomeDesc2: "Gérez vos clients et vos finances avec une fluidité absolue.",
-    certified: "Agence Certifiée",
-    cloudActive: "Système cloud opérationnel et synchronisé à 100%.",
-    treasury: "Trésorerie",
-    departures: "Départs",
-    currentYear: "Année en cours",
-    financialFlow: "Flux Financier",
-    liveFeed: "Live Feed",
-    noDepartures: "Aucun départ",
-    new: "Nouveau",
-    discoverAI: "Découvrez Safar AI",
-    aiDesc: "L'intelligence artificielle analyse vos offres et vous fournit des recommandations pour maximiser votre chiffre d'affaires.",
-    consultAssistant: "Consulter l'Assistant",
-
-    // Paramètres (Existant)
-    settingsTitle: "Paramètres", settingsDesc: "Gérez votre agence, votre équipe et vos intégrations.", tabGeneral: "Général", tabLang: "Langues", tabTeam: "Équipe", tabAuto: "Automatisations", agencyProfile: "Profil de l'agence", agencyDesc: "Les informations publiques de votre agence.", agencyName: "Nom de l'agence", phoneMain: "Téléphone Principal", address: "Adresse physique", update: "Mettre à jour", languageTitle: "Langue de l'interface", languageDesc: "Choisissez la langue d'affichage.", teamMembers: "Membres de l'équipe", colName: "Nom", colEmail: "Email", colRole: "Rôle", roleAdmin: "Gérant", roleEmp: "Employé", addEmp: "Ajouter un employé", addEmpDesc: "Créez un accès pour un nouveau membre.", fullName: "Nom complet", tempPass: "Mot de passe provisoire", createAccount: "Créer le compte", waIntegration: "Intégration WhatsApp Business", waDesc: "Configuration du Webhook pour WhatsApp.", waUrl: "URL du Webhook", waToken: "Jeton de vérification (Token)", waInfo: "Ces informations doivent être collées dans votre tableau de bord Meta."
+    // Menu & Accueil
+    dashboard: "Vue d'ensemble", clients: "Clients", voyages: "Voyages", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Paramètres", logout: "Déconnexion", menu: "Menu", welcome: "Bonjour", whatsHappening: "Voici ce qui se passe dans votre agence aujourd'hui.", prestigeEdition: "Édition Prestige", excellence: "L'excellence du", travel: "Voyage.", welcomeDesc: "Bienvenue dans votre centre de commandement", welcomeDesc2: "Gérez vos clients et vos finances avec une fluidité absolue.", certified: "Agence Certifiée", cloudActive: "Système cloud opérationnel et synchronisé à 100%.", treasury: "Trésorerie", departures: "Départs", currentYear: "Année en cours", financialFlow: "Flux Financier", liveFeed: "Live Feed", noDepartures: "Aucun départ", new: "Nouveau", discoverAI: "Découvrez Safar AI", aiDesc: "L'intelligence artificielle analyse vos offres et vous fournit des recommandations pour maximiser votre chiffre d'affaires.", consultAssistant: "Consulter l'Assistant",
+    // Paramètres
+    settingsTitle: "Paramètres", settingsDesc: "Gérez votre agence, votre équipe et vos intégrations.", tabGeneral: "Général", tabLang: "Langues", tabTeam: "Équipe", tabAuto: "Automatisations", agencyProfile: "Profil de l'agence", agencyDesc: "Les informations publiques de votre agence.", agencyName: "Nom de l'agence", phoneMain: "Téléphone Principal", address: "Adresse physique", update: "Mettre à jour", languageTitle: "Langue de l'interface", languageDesc: "Choisissez la langue d'affichage.", teamMembers: "Membres de l'équipe", colName: "Nom", colEmail: "Email", colRole: "Rôle", roleAdmin: "Gérant", roleEmp: "Employé", addEmp: "Ajouter un employé", addEmpDesc: "Créez un accès pour un nouveau membre.", fullName: "Nom complet", tempPass: "Mot de passe provisoire", createAccount: "Créer le compte", waIntegration: "Intégration WhatsApp Business", waDesc: "Configuration du Webhook pour WhatsApp.", waUrl: "URL du Webhook", waToken: "Jeton de vérification (Token)", waInfo: "Ces informations doivent être collées dans votre tableau de bord Meta.",
+    // Notifications & Graphique
+    yourNotifs: "Vos Notifications", upToDate: "Vous êtes à jour !", days7: "7 Jours", thisMonth: "Ce Mois", thisYear: "Cette Année", custom: "Personnalisé", generatedRevenue: "DA générés sur cette période.", to: "À", noData: "Aucune donnée financière pour cette période.",
+    // Clients
+    clientsTitle: "Gestion des Clients", clientsDesc: "Gérez la base de données de vos voyageurs et prospects.", searchClient: "Rechercher un client...", addClient: "Ajouter un Client", noClients: "Aucun client trouvé.", edit: "Modifier", delete: "Supprimer", dateJoined: "Inscrit le", phone: "Téléphone", source: "Source"
   },
   en: {
-    // Menu
-    dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu",
-    
-    // Dashboard Accueil
-    welcome: "Hello",
-    whatsHappening: "Here is what's happening in your agency today.",
-    prestigeEdition: "Prestige Edition",
-    excellence: "The excellence of",
-    travel: "Travel.",
-    welcomeDesc: "Welcome to your command center",
-    welcomeDesc2: "Manage your clients and finances with absolute fluidity.",
-    certified: "Certified Agency",
-    cloudActive: "Cloud system operational and 100% synchronized.",
-    treasury: "Treasury",
-    departures: "Departures",
-    currentYear: "Current Year",
-    financialFlow: "Financial Flow",
-    liveFeed: "Live Feed",
-    noDepartures: "No departures",
-    new: "New",
-    discoverAI: "Discover Safar AI",
-    aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.",
-    consultAssistant: "Consult Assistant",
-
-    // Paramètres (Existant)
-    settingsTitle: "Settings", settingsDesc: "Manage your agency, team and integrations.", tabGeneral: "General", tabLang: "Languages", tabTeam: "Team", tabAuto: "Automations", agencyProfile: "Agency Profile", agencyDesc: "Public info of your agency.", agencyName: "Agency Name", phoneMain: "Main Phone", address: "Physical Address", update: "Update", languageTitle: "Interface Language", languageDesc: "Choose display language.", teamMembers: "Team Members", colName: "Name", colEmail: "Email", colRole: "Role", roleAdmin: "Manager", roleEmp: "Employee", addEmp: "Add Employee", addEmpDesc: "Create access for a new member.", fullName: "Full Name", tempPass: "Temp Password", createAccount: "Create Account", waIntegration: "WhatsApp Business Integration", waDesc: "Webhook configuration for WhatsApp.", waUrl: "Webhook URL", waToken: "Verification Token", waInfo: "Paste this into your Meta dashboard."
+    // Menu & Accueil
+    dashboard: "Overview", clients: "Clients", voyages: "Tours", visas: "Visas", finances: "Finances", safarAI: "Safar AI", settings: "Settings", logout: "Log out", menu: "Menu", welcome: "Hello", whatsHappening: "Here is what's happening in your agency today.", prestigeEdition: "Prestige Edition", excellence: "The excellence of", travel: "Travel.", welcomeDesc: "Welcome to your command center", welcomeDesc2: "Manage your clients and finances with absolute fluidity.", certified: "Certified Agency", cloudActive: "Cloud system operational and 100% synchronized.", treasury: "Treasury", departures: "Departures", currentYear: "Current Year", financialFlow: "Financial Flow", liveFeed: "Live Feed", noDepartures: "No departures", new: "New", discoverAI: "Discover Safar AI", aiDesc: "Artificial intelligence analyzes your offers and provides recommendations to maximize your revenue.", consultAssistant: "Consult Assistant",
+    // Paramètres
+    settingsTitle: "Settings", settingsDesc: "Manage your agency, team and integrations.", tabGeneral: "General", tabLang: "Languages", tabTeam: "Team", tabAuto: "Automations", agencyProfile: "Agency Profile", agencyDesc: "Public info of your agency.", agencyName: "Agency Name", phoneMain: "Main Phone", address: "Physical Address", update: "Update", languageTitle: "Interface Language", languageDesc: "Choose display language.", teamMembers: "Team Members", colName: "Name", colEmail: "Email", colRole: "Role", roleAdmin: "Manager", roleEmp: "Employee", addEmp: "Add Employee", addEmpDesc: "Create access for a new member.", fullName: "Full Name", tempPass: "Temp Password", createAccount: "Create Account", waIntegration: "WhatsApp Business Integration", waDesc: "Webhook configuration for WhatsApp.", waUrl: "Webhook URL", waToken: "Verification Token", waInfo: "Paste this into your Meta dashboard.",
+    // Notifications & Graphique
+    yourNotifs: "Your Notifications", upToDate: "You are up to date!", days7: "7 Days", thisMonth: "This Month", thisYear: "This Year", custom: "Custom", generatedRevenue: "DA generated in this period.", to: "To", noData: "No financial data for this period.",
+    // Clients
+    clientsTitle: "Client Management", clientsDesc: "Manage your travelers and prospects database.", searchClient: "Search for a client...", addClient: "Add a Client", noClients: "No clients found.", edit: "Edit", delete: "Delete", dateJoined: "Joined on", phone: "Phone", source: "Source"
   },
   ar: {
-    // Menu
-    dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة",
-    
-    // Dashboard Accueil
-    welcome: "مرحباً",
-    whatsHappening: "إليك ما يحدث في وكالتك اليوم.",
-    prestigeEdition: "النسخة المرموقة",
-    excellence: "امتياز",
-    travel: "السفر.",
-    welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك",
-    welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.",
-    certified: "وكالة معتمدة",
-    cloudActive: "النظام السحابي يعمل ومتزامن 100%.",
-    treasury: "الخزينة",
-    departures: "المغادرين",
-    currentYear: "السنة الحالية",
-    financialFlow: "التدفق المالي",
-    liveFeed: "أحدث النشاطات",
-    noDepartures: "لا توجد رحلات",
-    new: "جديد",
-    discoverAI: "اكتشف ذكاء سفر",
-    aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.",
-    consultAssistant: "استشارة المساعد",
-
-    // Paramètres (Existant)
-    settingsTitle: "الإعدادات", settingsDesc: "إدارة وكالتك، فريقك والتكاملات.", tabGeneral: "عام", tabLang: "اللغات", tabTeam: "الفريق", tabAuto: "الأتمتة", agencyProfile: "ملف الوكالة", agencyDesc: "المعلومات العامة لوكالتك.", agencyName: "اسم الوكالة", phoneMain: "الهاتف الرئيسي", address: "العنوان الفعلي", update: "تحديث", languageTitle: "لغة الواجهة", languageDesc: "اختر لغة العرض.", teamMembers: "أعضاء الفريق", colName: "الاسم", colEmail: "البريد", colRole: "الدور", roleAdmin: "مدير", roleEmp: "موظف", addEmp: "إضافة موظف", addEmpDesc: "إنشاء وصول لعضو جديد.", fullName: "الاسم الكامل", tempPass: "كلمة مرور مؤقتة", createAccount: "إنشاء حساب", waIntegration: "دمج واتساب", waDesc: "إعداد Webhook لواتساب.", waUrl: "رابط Webhook", waToken: "رمز التحقق", waInfo: "الصق هذا في لوحة تحكم Meta."
+    // Menu & Accueil
+    dashboard: "نظرة عامة", clients: "العملاء", voyages: "الرحلات", visas: "التأشيرات", finances: "المالية", safarAI: "ذكاء سفر", settings: "الإعدادات", logout: "تسجيل الخروج", menu: "القائمة", welcome: "مرحباً", whatsHappening: "إليك ما يحدث في وكالتك اليوم.", prestigeEdition: "النسخة المرموقة", excellence: "امتياز", travel: "السفر.", welcomeDesc: "مرحباً بك في مركز القيادة الخاص بك", welcomeDesc2: "قم بإدارة عملائك وأموالك بسلاسة مطلقة.", certified: "وكالة معتمدة", cloudActive: "النظام السحابي يعمل ومتزامن 100%.", treasury: "الخزينة", departures: "المغادرين", currentYear: "السنة الحالية", financialFlow: "التدفق المالي", liveFeed: "أحدث النشاطات", noDepartures: "لا توجد رحلات", new: "جديد", discoverAI: "اكتشف ذكاء سفر", aiDesc: "يقوم الذكاء الاصطناعي بتحليل عروضك وتقديم توصيات لزيادة أرباحك.", consultAssistant: "استشارة المساعد",
+    // Paramètres
+    settingsTitle: "الإعدادات", settingsDesc: "إدارة وكالتك، فريقك والتكاملات.", tabGeneral: "عام", tabLang: "اللغات", tabTeam: "الفريق", tabAuto: "الأتمتة", agencyProfile: "ملف الوكالة", agencyDesc: "المعلومات العامة لوكالتك.", agencyName: "اسم الوكالة", phoneMain: "الهاتف الرئيسي", address: "العنوان الفعلي", update: "تحديث", languageTitle: "لغة الواجهة", languageDesc: "اختر لغة العرض.", teamMembers: "أعضاء الفريق", colName: "الاسم", colEmail: "البريد", colRole: "الدور", roleAdmin: "مدير", roleEmp: "موظف", addEmp: "إضافة موظف", addEmpDesc: "إنشاء وصول لعضو جديد.", fullName: "الاسم الكامل", tempPass: "كلمة مرور مؤقتة", createAccount: "إنشاء حساب", waIntegration: "دمج واتساب", waDesc: "إعداد Webhook لواتساب.", waUrl: "رابط Webhook", waToken: "رمز التحقق", waInfo: "الصق هذا في لوحة تحكم Meta.",
+    // Notifications & Graphique
+    yourNotifs: "إشعاراتك", upToDate: "أنت على اطلاع دائم!", days7: "7 أيام", thisMonth: "هذا الشهر", thisYear: "هذا العام", custom: "مخصص", generatedRevenue: "دج تم تحقيقها في هذه الفترة.", to: "إلى", noData: "لا توجد بيانات مالية لهذه الفترة.",
+    // Clients
+    clientsTitle: "إدارة العملاء", clientsDesc: "إدارة قاعدة بيانات المسافرين والعملاء المحتملين.", searchClient: "البحث عن عميل...", addClient: "إضافة عميل", noClients: "لم يتم العثور على عملاء.", edit: "تعديل", delete: "حذف", dateJoined: "انضم في", phone: "رقم الهاتف", source: "المصدر"
   }
 };
 export type Language = "fr" | "en" | "ar";

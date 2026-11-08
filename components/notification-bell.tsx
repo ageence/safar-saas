@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Bell, PlaneTakeoff, Globe, CheckCircle2 } from "lucide-react";
 import { getUnreadNotifications, markAsRead } from "@/app/actions/notifications";
+import { useLanguage } from "@/components/language-provider"; // 🟢 IMPORT DU MOTEUR DE LANGUES
 
 export function NotificationBell() {
+  const { t } = useLanguage(); // 🟢 INITIALISATION
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   
@@ -55,7 +57,8 @@ export function NotificationBell() {
       {isOpen && (
         <div className="absolute bottom-24 right-0 w-[320px] sm:w-[400px] bg-slate-50 rounded-2xl shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-4 border-slate-900 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           <div className="bg-slate-900 p-5 flex justify-between items-center text-white">
-            <h3 className="font-black text-xl">Vos Notifications</h3>
+            {/* 🟢 TRADUCTION DU TITRE */}
+            <h3 className="font-black text-xl">{t("yourNotifs")}</h3>
             <span className="bg-rose-500 text-white text-sm font-black px-3 py-1 rounded-full shadow-lg">{unreadCount}</span>
           </div>
           
@@ -63,7 +66,8 @@ export function NotificationBell() {
             {unreadCount === 0 ? (
               <div className="p-10 text-center text-slate-500 font-bold bg-white rounded-xl border border-slate-300 shadow-sm">
                 <Bell className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                Vous êtes à jour !
+                {/* 🟢 TRADUCTION DU MESSAGE "À JOUR" */}
+                {t("upToDate")}
               </div>
             ) : (
               notifications.map((notif) => (
