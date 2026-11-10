@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createVisaApplication } from "./actions";
+import { useLanguage } from "@/components/language-provider";
 
-// On reçoit la liste des clients pour pouvoir lier le visa à un client existant
 export function AddVisaDialog({ clients }: { clients: { id: string, firstName: string, lastName: string }[] }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,21 +26,21 @@ export function AddVisaDialog({ clients }: { clients: { id: string, firstName: s
   return (
     <>
       <Button onClick={() => setOpen(true)} className="bg-primary text-primary-foreground font-semibold">
-        <Plus className="mr-2 h-4 w-4" /> Nouveau Dossier
+        <Plus className="mr-2 h-4 w-4" /> {t("newFolder")}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Nouveau dossier Visa</DialogTitle>
+            <DialogTitle>{t("newVisaFolder")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
             
             <div className="space-y-2">
-              <Label htmlFor="clientId">Client</Label>
+              <Label htmlFor="clientId">{t("client")}</Label>
               <Select name="clientId" required>
                 <SelectTrigger className="bg-muted/50">
-                  <SelectValue placeholder="Sélectionner un client" />
+                  <SelectValue placeholder={t("selectClient")} />
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map(client => (
@@ -53,38 +54,38 @@ export function AddVisaDialog({ clients }: { clients: { id: string, firstName: s
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="country">Pays (Destination)</Label>
-                <Input id="country" name="country" placeholder="Ex: Espagne" required className="bg-muted/50" />
+                <Label htmlFor="country">{t("countryDestination")}</Label>
+                <Input id="country" name="country" placeholder={t("exSpain")} required className="bg-muted/50" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status">Statut</Label>
+                <Label htmlFor="status">{t("status")}</Label>
                 <Select name="status" required defaultValue="DOC_MANQUANTS">
                   <SelectTrigger className="bg-muted/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="DOC_MANQUANTS">Documents manquants</SelectItem>
-                    <SelectItem value="EN_ATTENTE_RDV">En attente de RDV</SelectItem>
-                    <SelectItem value="DEPOT_FAIT">Dépôt effectué</SelectItem>
-                    <SelectItem value="APPROUVE">Approuvé</SelectItem>
-                    <SelectItem value="REFUSE">Refusé</SelectItem>
+                    <SelectItem value="DOC_MANQUANTS">{t("missingDocs")}</SelectItem>
+                    <SelectItem value="EN_ATTENTE_RDV">{t("waitingAppointment")}</SelectItem>
+                    <SelectItem value="DEPOT_FAIT">{t("depositDone")}</SelectItem>
+                    <SelectItem value="APPROUVE">{t("approved")}</SelectItem>
+                    <SelectItem value="REFUSE">{t("refused")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="missingDocs">Documents manquants (Optionnel)</Label>
-              <Input id="missingDocs" name="missingDocs" placeholder="Ex: Relevé bancaire, Attestation" className="bg-muted/50" />
+              <Label htmlFor="missingDocs">{t("missingDocsOptional")}</Label>
+              <Input id="missingDocs" name="missingDocs" placeholder={t("exBankStatement")} className="bg-muted/50" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="appointmentDate">Date de RDV (VFS/BLS/TLS)</Label>
+              <Label htmlFor="appointmentDate">{t("appointmentDateLabel")}</Label>
               <Input id="appointmentDate" name="appointmentDate" type="date" className="bg-muted/50" />
             </div>
 
             <Button type="submit" className="w-full font-semibold" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Créer le dossier"}
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t("createFolder")}
             </Button>
           </form>
         </DialogContent>
