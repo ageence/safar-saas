@@ -17,10 +17,10 @@ export const dictionaries = {
     aiCopilot: "Copilot", aiAnalysis: "L'intelligence artificielle analyse les données de votre agence en temps réel.", stratRecs: "Recommandations Stratégiques", salesSpeed: "Vitesse de Vente", noSalesData: "Aucune donnée de vente pour le moment.", almostFull: "Presque complet", seatsAvailable: "Places disponibles", strongTrend: "Tendance Forte Détectée", trendMsg: "génère le plus de trafic.", imminentDepletion: "Épuisement imminent", depletionMsg1: "Il ne reste que", depletionMsg2: "places pour", depletionMsg3: "L'IA estime une clôture sous peu.", underperfOffer: "Offre sous-performante", underperfMsg: "n'a généré aucun client.", visaBottleneck: "Goulot d'étranglement Visa", visaMsg1: "Vous avez", visaMsg2: "dossiers Visa en attente.", learningInProgress: "Apprentissage en cours", learningMsg: "L'IA analyse actuellement votre agence.",
     // Finances
     totalCashed: "Total Encaissé", profitSplit: "Répartition des gains", remainingToCollect: "Reste à recouvrer", transactionDetails: "Détail des Transactions", filteredPeriod: "(Période Filtrée)", pending: "En attente", approved: "Approuvé", paid: "Payé",
-    // Voyages
-    tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places restantes sur", totalSpots: "Total", price: "Prix",
-    // Visas
-    visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays"
+    // Voyages & Visas (AJOUTS MANQUANTS)
+    tripManagement: "Gestion des Voyages", tripDesc: "Créez et gérez vos offres de voyages et Omra.", addTrip: "Ajouter une Offre", noTrips: "Aucun voyage disponible.", availableSeats: "Places disponibles", totalSpots: "Total", price: "Prix",
+    visaManagement: "Dossiers Visas", visaDesc: "Gérez les demandes de visas de vos clients.", addVisa: "Nouveau Dossier Visa", noVisas: "Aucun dossier visa.", status: "Statut", country: "Pays",
+    tripCatalog: "Catalogue", campaignsLinks: "Campagnes & Liens", createTrip: "Créer un Voyage", viewPublicPage: "Voir la page publique", appointmentDate: "Date de RDV", action: "Action"
   },
   en: {
     // Menu & Accueil
@@ -40,10 +40,10 @@ export const dictionaries = {
     aiCopilot: "Copilot", aiAnalysis: "Artificial intelligence analyzes your agency's data in real time.", stratRecs: "Strategic Recommendations", salesSpeed: "Sales Velocity", noSalesData: "No sales data at the moment.", almostFull: "Almost full", seatsAvailable: "Seats available", strongTrend: "Strong Trend Detected", trendMsg: "generates the most traffic.", imminentDepletion: "Imminent Depletion", depletionMsg1: "Only", depletionMsg2: "seats left for", depletionMsg3: "AI estimates closing soon.", underperfOffer: "Underperforming Offer", underperfMsg: "generated no clients.", visaBottleneck: "Visa Bottleneck", visaMsg1: "You have", visaMsg2: "pending visa files.", learningInProgress: "Learning in progress", learningMsg: "AI is currently analyzing your agency.",
     // Finances
     totalCashed: "Total Cashed", profitSplit: "Profit Split", remainingToCollect: "Remaining to Collect", transactionDetails: "Transaction Details", filteredPeriod: "(Filtered Period)", pending: "Pending", approved: "Approved", paid: "Paid",
-    // Voyages
-    tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats remaining out of", totalSpots: "Total", price: "Price",
-    // Visas
-    visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country"
+    // Voyages & Visas (AJOUTS MANQUANTS)
+    tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats available", totalSpots: "Total", price: "Price",
+    visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country",
+    tripCatalog: "Catalog", campaignsLinks: "Campaigns & Links", createTrip: "Create a Trip", viewPublicPage: "View public page", appointmentDate: "Appointment Date", action: "Action"
   },
   ar: {
     // Menu & Accueil
@@ -63,10 +63,10 @@ export const dictionaries = {
     aiCopilot: "المساعد", aiAnalysis: "يقوم الذكاء الاصطناعي بتحليل بيانات وكالتك في الوقت الفعلي.", stratRecs: "توصيات استراتيجية", salesSpeed: "سرعة المبيعات", noSalesData: "لا توجد بيانات مبيعات حالياً.", almostFull: "شبه مكتمل", seatsAvailable: "أماكن متاحة", strongTrend: "تم اكتشاف اتجاه قوي", trendMsg: "يولد أكبر عدد من الزيارات.", imminentDepletion: "نفاد وشيك", depletionMsg1: "لم يتبق سوى", depletionMsg2: "مقاعد لـ", depletionMsg3: "الذكاء الاصطناعي يتوقع الإغلاق قريباً.", underperfOffer: "عرض ضعيف الأداء", underperfMsg: "لم يجلب أي عميل.", visaBottleneck: "عنق زجاجة في التأشيرات", visaMsg1: "لديك", visaMsg2: "ملفات تأشيرة قيد الانتظار.", learningInProgress: "التعلم قيد التقدم", learningMsg: "الذكاء الاصطناعي يحلل وكالتك حالياً.",
     // Finances
     totalCashed: "إجمالي المقبوضات", profitSplit: "توزيع الأرباح", remainingToCollect: "المتبقي للتحصيل (الديون)", transactionDetails: "تفاصيل المعاملات", filteredPeriod: "(فترة مصفاة)", pending: "قيد الانتظار", approved: "مقبول", paid: "مدفوع",
-    // Voyages
-    tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "المقاعد المتبقية من", totalSpots: "الإجمالي", price: "السعر",
-    // Visas
-    visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد"
+    // Voyages & Visas (AJOUTS MANQUANTS)
+    tripManagement: "إدارة الرحلات", tripDesc: "قم بإنشاء وإدارة عروض رحلاتك والعمرة.", addTrip: "إضافة عرض", noTrips: "لا توجد رحلات متاحة.", availableSeats: "أماكن متاحة", totalSpots: "الإجمالي", price: "السعر",
+    visaManagement: "ملفات التأشيرات", visaDesc: "إدارة طلبات تأشيرات عملائك.", addVisa: "ملف تأشيرة جديد", noVisas: "لا توجد ملفات تأشيرة.", status: "الحالة", country: "البلد",
+    tripCatalog: "كتالوج", campaignsLinks: "الحملات والروابط", createTrip: "إنشاء رحلة", viewPublicPage: "عرض الصفحة العامة", appointmentDate: "تاريخ الموعد", action: "إجراء"
   }
 };
 export type Language = "fr" | "en" | "ar";
