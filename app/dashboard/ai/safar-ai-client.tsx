@@ -1,12 +1,22 @@
 "use client";
 
 import { useLanguage } from "@/components/language-provider";
-import { Sparkles, BrainCircuit, BarChart3 } from "lucide-react";
+import { Sparkles, BrainCircuit, BarChart3, TrendingUp, Clock, AlertTriangle, Zap } from "lucide-react";
 
-// Le badge local que tu as créé
 function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
   return <span className={`px-2.5 py-0.5 rounded-full font-bold ${className}`}>{children}</span>;
 }
+
+// 🟢 C'est le client qui génère l'icône selon le "type" d'alerte envoyé par le serveur
+const getIcon = (type: string) => {
+  switch(type) {
+    case "SUCCESS": return <TrendingUp className="w-8 h-8" />;
+    case "WARNING": return <Clock className="w-8 h-8" />;
+    case "ALERT": return <AlertTriangle className="w-8 h-8" />;
+    case "ACTION": return <Zap className="w-8 h-8" />;
+    case "INFO": default: return <BrainCircuit className="w-8 h-8" />;
+  }
+};
 
 export function SafarAIClient({ insights, offers }: { insights: any[], offers: any[] }) {
   const { t } = useLanguage();
@@ -41,12 +51,10 @@ export function SafarAIClient({ insights, offers }: { insights: any[], offers: a
             {insights.map((insight, idx) => (
               <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all flex items-start gap-5">
                 <div className={`p-4 rounded-2xl ${insight.bg} ${insight.color} shadow-inner`}>
-                  <insight.icon className="w-8 h-8" />
+                  {getIcon(insight.type)}
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-800 mb-1">{t(insight.titleKey)}</h3>
-                  
-                  {/* On reconstruit le message traduit avec des variables */}
                   <p className="text-slate-600 font-medium leading-relaxed">
                     {insight.type === "SUCCESS" && `${t("offer")} "${insight.dataTitle}" ${t("trendMsg")}`}
                     {insight.type === "WARNING" && `${t("depletionMsg1")} ${insight.dataSeats} ${t("depletionMsg2")} "${insight.dataTitle}". ${t("depletionMsg3")}`}

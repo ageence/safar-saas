@@ -2,7 +2,6 @@ export const instant = false;
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { TrendingUp, AlertTriangle, Zap, BrainCircuit, Clock } from "lucide-react";
 import { SafarAIClient } from "./safar-ai-client";
 
 export default async function SafarAIPage() {
@@ -20,7 +19,7 @@ export default async function SafarAIPage() {
     where: { agencyId, status: "EN_ATTENTE" }
   });
 
-  // Génération d'insights intelligents pour le Client Component
+  // Génération d'insights intelligents (SANS LES ICÔNES ICI)
   let insights = [];
   
   if (offers.length > 0) {
@@ -29,7 +28,7 @@ export default async function SafarAIPage() {
     
     if (topOffer.bookings.length > 0) {
       insights.push({
-        type: "SUCCESS", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-50",
+        type: "SUCCESS", color: "text-emerald-500", bg: "bg-emerald-50",
         titleKey: "strongTrend", dataTitle: topOffer.title
       });
     }
@@ -37,7 +36,7 @@ export default async function SafarAIPage() {
     const presquePlein = offers.find(o => o.availableSeats !== null && o.availableSeats > 0 && o.availableSeats <= 5);
     if (presquePlein) {
       insights.push({
-        type: "WARNING", icon: Clock, color: "text-orange-500", bg: "bg-orange-50",
+        type: "WARNING", color: "text-orange-500", bg: "bg-orange-50",
         titleKey: "imminentDepletion", dataTitle: presquePlein.title, dataSeats: presquePlein.availableSeats
       });
     }
@@ -45,7 +44,7 @@ export default async function SafarAIPage() {
     const lowPerf = sortedOffers[sortedOffers.length - 1];
     if (lowPerf.bookings.length === 0) {
       insights.push({
-        type: "ALERT", icon: AlertTriangle, color: "text-rose-500", bg: "bg-rose-50",
+        type: "ALERT", color: "text-rose-500", bg: "bg-rose-50",
         titleKey: "underperfOffer", dataTitle: lowPerf.title
       });
     }
@@ -53,14 +52,14 @@ export default async function SafarAIPage() {
 
   if (activeVisas > 5) {
     insights.push({
-      type: "ACTION", icon: Zap, color: "text-indigo-500", bg: "bg-indigo-50",
+      type: "ACTION", color: "text-indigo-500", bg: "bg-indigo-50",
       titleKey: "visaBottleneck", dataCount: activeVisas
     });
   }
 
   if (insights.length === 0) {
     insights.push({
-      type: "INFO", icon: BrainCircuit, color: "text-cyan-500", bg: "bg-cyan-50",
+      type: "INFO", color: "text-cyan-500", bg: "bg-cyan-50",
       titleKey: "learningInProgress"
     });
   }
