@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download, Eye, X, FileText, Loader2, UploadCloud, Video, Trash2 } from "lucide-react";
+import { useLanguage } from "@/components/language-provider"; // 🟢 MOTEUR DE TRADUCTION
 
 export function VisaDocumentManager({ 
   visaId, 
@@ -14,6 +15,8 @@ export function VisaDocumentManager({
   onUpload: (formData: FormData) => Promise<void>,
   onDelete: (docId: string, visaId: string) => Promise<void>
 }) {
+  const { t } = useLanguage(); // 🟢 INITIALISATION
+  
   const [preview, setPreview] = useState<{ url: string, type: string, name: string } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -32,8 +35,7 @@ export function VisaDocumentManager({
     }
 
     if (file.size > 4.5 * 1024 * 1024) {
-      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`⚠️ FICHIER TROP LOURD ! (${sizeMb} Mo)\n\nLe système accepte un maximum de 4.5 Mo. Veuillez compresser votre fichier.`);
+      alert(t("alertFileTooBig")); // 🟢 TRADUIT
       setUploading(false);
       form.reset();
       return;
@@ -71,20 +73,19 @@ export function VisaDocumentManager({
       }
     } catch (error: any) {
       console.error("Upload Error: ", error);
-      alert("❌ Erreur de connexion ou fichier corrompu.");
+      alert(t("errorConnection")); // 🟢 TRADUIT
       setUploading(false);
     }
   };
 
   const handleDelete = async (docId: string) => {
-    if (confirm("Voulez-vous vraiment supprimer ce fichier définitivement ?")) {
+    if (confirm(t("confirmDeleteDoc"))) { // 🟢 TRADUIT
       setDeletingId(docId);
       await onDelete(docId, visaId);
       setDeletingId(null);
     }
   };
 
-  // 🔴 CORRECTION POUR RECONNAITRE TOUTES LES VIDÉOS (ANCIENNES ET NOUVELLES)
   const getFileType = (url: string, fileName: string) => {
     if (!url) return "image";
     const strUrl = url.substring(0, 50).toLowerCase(); 
@@ -110,12 +111,12 @@ export function VisaDocumentManager({
     <div className="glass-promax p-8 rounded-[2rem]">
       <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
         <div className="p-3 bg-purple-50 text-purple-500 rounded-xl"><FileText className="w-6 h-6" /></div>
-        <h2 className="text-2xl font-black text-slate-800">Documents & Médias</h2>
+        <h2 className="text-2xl font-black text-slate-800">{t("documentsAndMedia")}</h2>
       </div>
 
       <div className="space-y-3 mb-6">
         {documents.length === 0 ? (
-          <p className="text-slate-500 font-medium">Aucun document uploadé.</p>
+          <p className="text-slate-500 font-medium">{t("noDocUploaded")}</p>
         ) : (
           documents.map((doc) => {
             const type = getFileType(doc.fileUrl, doc.name);
@@ -127,8 +128,8 @@ export function VisaDocumentManager({
                   <span className="truncate">{doc.name}</span>
                 </span>
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all"><Eye className="w-4 h-4" /> Aperçu</button>
-                  <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 bg-cyan-50 px-3 py-1.5 rounded-lg font-bold hover:bg-cyan-100 flex items-center gap-1 transition-all"><Download className="w-4 h-4" /> DL</a>
+                  <button onClick={() => setPreview({ url: doc.fileUrl, type, name: doc.name })} className="text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all"><Eye className="w-4 h-4" /> {t("preview")}</button>
+                  <a href={doc.fileUrl} download={doc.name} className="text-cyan-600 bg-cyan-50 px-3 py-1.5 rounded-lg font-bold hover:bg-cyan-100 flex items-center gap-1 transition-all"><Download className="w-4 h-4" /> {t("download")}</a>
                   
                   <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id} className="text-rose-500 bg-rose-50 p-2 rounded-lg hover:bg-rose-100 font-bold flex items-center transition-all ml-1">
                     {deletingId === doc.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
@@ -141,16 +142,16 @@ export function VisaDocumentManager({
       </div>
 
       <form onSubmit={handleUpload} className="bg-white p-5 rounded-xl border border-slate-200 flex flex-col gap-4">
-        <h4 className="font-bold text-slate-800">Ajouter (Image / PDF / Vidéo - Max 4.5 Mo)</h4>
-        <input required type="text" name="name" placeholder="Nom du fichier..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <h4 className="font-bold text-slate-800">{t("addDocVideoTitle")}</h4>
+        <input required type="text" name="name" placeholder={t("docNamePlaceholder")} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none" />
         <input required type="file" name="file" accept="image/*,application/pdf,video/*" className="text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
         <button type="submit" disabled={uploading} className="bg-slate-900 disabled:bg-slate-500 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2">
           {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-          {uploading ? "Envoi en cours (Patientez...)" : "Uploader le fichier"}
+          {uploading ? t("sendingWait") : t("uploadDocBtn")}
         </button>
       </form>
 
-      {/* MODAL APERÇU : AVEC L'ATTRIBUT "KEY" POUR FIXER LE BUG REACT */}
+      {/* MODAL APERÇU INTACT (Avec le key={preview.url} pour fixer la vidéo) */}
       {preview && (
         <div 
           className="fixed inset-0 z-[1000] bg-black/95 flex flex-col items-center justify-center p-4 sm:p-12" 
@@ -174,7 +175,6 @@ export function VisaDocumentManager({
                  <iframe key={preview.url} src={preview.url} className="w-full h-full bg-white rounded-xl shadow-2xl" />
               )}
               {preview.type === "video" && (
-                 // 🟢 LE "key={preview.url}" FORCE REACT A RECHARGER LA VIDEO !
                  <video 
                     key={preview.url} 
                     src={preview.url} 
