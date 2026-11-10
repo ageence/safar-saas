@@ -20,38 +20,53 @@ const getIcon = (type: string) => {
 };
 
 export function SafarAIClient({ insights, offers, metrics }: { insights: any[], offers: any[], metrics: any }) {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      {/* HEADER PREMIUM */}
-      <div className="glass-promax p-10 rounded-[2.5rem] relative overflow-hidden bg-slate-900 text-white shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[120px] opacity-30 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+      {/* 🚀 HEADER PREMIUM "WOW" (Dark Mode Forcé pour faire ressortir le texte) */}
+      <div className="relative p-10 md:p-12 rounded-[2.5rem] overflow-hidden bg-slate-950 border border-slate-800 shadow-[0_20px_50px_rgba(79,70,229,0.15)] group">
+        
+        {/* Lumières IA (Néon Blur) */}
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-600 rounded-full blur-[100px] opacity-50 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-20 w-80 h-80 bg-cyan-600 rounded-full blur-[100px] opacity-40"></div>
+        
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="p-4 bg-indigo-500/20 border border-indigo-400/30 rounded-2xl shadow-lg text-indigo-300">
-              <Sparkles className="h-10 w-10 animate-pulse" />
+          <div className="flex items-center gap-6">
+            
+            {/* Boîte Icone avec effet flottant */}
+            <div className="p-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500 rounded-3xl shadow-lg shadow-indigo-500/40 text-white transform group-hover:scale-110 transition-transform duration-700">
+              <Sparkles className="h-10 w-10 animate-pulse text-white" />
             </div>
+            
             <div>
-              <h1 className="text-4xl font-black tracking-tight flex items-center gap-3">
-                {t("safarAI")} 
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight flex items-center gap-4 text-white">
+                {/* Texte avec effet dégradé */}
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-cyan-200">
+                  {t("safarAI")} 
+                </span>
+                
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-indigo-500 text-white text-xs py-1 px-3 uppercase tracking-widest">{t("aiCopilot")}</Badge>
+                  <Badge className="bg-gradient-to-r from-indigo-600 to-cyan-600 border-none text-white text-xs py-1.5 px-4 uppercase tracking-widest shadow-lg shadow-indigo-500/40">
+                    {t("aiCopilot")}
+                  </Badge>
                   <span className="flex h-3 w-3 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                   </span>
                 </div>
               </h1>
-              <p className="text-slate-400 font-medium mt-2 max-w-lg leading-relaxed">{t("aiAnalysis")}</p>
+              <p className="text-slate-300 font-medium mt-3 max-w-2xl leading-relaxed text-lg">
+                {t("aiAnalysis")}
+              </p>
             </div>
+
           </div>
         </div>
       </div>
 
-      {/* NOUVEAU : BENTO BOXES KPI PRÉDICTIFS */}
+      {/* 🚀 BENTO BOXES KPI PRÉDICTIFS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
@@ -104,7 +119,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
                     {insight.type === "ACTION" && `${t("visaMsg1")} ${insight.dataCount} ${t("visaMsg2")}`}
                     {insight.type === "INFO" && t("learningMsg")}
                     
-                    {/* LES NOUVELLES ALERTES */}
                     {insight.type === "DEBT" && <>{t("unpaidDebtsMsg")} <strong className="text-rose-600">{new Intl.NumberFormat("fr-DZ").format(insight.dataAmount)} DA</strong>.</>}
                     {insight.type === "VIP" && `${t("vipClientsMsg")} (${insight.dataCount} ${t("clients")}).`}
                   </p>
