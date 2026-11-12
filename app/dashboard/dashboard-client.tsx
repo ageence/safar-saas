@@ -131,7 +131,7 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
               <Sparkles className="h-10 w-10 text-indigo-300 animate-pulse" />
             </div>
             <div>
-              <h3 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">{t("discoverAI")} <span className="text-sm align-top bg-indigo-500 text-white px-2 py-0.5 rounded-full ml-1"></span></h3>
+              <h3 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">{t("discoverAI")} </h3>
               <p className="text-indigo-100/80 font-medium text-lg max-w-2xl leading-relaxed">
                 {t("aiDesc")}
               </p>
