@@ -26,7 +26,9 @@ export const dictionaries = {
     // Actions Rapides
     quickActionNewClient: "Nouveau Client", quickActionNewVisa: "Nouveau Visa", quickActionNewTrip: "Nouveau Voyage",
     // Formulaire Nouveau Voyage
-    createTripBtn: "Créer un Voyage", newTripTitle: "Nouveau Voyage", newTripDesc: "Configurez l'offre avec les dates et places dispo.", uploadPoster: "Affiche / Photo (Upload)", changePhoto: "Changer la photo", clickToUpload: "Cliquez pour uploader l'affiche", tripTitleLabel: "Titre du voyage", tripTitleHolder: "Ex: Omra VIP", destLabel: "Destination", destHolder: "Ex: La Mecque", dateDepart: "Date Départ", dateRetour: "Date Retour", placesDispo: "Places Dispo", priceDa: "Prix (DA)", categoryLabel: "Catégorie", catVoyage: "Voyage Organisé", catOmra: "Omra", publishOfferBtn: "Publier l'Offre & Générer la Page"
+    createTripBtn: "Créer un Voyage", newTripTitle: "Nouveau Voyage", newTripDesc: "Configurez l'offre avec les dates et places dispo.", uploadPoster: "Affiche / Photo (Upload)", changePhoto: "Changer la photo", clickToUpload: "Cliquez pour uploader l'affiche", tripTitleLabel: "Titre du voyage", tripTitleHolder: "Ex: Omra VIP", destLabel: "Destination", destHolder: "Ex: La Mecque", dateDepart: "Date Départ", dateRetour: "Date Retour", placesDispo: "Places Dispo", priceDa: "Prix (DA)", categoryLabel: "Catégorie", catVoyage: "Voyage Organisé", catOmra: "Omra", publishOfferBtn: "Publier l'Offre & Générer la Page",
+    // Apparence
+    appearance: "Apparence", lightMode: "Clair", darkMode: "Sombre", themeDesc: "Personnalisez l'apparence de votre espace de travail."
   },
   en: {
     // Menu & Accueil
@@ -50,13 +52,14 @@ export const dictionaries = {
     // Voyages & Visas
     tripManagement: "Tours Management", tripDesc: "Create and manage your trips and Umrah offers.", addTrip: "Add an Offer", noTrips: "No trips available.", availableSeats: "Seats available", totalSpots: "Total", price: "Price",
     visaManagement: "Visa Files", visaDesc: "Manage your clients' visa applications.", addVisa: "New Visa File", noVisas: "No visa files.", status: "Status", country: "Country", tripCatalog: "Catalog", campaignsLinks: "Campaigns & Links", createTrip: "Create a Trip", viewPublicPage: "View public page", appointmentDate: "Appointment Date", action: "Action",
-    // 🟢 CORRECTION ICI: lastName au lieu de Last_Name
     visaFolder: "Visa Folder", client: "Client", lastName: "Last Name", firstName: "First Name", updateClient: "Update client", managementAndAppointment: "Management & Appointment", servicePrice: "Service Price", waitingDocs: "Waiting for docs", appointmentBooked: "Appointment booked", processing: "Processing", visaApproved: "Visa Approved ✅", visaRefused: "Visa Refused ❌", appointmentLink: "Appointment Link", linkPlaceholder: "Link...", remarksNotes: "Remarks & Notes", missingCertPlaceholder: "Missing certificate...", saveVisaInfo: "Save Visa Info", visaPrice: "Visa Price", remainingToPay: "Remaining to pay", newFolder: "New Folder", newVisaFolder: "New Visa Folder", selectClient: "Select a client", countryDestination: "Country (Destination)", exSpain: "Ex: Spain", missingDocs: "Missing documents", waitingAppointment: "Waiting for appointment", depositDone: "Deposit done", refused: "Refused", missingDocsOptional: "Missing documents (Optional)", exBankStatement: "Ex: Bank statement, Certificate", appointmentDateLabel: "Appointment Date", createFolder: "Create folder", campaignsVisaLinks: "Visa Campaigns & Links", campaignsDesc: "Generate professional landing pages to acquire new clients.", backToVisas: "Back to Visas", generateLink: "Generate a Link", campaignTitle: "Campaign Title", exVisaStudy: "Ex: France Study Visa...", targetCountry: "Target Country (Optional)", exFrance: "Ex: France (Empty = Free choice)", createPublicPage: "Create public page", securePageSocial: "Secure page ready for social media", openPage: "Open page", noCampaignsGenerated: "No page generated. Create your first campaign on the left!",
     documentsAndMedia: "Documents & Media", alertFileTooBig: "⚠️ FILE TOO LARGE! (MB)\n\nThe system accepts a maximum of 4.5 MB. Please compress your file.", errorConnection: "❌ Connection error or corrupted file.", confirmDeleteDoc: "Do you really want to permanently delete this file?", addDocVideoTitle: "Add (Image / PDF / Video - Max 4.5 MB)", sendingWait: "Sending (Please wait...)",
     // Actions Rapides
     quickActionNewClient: "New Client", quickActionNewVisa: "New Visa", quickActionNewTrip: "New Trip",
     // Formulaire Nouveau Voyage
-    createTripBtn: "Create a Trip", newTripTitle: "New Trip", newTripDesc: "Configure the offer with dates and available seats.", uploadPoster: "Poster / Photo (Upload)", changePhoto: "Change photo", clickToUpload: "Click to upload poster", tripTitleLabel: "Trip Title", tripTitleHolder: "Ex: VIP Umrah", destLabel: "Destination", destHolder: "Ex: Mecca", dateDepart: "Departure Date", dateRetour: "Return Date", placesDispo: "Available Seats", priceDa: "Price (DA)", categoryLabel: "Category", catVoyage: "Organized Trip", catOmra: "Umrah", publishOfferBtn: "Publish Offer & Generate Page"
+    createTripBtn: "Create a Trip", newTripTitle: "New Trip", newTripDesc: "Configure the offer with dates and available seats.", uploadPoster: "Poster / Photo (Upload)", changePhoto: "Change photo", clickToUpload: "Click to upload poster", tripTitleLabel: "Trip Title", tripTitleHolder: "Ex: VIP Umrah", destLabel: "Destination", destHolder: "Ex: Mecca", dateDepart: "Departure Date", dateRetour: "Return Date", placesDispo: "Available Seats", priceDa: "Price (DA)", categoryLabel: "Category", catVoyage: "Organized Trip", catOmra: "Umrah", publishOfferBtn: "Publish Offer & Generate Page",
+    // Apparence
+    appearance: "Appearance", lightMode: "Light", darkMode: "Dark", themeDesc: "Customize the appearance of your workspace."
   },
   ar: {
     // Menu & Accueil
@@ -85,7 +88,9 @@ export const dictionaries = {
     // Actions Rapides
     quickActionNewClient: "عميل جديد", quickActionNewVisa: "تأشيرة جديدة", quickActionNewTrip: "رحلة جديدة",
     // Formulaire Nouveau Voyage
-    createTripBtn: "إنشاء رحلة", newTripTitle: "رحلة جديدة", newTripDesc: "قم بإعداد العرض مع التواريخ والأماكن المتاحة.", uploadPoster: "ملصق / صورة (رفع)", changePhoto: "تغيير الصورة", clickToUpload: "انقر لرفع الملصق", tripTitleLabel: "عنوان الرحلة", tripTitleHolder: "مثال: عمرة VIP", destLabel: "الوجهة", destHolder: "مثال: مكة المكرمة", dateDepart: "تاريخ الذهاب", dateRetour: "تاريخ العودة", placesDispo: "الأماكن المتاحة", priceDa: "السعر (دج)", categoryLabel: "الفئة", catVoyage: "رحلة منظمة", catOmra: "عمرة", publishOfferBtn: "نشر العرض وإنشاء الصفحة"
+    createTripBtn: "إنشاء رحلة", newTripTitle: "رحلة جديدة", newTripDesc: "قم بإعداد العرض مع التواريخ والأماكن المتاحة.", uploadPoster: "ملصق / صورة (رفع)", changePhoto: "تغيير الصورة", clickToUpload: "انقر لرفع الملصق", tripTitleLabel: "عنوان الرحلة", tripTitleHolder: "مثال: عمرة VIP", destLabel: "الوجهة", destHolder: "مثال: مكة المكرمة", dateDepart: "تاريخ الذهاب", dateRetour: "تاريخ العودة", placesDispo: "الأماكن المتاحة", priceDa: "السعر (دج)", categoryLabel: "الفئة", catVoyage: "رحلة منظمة", catOmra: "عمرة", publishOfferBtn: "نشر العرض وإنشاء الصفحة",
+    // Apparence
+    appearance: "المظهر", lightMode: "فاتح", darkMode: "داكن", themeDesc: "تخصيص مظهر مساحة العمل الخاصة بك."
   }
 };
 export type Language = "fr" | "en" | "ar";

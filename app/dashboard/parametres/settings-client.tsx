@@ -1,194 +1,274 @@
 "use client";
 
-import { Settings, Users, MessageSquare, Globe, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Settings, Users, MessageSquare, Globe, CheckCircle2, Moon, Sun, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { updateAgency, addEmployee } from "./actions";
 import { useLanguage } from "@/components/language-provider";
 import { Language } from "@/lib/i18n/dictionaries";
+import { Badge } from "@/components/ui/badge";
 
 export default function SettingsClient({ agency, team, isAdmin }: any) {
   const { lang, setLang, t } = useLanguage();
+  const isAr = lang === 'ar';
+
+  // 🟢 GESTION DU THEME DARK / LIGHT
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    if (document.documentElement.classList.contains("dark")) {
+      setTheme("dark");
+    }
+  }, []);
+
+  const changeTheme = (newTheme: string) => {
+    setTheme(newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   const languages = [
-    { code: "fr", name: "Français", flag: "🇫🇷", region: "Europe / Maghreb" },
-    { code: "en", name: "English", flag: "🇬🇧", region: "International" },
-    { code: "ar", name: "العربية", flag: "🇩🇿", region: "MENA" }
+    { code: "fr", name: "Français", flag: "🇫🇷" },
+    { code: "en", name: "English", flag: "🇬🇧" },
+    { code: "ar", name: "العربية", flag: "🇩🇿" }
   ];
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-12 w-full max-w-5xl mx-auto ${isAr ? 'text-right' : 'text-left'}`}>
+      
+      {/* HEADER SETTINGS */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("settingsTitle")}</h1>
-        <p className="text-muted-foreground">{t("settingsDesc")}</p>
+        <h1 className="text-4xl font-black text-slate-900 tracking-tighter">{t("settingsTitle")}</h1>
+        <p className="text-slate-500 font-medium mt-2">{t("settingsDesc")}</p>
       </div>
 
-      <Tabs defaultValue="general" className="w-full">
-        {/* 🟢 ON PASSE À 4 COLONNES POUR INCLURE LA LANGUE */}
-        <TabsList className="grid w-full max-w-2xl grid-cols-4 bg-muted/50">
-          <TabsTrigger value="general">{t("tabGeneral")}</TabsTrigger>
-          <TabsTrigger value="langue">{t("tabLang")}</TabsTrigger>
-          <TabsTrigger value="equipe">{t("tabTeam")}</TabsTrigger>
-          <TabsTrigger value="automatisations">{t("tabAuto")}</TabsTrigger>
+      <Tabs defaultValue="general" className="w-full" dir={isAr ? "rtl" : "ltr"}>
+        
+        {/* 🟢 TABS ULTRA PRO (Pills flottantes) */}
+        <TabsList className="flex flex-wrap w-full bg-slate-100/50 p-2 rounded-3xl gap-2 h-auto justify-start mb-8 border border-slate-200/50">
+          <TabsTrigger value="general" className="rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-cyan-600 transition-all text-slate-500">
+            {t("tabGeneral")}
+          </TabsTrigger>
+          <TabsTrigger value="apparence" className="rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-indigo-600 transition-all text-slate-500">
+            {t("appearance")}
+          </TabsTrigger>
+          <TabsTrigger value="langue" className="rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-emerald-600 transition-all text-slate-500">
+            {t("tabLang")}
+          </TabsTrigger>
+          <TabsTrigger value="equipe" className="rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-orange-600 transition-all text-slate-500">
+            {t("tabTeam")}
+          </TabsTrigger>
+          <TabsTrigger value="automatisations" className="rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-purple-600 transition-all text-slate-500">
+            {t("tabAuto")}
+          </TabsTrigger>
         </TabsList>
         
-        {/* ONGLET 1 : GÉNÉRAL */}
-        <TabsContent value="general" className="mt-6">
-          <Card className="bg-card max-w-2xl">
-            <form action={updateAgency}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-primary" /> {t("agencyProfile")}
-                </CardTitle>
-                <CardDescription>{t("agencyDesc")}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>{t("agencyName")}</Label>
-                  <Input name="name" defaultValue={agency?.name} className="bg-muted/50" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("phoneMain")}</Label>
-                  <Input name="phone" defaultValue={agency?.phone || ""} placeholder="0555..." className="bg-muted/50" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("address")}</Label>
-                  <Input name="address" defaultValue={agency?.address || ""} placeholder="Alger..." className="bg-muted/50" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="font-semibold text-primary-foreground">{t("update")}</Button>
-              </CardFooter>
-            </form>
-          </Card>
-        </TabsContent>
-
-        {/* 🟢 ONGLET NOUVEAU : LANGUES */}
-        <TabsContent value="langue" className="mt-6">
-          <Card className="bg-card max-w-3xl border-slate-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-indigo-500" /> {t("languageTitle")}
-              </CardTitle>
-              <CardDescription>{t("languageDesc")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {languages.map((l) => {
-                  const isActive = lang === l.code;
-                  return (
-                    <button 
-                      key={l.code}
-                      onClick={() => setLang(l.code as Language)}
-                      className={`relative p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-3 active:scale-95 ${
-                        isActive ? "border-indigo-600 bg-indigo-50 shadow-md" : "border-slate-100 bg-white hover:border-indigo-300"
-                      }`}
-                    >
-                      {isActive && (
-                        <div className="absolute -top-3 -right-3 bg-indigo-600 text-white p-1 rounded-full shadow-md">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
-                      )}
-                      <span className="text-4xl">{l.flag}</span>
-                      <div>
-                        <h3 className={`font-black text-lg ${isActive ? "text-indigo-900" : "text-slate-800"}`}>{l.name}</h3>
-                        <p className={`text-xs font-bold mt-1 ${isActive ? "text-indigo-600" : "text-slate-400"}`}>{l.region}</p>
-                      </div>
-                    </button>
-                  );
-                })}
+        {/* ONGLET 1 : GÉNÉRAL (Profil Agence) */}
+        <TabsContent value="general" className="mt-0">
+          <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-4 bg-cyan-50 text-cyan-600 rounded-2xl"><Settings className="w-7 h-7" /></div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">{t("agencyProfile")}</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">{t("agencyDesc")}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <form action={updateAgency} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("agencyName")}</label>
+                  <input name="name" defaultValue={agency?.name} className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("phoneMain")}</label>
+                  <input name="phone" defaultValue={agency?.phone || ""} dir="ltr" className={`w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white ${isAr ? 'text-right' : 'text-left'}`} />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("address")}</label>
+                <input name="address" defaultValue={agency?.address || ""} className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white" />
+              </div>
+              <div className="pt-4 border-t border-slate-100">
+                <Button type="submit" className="bg-slate-900 hover:bg-cyan-600 text-white font-bold rounded-2xl px-8 h-14 shadow-lg hover:shadow-cyan-500/20 transition-all text-lg">
+                  {t("update")}
+                </Button>
+              </div>
+            </form>
+          </div>
         </TabsContent>
 
-        {/* ONGLET 3 : ÉQUIPE */}
-        <TabsContent value="equipe" className="mt-6 space-y-6">
-          <Card className="bg-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" /> {t("teamMembers")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t("colName")}</TableHead>
-                    <TableHead>{t("colEmail")}</TableHead>
-                    <TableHead>{t("colRole")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+        {/* 🟢 ONGLET NOUVEAU : APPARENCE (Dark/Light Mode) */}
+        <TabsContent value="apparence" className="mt-0">
+          <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl"><Monitor className="w-7 h-7" /></div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">{t("appearance")}</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">{t("themeDesc")}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Carte Light Mode */}
+              <button 
+                onClick={() => changeTheme("light")}
+                className={`p-1 rounded-[2rem] border-4 transition-all text-left ${theme === "light" ? "border-indigo-500 shadow-xl shadow-indigo-500/20" : "border-transparent hover:border-slate-200"}`}
+              >
+                <div className="bg-slate-50 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                  {theme === "light" && <div className="absolute top-4 right-4 bg-indigo-500 text-white p-1 rounded-full"><CheckCircle2 className="w-5 h-5" /></div>}
+                  <div className="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center"><Sun className="w-10 h-10 text-amber-500" /></div>
+                  <span className="font-black text-xl text-slate-800">{t("lightMode")}</span>
+                </div>
+              </button>
+
+              {/* Carte Dark Mode */}
+              <button 
+                onClick={() => changeTheme("dark")}
+                className={`p-1 rounded-[2rem] border-4 transition-all text-left ${theme === "dark" ? "border-indigo-500 shadow-xl shadow-indigo-500/20" : "border-transparent hover:border-slate-200"}`}
+              >
+                <div className="bg-slate-900 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                  {theme === "dark" && <div className="absolute top-4 right-4 bg-indigo-500 text-white p-1 rounded-full"><CheckCircle2 className="w-5 h-5" /></div>}
+                  <div className="w-20 h-20 rounded-full bg-slate-800 shadow-inner flex items-center justify-center border border-slate-700"><Moon className="w-10 h-10 text-indigo-400" /></div>
+                  <span className="font-black text-xl text-white">{t("darkMode")}</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ONGLET LANGUES (Épuré) */}
+        <TabsContent value="langue" className="mt-0">
+          <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl"><Globe className="w-7 h-7" /></div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">{t("languageTitle")}</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">{t("languageDesc")}</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {languages.map((l) => {
+                const isActive = lang === l.code;
+                return (
+                  <button 
+                    key={l.code}
+                    onClick={() => setLang(l.code as Language)}
+                    className={`relative p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center justify-center text-center gap-4 active:scale-95 ${
+                      isActive ? "border-emerald-500 bg-emerald-50/30 shadow-lg shadow-emerald-500/10" : "border-slate-100 bg-white hover:border-emerald-200"
+                    }`}
+                  >
+                    {isActive && (
+                      <div className={`absolute top-4 ${isAr ? 'left-4' : 'right-4'} bg-emerald-500 text-white p-1 rounded-full shadow-md`}>
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                    )}
+                    <span className="text-5xl">{l.flag}</span>
+                    <h3 className={`font-black text-2xl ${isActive ? "text-emerald-900" : "text-slate-800"}`}>{l.name}</h3>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ONGLET ÉQUIPE (Design Table Pro) */}
+        <TabsContent value="equipe" className="mt-0 space-y-6">
+          <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-4 bg-orange-50 text-orange-600 rounded-2xl"><Users className="w-7 h-7" /></div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">{t("teamMembers")}</h2>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className={`bg-slate-50 border-b border-slate-100 text-slate-400 text-xs uppercase tracking-widest ${isAr ? 'text-right' : 'text-left'}`}>
+                    <th className="p-4 font-bold">{t("colName")}</th>
+                    <th className="p-4 font-bold">{t("colEmail")}</th>
+                    <th className="p-4 font-bold">{t("colRole")}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
                   {team.map((member: any) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>
-                        <Badge variant={member.role === "AGENCY_ADMIN" ? "default" : "secondary"}>
+                    <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className={`p-4 font-extrabold text-slate-800 ${isAr ? 'text-right' : 'text-left'}`}>{member.name}</td>
+                      <td className={`p-4 font-medium text-slate-500 ${isAr ? 'text-right' : 'text-left'}`} dir="ltr">{member.email}</td>
+                      <td className={`p-4 ${isAr ? 'text-right' : 'text-left'}`}>
+                        <Badge className={`${member.role === "AGENCY_ADMIN" ? "bg-orange-100 text-orange-700 hover:bg-orange-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"} border-none px-3 py-1 font-bold`}>
                           {member.role === "AGENCY_ADMIN" ? t("roleAdmin") : t("roleEmp")}
                         </Badge>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {isAdmin && (
-            <Card className="bg-card max-w-2xl">
-              <form action={addEmployee}>
-                <CardHeader>
-                  <CardTitle>{t("addEmp")}</CardTitle>
-                  <CardDescription>{t("addEmpDesc")}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>{t("fullName")}</Label>
-                      <Input name="name" required className="bg-muted/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t("colEmail")}</Label>
-                      <Input name="email" type="email" required className="bg-muted/50" />
-                    </div>
+            <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+              <div className="mb-8">
+                <h2 className="text-2xl font-black text-slate-800">{t("addEmp")}</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">{t("addEmpDesc")}</p>
+              </div>
+              <form action={addEmployee} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("fullName")}</label>
+                    <input name="name" required className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white" />
                   </div>
-                  <div className="space-y-2">
-                    <Label>{t("tempPass")}</Label>
-                    <Input name="password" type="password" required className="bg-muted/50" />
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("colEmail")}</label>
+                    <input name="email" type="email" required dir="ltr" className={`w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white ${isAr ? 'text-right' : 'text-left'}`} />
                   </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="font-semibold text-primary-foreground">{t("createAccount")}</Button>
-                </CardFooter>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("tempPass")}</label>
+                  <input name="password" type="password" required className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white" />
+                </div>
+                <div className="pt-4 border-t border-slate-100">
+                  <Button type="submit" className="bg-slate-900 hover:bg-orange-500 text-white font-bold rounded-2xl px-8 h-14 shadow-lg hover:shadow-orange-500/20 transition-all text-lg">
+                    {t("createAccount")}
+                  </Button>
+                </div>
               </form>
-            </Card>
+            </div>
           )}
         </TabsContent>
 
-        {/* ONGLET 4 : AUTOMATISATIONS */}
-        <TabsContent value="automatisations" className="mt-6">
-          <Card className="bg-card max-w-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-green-500" /> {t("waIntegration")}
-              </CardTitle>
-              <CardDescription>{t("waDesc")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted p-4 rounded-md border text-sm space-y-2">
-                <p><span className="font-semibold text-primary">{t("waUrl")} :</span> https://ton-domaine.com/api/webhooks/whatsapp</p>
-                <p><span className="font-semibold text-primary">{t("waToken")} :</span> safar_saas_secure_token</p>
+        {/* ONGLET AUTOMATISATIONS */}
+        <TabsContent value="automatisations" className="mt-0">
+          <div className="glass-promax p-8 md:p-10 rounded-[2.5rem]">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-4 bg-purple-50 text-purple-600 rounded-2xl"><MessageSquare className="w-7 h-7" /></div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">{t("waIntegration")}</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">{t("waDesc")}</p>
               </div>
-              <p className="text-sm text-muted-foreground">{t("waInfo")}</p>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-sm space-y-4 shadow-xl">
+              <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/5 rounded-2xl border border-white/10 ${isAr ? 'flex-row-reverse' : ''}`}>
+                <span className="font-bold text-slate-400">{t("waUrl")}</span>
+                <code className="text-emerald-400 font-mono bg-emerald-400/10 px-4 py-2 rounded-xl" dir="ltr">https://ton-domaine.com/api/webhooks/whatsapp</code>
+              </div>
+              <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/5 rounded-2xl border border-white/10 ${isAr ? 'flex-row-reverse' : ''}`}>
+                <span className="font-bold text-slate-400">{t("waToken")}</span>
+                <code className="text-purple-400 font-mono bg-purple-400/10 px-4 py-2 rounded-xl" dir="ltr">safar_saas_secure_token</code>
+              </div>
+            </div>
+            <p className="text-sm font-bold text-slate-400 mt-6 flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500"></div> {t("waInfo")}
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
