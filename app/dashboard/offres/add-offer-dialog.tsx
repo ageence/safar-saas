@@ -4,14 +4,14 @@ import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { UploadCloud, X, Plus, PlaneTakeoff } from "lucide-react";
-import { useLanguage } from "@/components/language-provider"; // 🟢 Moteur de traduction
+import { useLanguage } from "@/components/language-provider";
 
 export function AddOfferDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { t, lang } = useLanguage(); // 🟢
+  const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,24 +44,28 @@ export function AddOfferDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className={`inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 font-black rounded-2xl h-14 px-8 hover:scale-105 transition-all ${isAr ? 'flex-row-reverse' : ''}`}>
+      <DialogTrigger className="inline-flex items-center w-full sm:w-auto justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 font-black rounded-2xl h-14 px-8 hover:scale-105 transition-all">
         <Plus className={isAr ? "ml-2 h-6 w-6" : "mr-2 h-6 w-6"} /> {t("createTripBtn")}
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[700px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+      {/* LE MODAL LUI MÊME EN RTL */}
+      <DialogContent 
+        dir={isAr ? "rtl" : "ltr"} 
+        className="sm:max-w-[700px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-0 overflow-hidden"
+      >
         
-        <div className={`bg-gradient-to-r from-cyan-50 to-blue-50 p-8 border-b border-white/50 flex items-center gap-5 relative overflow-hidden ${isAr ? 'flex-row-reverse text-right' : 'text-left'}`}>
+        <div className={`bg-gradient-to-r from-cyan-50 to-blue-50 p-8 border-b border-white/50 flex items-center gap-5 relative overflow-hidden ${isAr ? 'text-right' : 'text-left'}`}>
           <div className={`absolute top-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-[30px] ${isAr ? 'left-0' : 'right-0'}`}></div>
           <div className="p-4 bg-white rounded-2xl shadow-sm border border-cyan-50 relative z-10 flex-shrink-0">
             <PlaneTakeoff className="h-7 w-7 text-cyan-500" />
           </div>
-          <div className="relative z-10">
+          <div className="relative z-10 w-full">
             <DialogTitle className="text-3xl font-black text-slate-800 tracking-tighter">{t("newTripTitle")}</DialogTitle>
             <p className="text-sm font-bold text-slate-500 mt-1">{t("newTripDesc")}</p>
           </div>
         </div>
 
-        <form className="p-8 space-y-6 max-h-[70vh] overflow-y-auto" action="/api/offers" method="POST">
+        <form className={`p-8 space-y-6 max-h-[70vh] overflow-y-auto ${isAr ? 'text-right' : 'text-left'}`} action="/api/offers" method="POST">
           
           <div className="space-y-3">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("uploadPoster")}</label>
@@ -100,7 +104,7 @@ export function AddOfferDialog() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t("dateDepart")}</label>
               <input required type="date" name="dateDepart" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-slate-800 font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all" />

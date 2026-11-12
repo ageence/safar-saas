@@ -12,24 +12,29 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
   const isAr = lang === 'ar';
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
+    <div dir={isAr ? "rtl" : "ltr"} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      <div className={`glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 ${isAr ? 'sm:flex-row-reverse' : ''}`}>
-        <div className={`flex items-center gap-5 ${isAr ? 'flex-row-reverse text-right' : ''}`}>
+      {/* HEADER CATALOGUE 100% RTL PROPRE */}
+      <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className={`flex items-center gap-5 ${isAr ? 'text-right' : 'text-left'} w-full sm:w-auto`}>
           <div className="p-4 bg-gradient-to-tr from-orange-400 to-rose-500 rounded-2xl shadow-lg shadow-rose-500/20 text-white animate-float flex-shrink-0">
             <PlaneTakeoff className="h-8 w-8" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tighter">{t("tripCatalog")} <span className="text-royal-gold">{t("voyages")}</span></h1>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tighter">
+              {t("tripCatalog")} <span className="text-royal-gold">{t("voyages")}</span>
+            </h1>
             <p className="text-slate-500 font-medium text-sm mt-1">{t("tripDesc")}</p>
           </div>
         </div>
         
-        {/* Le Bouton est encapsulé ici */}
-        <AddOfferDialog />
+        {/* Le Bouton */}
+        <div className="w-full sm:w-auto">
+          <AddOfferDialog />
+        </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" dir={isAr ? "rtl" : "ltr"}>
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {offers.length === 0 ? (
           <div className="col-span-full glass-promax p-16 text-center flex flex-col items-center">
             <PlaneTakeoff className="h-16 w-16 text-slate-300 mb-4" />
@@ -44,7 +49,7 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
             const price = offer.price || 0;
 
             return (
-              <div key={offer.id} className="glass-promax flex flex-col overflow-hidden group relative text-start">
+              <div key={offer.id} className={`glass-promax flex flex-col overflow-hidden group relative ${isAr ? 'text-right' : 'text-left'}`}>
                 
                 <div className={`absolute top-4 z-50 flex items-center gap-2 ${isAr ? 'left-4' : 'right-4'}`}>
                   <Link href={`/dashboard/offres/${offer.id}/edit`} className="p-2.5 bg-white/90 hover:bg-cyan-50 text-cyan-600 rounded-xl shadow-lg backdrop-blur-md transition-all hover:scale-110 border border-white">
@@ -92,7 +97,7 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
                   <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-4">
                     <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("priceDa")}</p>
-                      <p className="text-2xl font-black text-slate-900">
+                      <p className="text-2xl font-black text-slate-900" dir="ltr">
                         {price > 0 ? new Intl.NumberFormat("fr-DZ").format(price) : "Sur devis"} <span className="text-sm text-slate-500">DA</span>
                       </p>
                     </div>
