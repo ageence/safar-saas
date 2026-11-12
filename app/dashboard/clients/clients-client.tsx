@@ -9,41 +9,48 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
+  // Astuce pour garder le "&" ou "و" au bon endroit
+  const crmTitleParts = t("crmReservations").split(" & ");
+  const firstPart = crmTitleParts[0];
+  const secondPart = crmTitleParts.length > 1 ? (isAr ? "و " + crmTitleParts[1] : "& " + crmTitleParts[1]) : "";
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
+    // 🟢 On applique le RTL sur toute la page d'un coup !
+    <div dir={isAr ? "rtl" : "ltr"} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
       {/* HEADER CRM */}
-      <div className={`glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 ${isAr ? 'sm:flex-row-reverse' : ''}`}>
-        <div className={`flex items-center gap-5 ${isAr ? 'flex-row-reverse text-right' : ''}`}>
+      <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="flex items-center gap-5">
           <div className="p-4 bg-gradient-to-tr from-emerald-400 to-cyan-500 rounded-2xl shadow-lg shadow-cyan-500/20 text-white animate-float flex-shrink-0">
             <Users className="h-8 w-8" />
           </div>
-          <div>
+          <div className={isAr ? "text-right" : "text-left"}>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tighter">
-              {t("crmReservations").split(" & ")[0]} <span className="text-royal-ocean">{lang === "ar" ? "و الحجوزات" : "& " + t("crmReservations").split(" & ")[1]}</span>
+              {firstPart} <span className="text-royal-ocean">{secondPart}</span>
             </h1>
             <p className="text-slate-500 font-medium text-sm mt-1">{t("crmDesc")}</p>
           </div>
         </div>
         
-        {/* 🟢 BOUTON AJOUTER UN CLIENT REMIS EN PLACE */}
-        <Link href="/dashboard/clients/nouveau">
-          <button className={`px-5 py-3 bg-slate-900 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg flex items-center gap-2 transition-all hover:scale-105 ${isAr ? 'flex-row-reverse' : ''}`}>
-            <PlusCircle className="w-5 h-5" /> {t("addClient")}
+        {/* BOUTON AJOUTER UN CLIENT */}
+        {/* ⚠️ J'ai mis href="#" temporairement pour enlever l'erreur 404 */}
+        <Link href="#" className="w-full sm:w-auto">
+          <button className="w-full sm:w-auto px-5 py-3 bg-slate-900 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg flex items-center justify-center transition-all hover:scale-105">
+            <PlusCircle className={`w-5 h-5 ${isAr ? "ml-2" : "mr-2"}`} /> 
+            <span>{t("addClient")}</span>
           </button>
         </Link>
       </div>
 
       {/* LISTE DES RÉSERVATIONS */}
       <div className="glass-promax rounded-[2rem] p-8">
-        <div className={`flex items-center justify-between mb-8 border-b border-slate-100 pb-4 ${isAr ? 'flex-row-reverse' : ''}`}>
+        <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
           <h3 className="text-xl font-bold text-slate-800">{t("lastBookings")}</h3>
           <Badge className="bg-emerald-50 text-emerald-600 border-none">{bookings.length} {t("demands")}</Badge>
         </div>
 
         <div className="overflow-x-auto">
-          {/* 🟢 CORRECTION TABLEAU RTL : dir={isAr ? "rtl" : "ltr"} appliqué à la table */}
-          <table className="w-full border-collapse" dir={isAr ? "rtl" : "ltr"}>
+          <table className="w-full border-collapse">
             <thead>
               <tr className={`border-b border-slate-100 text-slate-400 text-xs uppercase tracking-widest ${isAr ? 'text-right' : 'text-left'}`}>
                 <th className="pb-4 font-bold px-2">{t("thClient")}</th>
@@ -78,7 +85,7 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
                     </td>
                     <td className={`py-4 px-2 ${isAr ? 'text-right' : 'text-left'}`}>
                       <div className="flex items-center gap-2">
-                        <PlaneTakeoff className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                        <PlaneTakeoff className={`w-4 h-4 text-orange-400 flex-shrink-0 ${isAr ? 'ml-2' : 'mr-2'}`} />
                         <span className="font-bold text-slate-700 truncate max-w-[200px]">{booking.offer?.title}</span>
                       </div>
                     </td>
@@ -87,8 +94,8 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
                     </td>
                     <td className={`py-4 px-2 ${isAr ? 'text-left' : 'text-right'}`}>
                       <Link href={`/dashboard/clients/${booking.id}`}>
-                        <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:border-cyan-500 hover:text-cyan-600 hover:shadow-md transition-all flex items-center justify-center gap-2 inline-flex">
-                          <Eye className="w-4 h-4" /> {t("openFile")}
+                        <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:border-cyan-500 hover:text-cyan-600 hover:shadow-md transition-all inline-flex items-center justify-center">
+                          <Eye className={`w-4 h-4 ${isAr ? 'ml-2' : 'mr-2'}`} /> <span>{t("openFile")}</span>
                         </button>
                       </Link>
                     </td>
