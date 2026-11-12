@@ -14,16 +14,16 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
       
       {/* 🚀 HERO SECTION VIP (Clean & Pro) */}
       <div className="glass-promax w-full p-10 md:p-14 flex flex-col md:flex-row justify-between items-center gap-10 bg-gradient-to-r from-white/60 to-cyan-50/40">
-        <div className="relative z-10 w-full md:w-1/2">
+        <div className={`relative z-10 w-full md:w-1/2 ${isAr ? 'text-right' : 'text-left'}`}>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 mb-4 leading-tight">
             {t("welcome")}, <span className="text-royal-ocean">{session.user.name}</span>.
           </h1>
-          <p className="text-slate-500 text-lg font-medium max-w-xl">
+          <p className={`text-slate-500 text-lg font-medium max-w-xl ${isAr ? 'ml-auto' : 'mr-auto'}`}>
             {t("welcomeDesc")}. {t("welcomeDesc2")}
           </p>
         </div>
         
-        {/* 🚀 NOUVEAU : QUICK ACTIONS (Remplace les badges inutiles) */}
+        {/* 🚀 QUICK ACTIONS */}
         <div className={`w-full md:w-1/2 flex flex-col md:flex-row gap-4 ${isAr ? 'md:justify-start' : 'md:justify-end'}`}>
           <Link href="/dashboard/clients" className="flex-1 max-w-[200px]">
             <button className="w-full p-4 bg-white/80 hover:bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all group flex flex-col items-center justify-center gap-2">
@@ -136,16 +136,17 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
           </div>
         </div>
 
-        {/* 🚀 SAFAR AI BANNER (ALIGNEMENT RTL/LTR DYNAMIQUE) */}
+        {/* 🚀 SAFAR AI BANNER (ALIGNEMENT RTL/LTR DYNAMIQUE 100%) */}
         <div className={`col-span-1 md:col-span-12 p-8 md:p-10 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl mt-2 border border-indigo-500/20 ${isAr ? 'lg:flex-row-reverse' : ''}`}>
           
           <div className={`absolute top-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none ${isAr ? 'left-0' : 'right-0'}`}></div>
           
-          <div className={`relative z-10 flex flex-col sm:flex-row items-center gap-6 text-center ${isAr ? 'sm:flex-row-reverse sm:text-right' : 'sm:items-start sm:text-left'}`}>
+          {/* 🟢 CORRECTION: Alignement forcé à droite en Arabe, à gauche en Fr/En */}
+          <div className={`relative z-10 flex flex-col sm:flex-row gap-6 w-full lg:w-auto ${isAr ? 'items-end sm:items-center sm:flex-row-reverse' : 'items-start sm:items-center'}`}>
             <div className="p-5 bg-white/10 rounded-3xl backdrop-blur-md border border-white/20 shadow-inner flex-shrink-0">
               <Sparkles className="h-10 w-10 text-indigo-300 animate-pulse" />
             </div>
-            <div>
+            <div className={isAr ? 'text-right' : 'text-left'}>
               <h3 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">{t("discoverAI")}</h3>
               <p className="text-indigo-100/80 font-medium text-lg max-w-2xl leading-relaxed">
                 {t("aiDesc")}
