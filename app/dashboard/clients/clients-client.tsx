@@ -1,21 +1,20 @@
 "use client";
 
 import { useLanguage } from "@/components/language-provider";
-import { Users, Eye, PlaneTakeoff, PlusCircle } from "lucide-react";
+import { Users, Eye, PlaneTakeoff } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { AddClientDialog } from "./add-client-dialog"; // 🟢 On importe le Pop-up !
 
 export default function ClientsClient({ bookings }: { bookings: any[] }) {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
-  // Astuce pour garder le "&" ou "و" au bon endroit
   const crmTitleParts = t("crmReservations").split(" & ");
   const firstPart = crmTitleParts[0];
   const secondPart = crmTitleParts.length > 1 ? (isAr ? "و " + crmTitleParts[1] : "& " + crmTitleParts[1]) : "";
 
   return (
-    // 🟢 On applique le RTL sur toute la page d'un coup !
     <div dir={isAr ? "rtl" : "ltr"} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
       {/* HEADER CRM */}
@@ -32,14 +31,8 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
           </div>
         </div>
         
-        {/* BOUTON AJOUTER UN CLIENT */}
-        {/* ⚠️ J'ai mis href="#" temporairement pour enlever l'erreur 404 */}
-        <Link href="#" className="w-full sm:w-auto">
-          <button className="w-full sm:w-auto px-5 py-3 bg-slate-900 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg flex items-center justify-center transition-all hover:scale-105">
-            <PlusCircle className={`w-5 h-5 ${isAr ? "ml-2" : "mr-2"}`} /> 
-            <span>{t("addClient")}</span>
-          </button>
-        </Link>
+        {/* 🟢 LE BOUTON D'AJOUT OUVRE MAINTENANT LE POP-UP */}
+        <AddClientDialog />
       </div>
 
       {/* LISTE DES RÉSERVATIONS */}
@@ -89,13 +82,16 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
                         <span className="font-bold text-slate-700 truncate max-w-[200px]">{booking.offer?.title}</span>
                       </div>
                     </td>
-                    <td className={`py-4 px-2 font-medium text-slate-500 ${isAr ? 'text-right' : 'text-left'}`}>
-                      {new Date(booking.createdAt).toLocaleDateString(isAr ? 'ar-EG' : 'fr-FR')}
+                    
+                    {/* 🟢 CORRECTION: On force fr-FR pour que les chiffres soient toujours 12/11/2026 */}
+                    <td className={`py-4 px-2 font-medium text-slate-500 ${isAr ? 'text-right' : 'text-left'}`} dir="ltr">
+                      {new Date(booking.createdAt).toLocaleDateString('fr-FR')}
                     </td>
+                    
                     <td className={`py-4 px-2 ${isAr ? 'text-left' : 'text-right'}`}>
                       <Link href={`/dashboard/clients/${booking.id}`}>
-                        <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:border-cyan-500 hover:text-cyan-600 hover:shadow-md transition-all inline-flex items-center justify-center">
-                          <Eye className={`w-4 h-4 ${isAr ? 'ml-2' : 'mr-2'}`} /> <span>{t("openFile")}</span>
+                        <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:border-cyan-500 hover:text-cyan-600 hover:shadow-md transition-all inline-flex items-center justify-center gap-2">
+                          <Eye className="w-4 h-4" /> <span>{t("openFile")}</span>
                         </button>
                       </Link>
                     </td>
