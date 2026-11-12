@@ -9,13 +9,14 @@ import { DeleteButton } from "./delete-button";
 
 export default function OffresClient({ offers, deleteOfferAction }: { offers: any[], deleteOfferAction: any }) {
   const { t, lang } = useLanguage();
+  const isAr = lang === 'ar';
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-        <div className="flex items-center gap-5">
-          <div className="p-4 bg-gradient-to-tr from-orange-400 to-rose-500 rounded-2xl shadow-lg shadow-rose-500/20 text-white animate-float">
+      <div className={`glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 ${isAr ? 'sm:flex-row-reverse' : ''}`}>
+        <div className={`flex items-center gap-5 ${isAr ? 'flex-row-reverse text-right' : ''}`}>
+          <div className="p-4 bg-gradient-to-tr from-orange-400 to-rose-500 rounded-2xl shadow-lg shadow-rose-500/20 text-white animate-float flex-shrink-0">
             <PlaneTakeoff className="h-8 w-8" />
           </div>
           <div>
@@ -23,15 +24,17 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
             <p className="text-slate-500 font-medium text-sm mt-1">{t("tripDesc")}</p>
           </div>
         </div>
+        
+        {/* Le Bouton est encapsulé ici */}
         <AddOfferDialog />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" dir={isAr ? "rtl" : "ltr"}>
         {offers.length === 0 ? (
           <div className="col-span-full glass-promax p-16 text-center flex flex-col items-center">
             <PlaneTakeoff className="h-16 w-16 text-slate-300 mb-4" />
             <h3 className="text-2xl font-bold text-slate-700">{t("noTrips")}</h3>
-            <p className="text-slate-500 mt-2">{t("createTrip")}</p>
+            <p className="text-slate-500 mt-2">{t("createTripBtn")}</p>
           </div>
         ) : (
           offers.map((offer) => {
@@ -41,9 +44,9 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
             const price = offer.price || 0;
 
             return (
-              <div key={offer.id} className="glass-promax flex flex-col overflow-hidden group relative">
+              <div key={offer.id} className="glass-promax flex flex-col overflow-hidden group relative text-start">
                 
-                <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+                <div className={`absolute top-4 z-50 flex items-center gap-2 ${isAr ? 'left-4' : 'right-4'}`}>
                   <Link href={`/dashboard/offres/${offer.id}/edit`} className="p-2.5 bg-white/90 hover:bg-cyan-50 text-cyan-600 rounded-xl shadow-lg backdrop-blur-md transition-all hover:scale-110 border border-white">
                     <Edit className="h-4 w-4" />
                   </Link>
@@ -59,8 +62,8 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center opacity-20"><PlaneTakeoff className="h-20 w-20 text-white" /></div>
                   )}
-                  <div className="absolute top-4 left-4 z-10">
-                    <Badge className="bg-white/95 text-slate-900 font-black backdrop-blur-md shadow-lg border-none px-4 py-1.5 uppercase tracking-wider text-xs">{offer.type || t("offer")}</Badge>
+                  <div className={`absolute top-4 z-10 ${isAr ? 'right-4' : 'left-4'}`}>
+                    <Badge className="bg-white/95 text-slate-900 font-black backdrop-blur-md shadow-lg border-none px-4 py-1.5 uppercase tracking-wider text-xs">{offer.type === 'OMRA' ? t("catOmra") : t("catVoyage")}</Badge>
                   </div>
                 </div>
 
@@ -72,23 +75,23 @@ export default function OffresClient({ offers, deleteOfferAction }: { offers: an
                   <div className="space-y-3 mt-2 flex-1">
                     {offer.destination && (
                       <div className="flex items-center text-slate-600 font-medium">
-                        <MapPin className="h-5 w-5 mr-3 text-cyan-500" /> {offer.destination}
+                        <MapPin className={`h-5 w-5 text-cyan-500 ${isAr ? 'ml-3' : 'mr-3'}`} /> {offer.destination}
                       </div>
                     )}
                     {startDate && (
                       <div className="flex items-center text-slate-600 font-medium">
-                        <Calendar className="h-5 w-5 mr-3 text-orange-500" />
-                        {new Date(startDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR')} {endDate && ` - ${new Date(endDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR')}`}
+                        <Calendar className={`h-5 w-5 text-orange-500 ${isAr ? 'ml-3' : 'mr-3'}`} />
+                        {new Date(startDate).toLocaleDateString(isAr ? 'ar-EG' : 'fr-FR')} {endDate && ` - ${new Date(endDate).toLocaleDateString(isAr ? 'ar-EG' : 'fr-FR')}`}
                       </div>
                     )}
                     <div className="flex items-center text-slate-600 font-medium">
-                      <Users className="h-5 w-5 mr-3 text-purple-500" /> {places} {t("availableSeats")}
+                      <Users className={`h-5 w-5 text-purple-500 ${isAr ? 'ml-3' : 'mr-3'}`} /> {places} {t("availableSeats")}
                     </div>
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-4">
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("price")}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("priceDa")}</p>
                       <p className="text-2xl font-black text-slate-900">
                         {price > 0 ? new Intl.NumberFormat("fr-DZ").format(price) : "Sur devis"} <span className="text-sm text-slate-500">DA</span>
                       </p>
