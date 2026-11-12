@@ -4,7 +4,7 @@ import { useLanguage } from "@/components/language-provider";
 import { Users, Eye, PlaneTakeoff } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { AddClientDialog } from "./add-client-dialog"; // 🟢 On importe le Pop-up !
+import { AddClientDialog } from "./add-client-dialog";
 
 export default function ClientsClient({ bookings }: { bookings: any[] }) {
   const { t, lang } = useLanguage();
@@ -17,7 +17,6 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
   return (
     <div dir={isAr ? "rtl" : "ltr"} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      {/* HEADER CRM */}
       <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div className="flex items-center gap-5">
           <div className="p-4 bg-gradient-to-tr from-emerald-400 to-cyan-500 rounded-2xl shadow-lg shadow-cyan-500/20 text-white animate-float flex-shrink-0">
@@ -31,11 +30,9 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
           </div>
         </div>
         
-        {/* 🟢 LE BOUTON D'AJOUT OUVRE MAINTENANT LE POP-UP */}
         <AddClientDialog />
       </div>
 
-      {/* LISTE DES RÉSERVATIONS */}
       <div className="glass-promax rounded-[2rem] p-8">
         <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
           <h3 className="text-xl font-bold text-slate-800">{t("lastBookings")}</h3>
@@ -50,7 +47,8 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
                 <th className="pb-4 font-bold px-2">{t("thPhone")}</th>
                 <th className="pb-4 font-bold px-2">{t("thTrip")}</th>
                 <th className="pb-4 font-bold px-2">{t("thDate")}</th>
-                <th className={`pb-4 font-bold px-2 ${isAr ? 'text-left' : 'text-right'}`}>{t("thFile")}</th>
+                {/* 🟢 CORRECTION: Colonne Dossier centrée */}
+                <th className="pb-4 font-bold px-2 text-center w-32">{t("thFile")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -82,13 +80,11 @@ export default function ClientsClient({ bookings }: { bookings: any[] }) {
                         <span className="font-bold text-slate-700 truncate max-w-[200px]">{booking.offer?.title}</span>
                       </div>
                     </td>
-                    
-                    {/* 🟢 CORRECTION: On force fr-FR pour que les chiffres soient toujours 12/11/2026 */}
                     <td className={`py-4 px-2 font-medium text-slate-500 ${isAr ? 'text-right' : 'text-left'}`} dir="ltr">
                       {new Date(booking.createdAt).toLocaleDateString('fr-FR')}
                     </td>
-                    
-                    <td className={`py-4 px-2 ${isAr ? 'text-left' : 'text-right'}`}>
+                    {/* 🟢 CORRECTION: Cellule Dossier centrée */}
+                    <td className="py-4 px-2 text-center">
                       <Link href={`/dashboard/clients/${booking.id}`}>
                         <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:border-cyan-500 hover:text-cyan-600 hover:shadow-md transition-all inline-flex items-center justify-center gap-2">
                           <Eye className="w-4 h-4" /> <span>{t("openFile")}</span>

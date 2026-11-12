@@ -31,10 +31,8 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
   };
 
   return (
-    // 🟢 On applique le RTL à toute la page pour l'Arabe
     <div dir={isAr ? "rtl" : "ltr"} className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10">
       
-      {/* HEADER VISAS */}
       <div className="glass-promax p-8 rounded-[2rem] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div className="flex items-center gap-5">
           <div className="p-4 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20 text-white animate-float flex-shrink-0">
@@ -52,14 +50,12 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
               <Globe className="w-5 h-5" /> <span>{t("campaignsLinks")}</span>
             </button>
           </Link>
-          {/* L'AJOUT DE VISA SE FAIT ICI VIA LE DIALOG */}
           <div className="w-full sm:w-auto">
             <AddVisaDialog clients={clients} />
           </div>
         </div>
       </div>
 
-      {/* TABLEAU DES VISAS - ALIGNEMENT PARFAIT */}
       <div className="glass-promax rounded-[2rem] p-8 overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
@@ -69,7 +65,8 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
               <th className="pb-4 font-bold px-4">{t("status")}</th>
               <th className="pb-4 font-bold px-4">{t("appointmentDate")}</th>
               <th className="pb-4 font-bold px-4">{t("remarksNotes")}</th>
-              <th className={`pb-4 font-bold px-4 ${isAr ? 'text-left' : 'text-right'}`}>{t("action")}</th>
+              {/* 🟢 CORRECTION: Colonne Action centrée */}
+              <th className="pb-4 font-bold px-4 text-center w-32">{t("action")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -85,18 +82,15 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
                   <td className={`py-4 px-4 font-extrabold text-slate-800 ${isAr ? 'text-right' : 'text-left'}`}>
                     {visa.client?.lastName} {visa.client?.firstName}
                   </td>
-                  
                   <td className={`py-4 px-4 ${isAr ? 'text-right' : 'text-left'}`}>
                     <div className="flex items-center gap-2 font-bold text-slate-600">
                       <FileText className="h-4 w-4 text-indigo-500 flex-shrink-0" />
                       <span>{visa.country}</span>
                     </div>
                   </td>
-                  
                   <td className={`py-4 px-4 ${isAr ? 'text-right' : 'text-left'}`}>
                     {getStatusBadge(visa.status)}
                   </td>
-                  
                   <td className={`py-4 px-4 ${isAr ? 'text-right' : 'text-left'}`}>
                     {visa.appointmentDate ? (
                       <div className="flex items-center gap-2 text-sm font-bold text-slate-700 bg-slate-100 w-fit px-3 py-1 rounded-lg" dir="ltr">
@@ -105,7 +99,6 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
                       </div>
                     ) : <span className="text-slate-300 text-sm font-medium">-</span>}
                   </td>
-                  
                   <td className={`py-4 px-4 text-sm max-w-[200px] ${isAr ? 'text-right' : 'text-left'}`}>
                     {visa.notes ? (
                       <div className="flex items-start gap-2 text-rose-500">
@@ -114,10 +107,10 @@ export default function VisasClient({ visas, clients }: { visas: any[], clients:
                       </div>
                     ) : <span className="text-slate-300">-</span>}
                   </td>
-                  
-                  <td className={`py-4 px-4 ${isAr ? 'text-left' : 'text-right'}`}>
+                  {/* 🟢 CORRECTION: Cellule Action centrée */}
+                  <td className="py-4 px-4 text-center">
                     <Link href={`/dashboard/visas/${visa.id}`}>
-                      <button className="px-5 py-2.5 bg-white border border-slate-200 text-indigo-600 font-bold rounded-xl hover:border-indigo-500 shadow-sm flex items-center justify-center gap-2 transition-all">
+                      <button className="px-5 py-2.5 bg-white border border-slate-200 text-indigo-600 font-bold rounded-xl hover:border-indigo-500 shadow-sm inline-flex items-center justify-center gap-2 transition-all">
                         <Eye className="w-4 h-4" /> <span>{t("openFile")}</span>
                       </button>
                     </Link>
