@@ -12,34 +12,37 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
   return (
     <div className="space-y-8 animate-in fade-in zoom-in-95 duration-1000 w-full pb-12">
       
-      {/* 🚀 HERO SECTION VIP (Clean & Pro) */}
-      <div className="glass-promax w-full p-10 md:p-14 flex flex-col md:flex-row justify-between items-center gap-10 bg-gradient-to-r from-white/60 to-cyan-50/40">
-        <div className={`relative z-10 w-full md:w-1/2 ${isAr ? 'text-right' : 'text-left'}`}>
+      {/* 🚀 HERO SECTION VIP (RTL NATIF) */}
+      <div 
+        dir={isAr ? "rtl" : "ltr"}
+        className="glass-promax w-full p-10 md:p-14 flex flex-col md:flex-row justify-between items-center gap-10 bg-gradient-to-r from-white/60 to-cyan-50/40"
+      >
+        <div className="relative z-10 w-full md:w-1/2 text-center md:text-start">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 mb-4 leading-tight">
             {t("welcome")}, <span className="text-royal-ocean">{session.user.name}</span>.
           </h1>
-          <p className={`text-slate-500 text-lg font-medium max-w-xl ${isAr ? 'ml-auto' : 'mr-auto'}`}>
+          <p className="text-slate-500 text-lg font-medium max-w-xl">
             {t("welcomeDesc")}. {t("welcomeDesc2")}
           </p>
         </div>
         
         {/* 🚀 QUICK ACTIONS */}
-        <div className={`w-full md:w-1/2 flex flex-col md:flex-row gap-4 ${isAr ? 'md:justify-start' : 'md:justify-end'}`}>
-          <Link href="/dashboard/clients" className="flex-1 max-w-[200px]">
+        <div className="w-full md:w-1/2 flex flex-col md:flex-row gap-4 md:justify-end">
+          <Link href="/dashboard/clients" className="flex-1 max-w-[200px] mx-auto md:mx-0">
             <button className="w-full p-4 bg-white/80 hover:bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all group flex flex-col items-center justify-center gap-2">
               <div className="p-3 bg-emerald-50 text-emerald-500 rounded-xl group-hover:scale-110 transition-transform"><PlusCircle className="w-6 h-6" /></div>
               <span className="text-sm font-bold text-slate-700">{t("quickActionNewClient")}</span>
             </button>
           </Link>
 
-          <Link href="/dashboard/visas" className="flex-1 max-w-[200px]">
+          <Link href="/dashboard/visas" className="flex-1 max-w-[200px] mx-auto md:mx-0">
             <button className="w-full p-4 bg-white/80 hover:bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all group flex flex-col items-center justify-center gap-2">
               <div className="p-3 bg-purple-50 text-purple-500 rounded-xl group-hover:scale-110 transition-transform"><PlusCircle className="w-6 h-6" /></div>
               <span className="text-sm font-bold text-slate-700">{t("quickActionNewVisa")}</span>
             </button>
           </Link>
 
-          <Link href="/dashboard/offres" className="flex-1 max-w-[200px]">
+          <Link href="/dashboard/offres" className="flex-1 max-w-[200px] mx-auto md:mx-0">
             <button className="w-full p-4 bg-white/80 hover:bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all group flex flex-col items-center justify-center gap-2">
               <div className="p-3 bg-orange-50 text-orange-500 rounded-xl group-hover:scale-110 transition-transform"><PlusCircle className="w-6 h-6" /></div>
               <span className="text-sm font-bold text-slate-700">{t("quickActionNewTrip")}</span>
@@ -100,7 +103,7 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
         </div>
 
         {/* LIVE FEED */}
-        <div className="glass-promax col-span-1 md:col-span-4 p-8 flex flex-col bg-white/40">
+        <div className="glass-promax col-span-1 md:col-span-4 p-8 flex flex-col bg-white/40" dir={isAr ? "rtl" : "ltr"}>
           <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-5">
             <h3 className="text-2xl font-black text-slate-800">{t("liveFeed")}</h3>
             <span className="relative flex h-2 w-2">
@@ -125,7 +128,7 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
                     <p className="text-[16px] font-extrabold text-slate-900 truncate">{booking.client.lastName} {booking.client.firstName}</p>
                     <p className="text-xs font-bold text-slate-500 truncate mt-0.5">{booking.offer.title}</p>
                   </div>
-                  <div className="text-right pr-2 flex-shrink-0">
+                  <div className="flex-shrink-0">
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                       {t("new")}
                     </span>
@@ -136,17 +139,18 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
           </div>
         </div>
 
-        {/* 🚀 SAFAR AI BANNER (ALIGNEMENT RTL/LTR DYNAMIQUE 100%) */}
-        <div className={`col-span-1 md:col-span-12 p-8 md:p-10 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl mt-2 border border-indigo-500/20 ${isAr ? 'lg:flex-row-reverse' : ''}`}>
-          
+        {/* 🚀 SAFAR AI BANNER (RTL NATIF 100%) */}
+        <div 
+          dir={isAr ? "rtl" : "ltr"}
+          className="col-span-1 md:col-span-12 p-8 md:p-10 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl mt-2 border border-indigo-500/20"
+        >
           <div className={`absolute top-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none ${isAr ? 'left-0' : 'right-0'}`}></div>
           
-          {/* 🟢 CORRECTION: Alignement forcé à droite en Arabe, à gauche en Fr/En */}
-          <div className={`relative z-10 flex flex-col sm:flex-row gap-6 w-full lg:w-auto ${isAr ? 'items-end sm:items-center sm:flex-row-reverse' : 'items-start sm:items-center'}`}>
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-start w-full lg:w-auto">
             <div className="p-5 bg-white/10 rounded-3xl backdrop-blur-md border border-white/20 shadow-inner flex-shrink-0">
               <Sparkles className="h-10 w-10 text-indigo-300 animate-pulse" />
             </div>
-            <div className={isAr ? 'text-right' : 'text-left'}>
+            <div>
               <h3 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">{t("discoverAI")}</h3>
               <p className="text-indigo-100/80 font-medium text-lg max-w-2xl leading-relaxed">
                 {t("aiDesc")}
@@ -156,8 +160,9 @@ export default function DashboardClient({ session, clientsCount, visasCount, boo
           
           <div className="relative z-10 w-full lg:w-auto flex-shrink-0">
             <Link href="/dashboard/ai">
-              <button className={`w-full lg:w-auto bg-white hover:bg-indigo-50 text-indigo-700 font-black px-8 py-4 rounded-2xl shadow-[0_10px_40px_rgba(255,255,255,0.2)] hover:shadow-[0_10px_60px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all text-lg flex items-center justify-center gap-3 ${isAr ? 'flex-row-reverse' : ''}`}>
-                <BrainCircuit className="w-6 h-6" /> {t("consultAssistant")}
+              <button className="w-full lg:w-auto bg-white hover:bg-indigo-50 text-indigo-700 font-black px-8 py-4 rounded-2xl shadow-[0_10px_40px_rgba(255,255,255,0.2)] hover:shadow-[0_10px_60px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all text-lg flex items-center justify-center gap-3">
+                <BrainCircuit className="w-6 h-6" /> 
+                <span>{t("consultAssistant")}</span>
               </button>
             </Link>
           </div>
