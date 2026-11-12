@@ -34,9 +34,8 @@ export function VisaDossierClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* COLONNE GAUCHE (Infos Client + Finances) */}
+        {/* COLONNE GAUCHE */}
         <div className="space-y-8">
-          
           <div className="glass-promax p-8 rounded-[2rem] bg-indigo-50 border-indigo-100">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-indigo-500 text-white rounded-xl"><User className="w-6 h-6" /></div>
@@ -74,7 +73,6 @@ export function VisaDossierClient({
             </form>
           </div>
 
-          {/* 🟢 FINANCES MOUNTÉ ICI (À GAUCHE, SOUS LE CLIENT) */}
           <div className="glass-promax p-8 rounded-[2rem] bg-gradient-to-b from-white to-slate-50/50 border-emerald-100">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-emerald-50 text-emerald-500 rounded-xl"><Wallet className="w-6 h-6" /></div>
@@ -109,10 +107,9 @@ export function VisaDossierClient({
               </form>
             )}
           </div>
-
         </div>
 
-        {/* COLONNE DROITE (Gestion RDV + Documents) */}
+        {/* COLONNE DROITE */}
         <div className="lg:col-span-2 space-y-8">
           <div className="glass-promax p-8 rounded-[2rem]">
             <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
@@ -130,9 +127,13 @@ export function VisaDossierClient({
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-400 uppercase">{t("status")}</label>
+                  {/* 🟢 CORRECTION: TOUS les statuts inclus pour s'adapter à la BDD */}
                   <select name="status" defaultValue={visa.status} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <option value="DOC_MANQUANTS">{t("missingDocs")}</option>
                     <option value="EN_ATTENTE">{t("waitingDocs")}</option>
+                    <option value="EN_ATTENTE_RDV">{t("waitingAppointment")}</option>
                     <option value="RNDV_PRIS">{t("appointmentBooked")}</option>
+                    <option value="DEPOT_FAIT">{t("processing")} / {t("depositDone")}</option>
                     <option value="EN_COURS">{t("processing")}</option>
                     <option value="APPROUVE">{t("visaApproved")}</option>
                     <option value="REFUSE">{t("visaRefused")}</option>

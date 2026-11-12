@@ -23,7 +23,6 @@ export function FinancesClient({
           <p className="text-slate-500 font-medium mt-1">{t("financesDesc")}</p>
         </div>
         
-        {/* LE FORMULAIRE DE FILTRE */}
         <form className="relative z-10 flex flex-wrap items-end gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
           <div>
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1 block">{t("filterFrom")}</label>
@@ -46,7 +45,6 @@ export function FinancesClient({
         </form>
       </div>
 
-      {/* KPI CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
@@ -75,7 +73,6 @@ export function FinancesClient({
 
       </div>
 
-      {/* TABLE DES TRANSACTIONS */}
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-8">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black text-slate-800 flex items-center flex-wrap gap-2">
@@ -105,10 +102,20 @@ export function FinancesClient({
                 </div>
                 
                 <div className={`flex items-center gap-6 mt-4 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end ${isAr ? 'flex-row-reverse' : ''}`}>
-                  <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest ${trans.status === 'EN_ATTENTE' ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-600 border border-emerald-200'}`}>
-                    {trans.status === 'EN_ATTENTE' ? t("pending") : trans.status === 'APPROUVE' ? t("approved") : trans.status === 'PAYE' ? t("paid") : trans.status}
+                  {/* 🟢 CORRECTION: On traduit absolument TOUS les statuts possibles */}
+                  <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest bg-slate-100 text-slate-500`}>
+                    {
+                      trans.status === 'EN_ATTENTE' ? t("pending") : 
+                      trans.status === 'DOC_MANQUANTS' ? t("missingDocs") :
+                      trans.status === 'EN_ATTENTE_RDV' ? t("waitingAppointment") :
+                      trans.status === 'RNDV_PRIS' ? t("appointmentBooked") :
+                      trans.status === 'EN_COURS' || trans.status === 'DEPOT_FAIT' ? t("processing") :
+                      trans.status === 'APPROUVE' || trans.status === 'CONFIRME' ? t("approved") : 
+                      trans.status === 'PAYE' ? t("paid") : 
+                      trans.status === 'REFUSE' ? t("refused") : trans.status
+                    }
                   </span>
-                  <span className={`font-black text-xl w-32 ${isAr ? 'text-left' : 'text-right'} ${trans.status === 'EN_ATTENTE' ? 'text-slate-400' : 'text-slate-900'}`} dir="ltr">
+                  <span className={`font-black text-xl w-32 ${isAr ? 'text-left' : 'text-right'} ${trans.status === 'EN_ATTENTE' || trans.status === 'DOC_MANQUANTS' ? 'text-slate-400' : 'text-slate-900'}`} dir="ltr">
                     {new Intl.NumberFormat('fr-DZ').format(trans.amount)} <span className="text-sm">DA</span>
                   </span>
                 </div>
