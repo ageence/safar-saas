@@ -3,10 +3,6 @@
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, BarChart3, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, CheckCircle, PieChart } from "lucide-react";
 
-function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
-  return <span className={`px-2.5 py-0.5 rounded-full font-bold shadow-sm ${className}`}>{children}</span>;
-}
-
 const getIcon = (type: string) => {
   switch(type) {
     case "SUCCESS": return <TrendingUp className="w-8 h-8" />;
@@ -22,7 +18,6 @@ const getIcon = (type: string) => {
 export function SafarAIClient({ insights, offers, metrics }: { insights: any[], offers: any[], metrics: any }) {
   const { t, lang } = useLanguage();
   
-  // 🟢 VÉRIFICATION DE LA LANGUE POUR INVERSER LE DESIGN (RTL vs LTR)
   const isAr = lang === 'ar'; 
 
   return (
@@ -31,7 +26,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
       {/* HEADER PREMIUM */}
       <div className="relative p-10 md:p-12 rounded-[2.5rem] overflow-hidden bg-slate-950 border border-slate-800 shadow-[0_20px_50px_rgba(79,70,229,0.15)] group">
         
-        {/* Lumières IA - Inversées dynamiquement */}
         <div className={`absolute -top-40 w-96 h-96 bg-indigo-600 rounded-full blur-[100px] opacity-50 animate-pulse ${isAr ? '-left-40' : '-right-40'}`}></div>
         <div className={`absolute -bottom-40 w-80 h-80 bg-cyan-600 rounded-full blur-[100px] opacity-40 ${isAr ? '-right-20' : '-left-20'}`}></div>
         
@@ -47,15 +41,11 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
                   {t("safarAI")} 
                 </span>
                 
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-gradient-to-r from-indigo-600 to-cyan-600 border-none text-white text-xs py-1.5 px-4 uppercase tracking-widest shadow-lg shadow-indigo-500/40">
-                    {t("aiCopilot")}
-                  </Badge>
-                  <span className="flex h-3 w-3 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                  </span>
-                </div>
+                {/* JUSTE LE POINT VERT QUI CLIGNOTE */}
+                <span className="flex h-3 w-3 relative ml-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
               </h1>
               <p className="text-slate-300 font-medium mt-3 max-w-2xl leading-relaxed text-lg">
                 {t("aiAnalysis")}
@@ -69,7 +59,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
-          {/* Icône qui bascule à gauche en Arabe */}
           <div className={`absolute top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity ${isAr ? 'left-0' : 'right-0'}`}>
             <PieChart className="w-16 h-16 text-emerald-500"/>
           </div>
