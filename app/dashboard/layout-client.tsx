@@ -33,7 +33,7 @@ export default function LayoutClient({ children, session }: { children: React.Re
     { name: t("safarAI"), href: "/dashboard/ai", icon: Sparkles, color: "text-indigo-600", bg: "bg-indigo-50" },
     { name: t("finances"), href: "/dashboard/finances", icon: Wallet, color: "text-rose-500", bg: "bg-rose-50" },
     // 🟢 CORRECTION DU LIEN 404 ICI : 
-    { name: t("settings"), href: "/dashboard/settings", icon: Settings, color: "text-slate-500", bg: "bg-slate-100" },
+    { name: t("settings"), href: "/dashboard/parametres", icon: Settings, color: "text-slate-500", bg: "bg-slate-100" },
   ];
 
   return (
