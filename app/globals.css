@@ -174,3 +174,36 @@
 .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
 .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+/* =========================================
+   CORRECTION GLOBALE DU CONTRASTE DARK MODE
+   ========================================= */
+@layer utilities {
+  /* On illumine tous les textes secondaires gris foncés pour le Dark Mode */
+  .dark .text-slate-500,
+  .dark .text-slate-600 {
+    color: #cbd5e1 !important; /* slate-300 : Gris clair très lumineux */
+  }
+  .dark .text-slate-400 {
+    color: #e2e8f0 !important; /* slate-200 : Presque blanc pour les petits textes */
+  }
+  .dark .text-slate-700,
+  .dark .text-slate-800,
+  .dark .text-slate-900 {
+    color: #f8fafc !important; /* slate-50 : Blanc pur pour les titres et textes forts */
+  }
+  
+  /* Correction globale des Inputs, Placeholders et bordures */
+  .dark input, 
+  .dark select, 
+  .dark textarea {
+    background-color: #0f172a !important; /* slate-900 */
+    color: #ffffff !important;
+    border-color: #334155 !important; /* slate-700 */
+  }
+  
+  .dark input::placeholder, 
+  .dark textarea::placeholder {
+    color: #94a3b8 !important; /* slate-400 : Placeholder parfaitement visible */
+    opacity: 1;
+  }
+}
