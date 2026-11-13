@@ -13,21 +13,29 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
   const { lang, setLang, t } = useLanguage();
   const isAr = lang === 'ar';
 
-  // 🟢 GESTION DU THEME DARK / LIGHT
+  // 🟢 GESTION DU THEME GLOBAL
   const [theme, setTheme] = useState("light");
 
+  // On vérifie le theme actuel au chargement
   useEffect(() => {
-    if (document.documentElement.classList.contains("dark")) {
-      setTheme("dark");
+    if (typeof window !== "undefined") {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+      }
     }
   }, []);
 
+  // Fonction pour changer TOUTE la plateforme
   const changeTheme = (newTheme: string) => {
     setTheme(newTheme);
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark"); // Sauvegarde globale
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light"); // Sauvegarde globale
     }
   };
 
@@ -38,7 +46,6 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
   ];
 
   return (
-    // 🟢 Ajout des classes "dark:text-white" pour le texte principal
     <div className={`space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-12 w-full max-w-5xl mx-auto dark:text-white ${isAr ? 'text-right' : 'text-left'}`}>
       
       {/* HEADER SETTINGS */}
@@ -47,24 +54,24 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
         <p className="text-slate-500 dark:text-slate-400 font-medium mt-2">{t("settingsDesc")}</p>
       </div>
 
-      <Tabs defaultValue="general" className="w-full" dir={isAr ? "rtl" : "ltr"}>
+      <Tabs defaultValue="apparence" className="w-full" dir={isAr ? "rtl" : "ltr"}>
         
-        {/* 🟢 CORRECTION TABS : overflow-x-auto au lieu de flex-wrap pour que ça rentre parfaitement */}
         <div className="w-full overflow-hidden">
-          <TabsList className="flex w-full overflow-x-auto no-scrollbar bg-slate-100/50 dark:bg-slate-800 p-2 rounded-3xl gap-2 h-auto justify-start mb-8 border border-slate-200/50 dark:border-slate-700">
-            <TabsTrigger value="general" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400 transition-all text-slate-500 dark:text-slate-400">
+          <TabsList className="flex w-full overflow-x-auto no-scrollbar bg-slate-100/50 dark:bg-slate-800/80 p-2 rounded-3xl gap-2 h-auto justify-start mb-8 border border-slate-200/50 dark:border-slate-700/50">
+            <TabsTrigger value="general" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-md data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400 transition-all text-slate-500 dark:text-slate-400">
               {t("tabGeneral")}
             </TabsTrigger>
-            <TabsTrigger value="apparence" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 transition-all text-slate-500 dark:text-slate-400">
+            {/* J'ai mis apparence en premier par défaut pour que tu testes direct ! */}
+            <TabsTrigger value="apparence" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-md data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-300 transition-all text-slate-500 dark:text-slate-400">
               {t("appearance")}
             </TabsTrigger>
-            <TabsTrigger value="langue" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 transition-all text-slate-500 dark:text-slate-400">
+            <TabsTrigger value="langue" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-md data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 transition-all text-slate-500 dark:text-slate-400">
               {t("tabLang")}
             </TabsTrigger>
-            <TabsTrigger value="equipe" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md data-[state=active]:text-orange-600 dark:data-[state=active]:text-orange-400 transition-all text-slate-500 dark:text-slate-400">
+            <TabsTrigger value="equipe" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-md data-[state=active]:text-orange-600 dark:data-[state=active]:text-orange-400 transition-all text-slate-500 dark:text-slate-400">
               {t("tabTeam")}
             </TabsTrigger>
-            <TabsTrigger value="automatisations" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-md data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all text-slate-500 dark:text-slate-400">
+            <TabsTrigger value="automatisations" className="whitespace-nowrap rounded-2xl px-6 py-3 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-md data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 transition-all text-slate-500 dark:text-slate-400">
               {t("tabAuto")}
             </TabsTrigger>
           </TabsList>
@@ -72,7 +79,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
         
         {/* ONGLET 1 : GÉNÉRAL (Profil Agence) */}
         <TabsContent value="general" className="mt-0">
-          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-2xl"><Settings className="w-7 h-7" /></div>
               <div>
@@ -85,16 +92,16 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("agencyName")}</label>
-                  <input name="name" defaultValue={agency?.name} className="w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
+                  <input name="name" defaultValue={agency?.name} className="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
                 </div>
                 <div className="space-y-3">
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("phoneMain")}</label>
-                  <input name="phone" defaultValue={agency?.phone || ""} dir="ltr" className={`w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 ${isAr ? 'text-right' : 'text-left'}`} />
+                  <input name="phone" defaultValue={agency?.phone || ""} dir="ltr" className={`w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 ${isAr ? 'text-right' : 'text-left'}`} />
                 </div>
               </div>
               <div className="space-y-3">
                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("address")}</label>
-                <input name="address" defaultValue={agency?.address || ""} className="w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
+                <input name="address" defaultValue={agency?.address || ""} className="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
               </div>
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                 <Button type="submit" className="bg-slate-900 dark:bg-cyan-600 hover:bg-cyan-600 dark:hover:bg-cyan-500 text-white font-bold rounded-2xl px-8 h-14 shadow-lg transition-all text-lg">
@@ -105,9 +112,9 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
           </div>
         </TabsContent>
 
-        {/* ONGLET APPARENCE (Dark/Light Mode) */}
+        {/* 🟢 ONGLET APPARENCE (Changement de thème GLOBAL) */}
         <TabsContent value="apparence" className="mt-0">
-          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl"><Monitor className="w-7 h-7" /></div>
               <div>
@@ -123,7 +130,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
                 onClick={() => changeTheme("light")}
                 className={`p-1 rounded-[2rem] border-4 transition-all text-left ${theme === "light" ? "border-indigo-500 shadow-xl shadow-indigo-500/20" : "border-transparent hover:border-slate-200 dark:hover:border-slate-700"}`}
               >
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden transition-colors">
                   {theme === "light" && <div className="absolute top-4 right-4 bg-indigo-500 text-white p-1 rounded-full"><CheckCircle2 className="w-5 h-5" /></div>}
                   <div className="w-20 h-20 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center"><Sun className="w-10 h-10 text-amber-500" /></div>
                   <span className="font-black text-xl text-slate-800 dark:text-white">{t("lightMode")}</span>
@@ -136,7 +143,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
                 onClick={() => changeTheme("dark")}
                 className={`p-1 rounded-[2rem] border-4 transition-all text-left ${theme === "dark" ? "border-indigo-500 shadow-xl shadow-indigo-500/20" : "border-transparent hover:border-slate-200 dark:hover:border-slate-700"}`}
               >
-                <div className="bg-slate-900 dark:bg-slate-950 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+                <div className="bg-slate-900 dark:bg-slate-950 rounded-[1.7rem] p-6 h-full flex flex-col items-center justify-center gap-4 relative overflow-hidden transition-colors">
                   {theme === "dark" && <div className="absolute top-4 right-4 bg-indigo-500 text-white p-1 rounded-full"><CheckCircle2 className="w-5 h-5" /></div>}
                   <div className="w-20 h-20 rounded-full bg-slate-800 dark:bg-slate-900 shadow-inner flex items-center justify-center border border-slate-700"><Moon className="w-10 h-10 text-indigo-400" /></div>
                   <span className="font-black text-xl text-white">{t("darkMode")}</span>
@@ -148,7 +155,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
 
         {/* ONGLET LANGUES */}
         <TabsContent value="langue" className="mt-0">
-          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl"><Globe className="w-7 h-7" /></div>
               <div>
@@ -166,7 +173,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
                     type="button"
                     onClick={() => setLang(l.code as Language)}
                     className={`relative p-8 rounded-[2rem] border-2 transition-all flex flex-col items-center justify-center text-center gap-4 active:scale-95 ${
-                      isActive ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/20 shadow-lg shadow-emerald-500/10" : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-emerald-200"
+                      isActive ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/40 shadow-lg shadow-emerald-500/10" : "border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-200"
                     }`}
                   >
                     {isActive && (
@@ -185,7 +192,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
 
         {/* ONGLET ÉQUIPE */}
         <TabsContent value="equipe" className="mt-0 space-y-6">
-          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl"><Users className="w-7 h-7" /></div>
               <div>
@@ -220,7 +227,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
           </div>
 
           {isAdmin && (
-            <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+            <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-slate-800 dark:text-white">{t("addEmp")}</h2>
                 <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1">{t("addEmpDesc")}</p>
@@ -229,16 +236,16 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("fullName")}</label>
-                    <input name="name" required className="w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-700" />
+                    <input name="name" required className="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("colEmail")}</label>
-                    <input name="email" type="email" required dir="ltr" className={`w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-700 ${isAr ? 'text-right' : 'text-left'}`} />
+                    <input name="email" type="email" required dir="ltr" className={`w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800 ${isAr ? 'text-right' : 'text-left'}`} />
                   </div>
                 </div>
                 <div className="space-y-3">
                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest">{t("tempPass")}</label>
-                  <input name="password" type="password" required className="w-full bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-700" />
+                  <input name="password" type="password" required className="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-5 py-4 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-orange-500 outline-none transition-all hover:bg-white dark:hover:bg-slate-800" />
                 </div>
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                   <Button type="submit" className="bg-slate-900 dark:bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-2xl px-8 h-14 shadow-lg transition-all text-lg">
@@ -252,7 +259,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
 
         {/* ONGLET AUTOMATISATIONS */}
         <TabsContent value="automatisations" className="mt-0">
-          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem]">
+          <div className="glass-promax dark:bg-slate-900 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] transition-colors">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl"><MessageSquare className="w-7 h-7" /></div>
               <div>
@@ -261,7 +268,7 @@ export default function SettingsClient({ agency, team, isAdmin }: any) {
               </div>
             </div>
             
-            <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-sm space-y-4 shadow-xl">
+            <div className="bg-slate-900 dark:bg-slate-950 p-6 rounded-3xl border border-slate-800 text-sm space-y-4 shadow-xl">
               <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/5 rounded-2xl border border-white/10 ${isAr ? 'flex-row-reverse' : ''}`}>
                 <span className="font-bold text-slate-400">{t("waUrl")}</span>
                 <code className="text-emerald-400 font-mono bg-emerald-400/10 px-4 py-2 rounded-xl" dir="ltr">https://ton-domaine.com/api/webhooks/whatsapp</code>
