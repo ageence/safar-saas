@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "@/components/language-provider"; // 🟢 IMPORT DU MOTEUR DE LANGUE
+import { LanguageProvider } from "@/components/language-provider";
+import { ThemeProvider } from "@/components/theme-provider"; // 🟢 Ajout
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Safar.Pro - CRM & Réservations", // Titre professionnel pour l'onglet
+  title: "Safar.Pro - CRM & Réservations",
   description: "Système de gestion SaaS premium pour les agences de voyage et visas.",
 };
 
@@ -24,15 +25,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    // 🟢 suppressHydrationWarning est obligatoire pour next-themes
+    <html lang="fr" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        {/* 🟢 LE MOTEUR DE LANGUE ENGLOBE TOUTE L'APPLICATION */}
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+        {/* 🟢 THEME PROVIDER ENGLOBE L'APPLICATION */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
