@@ -207,3 +207,105 @@
     opacity: 1;
   }
 }
+/* =========================================
+   🔴 MOTEUR DARK MODE GLOBAL PREMIUM 🔴
+   Hada yrigel ga3 les pages d'un coup !
+   ========================================= */
+
+@layer utilities {
+  
+  /* 1. RÉPARATION DES TEXTES (Finis les textes gris invisibles !) */
+  .dark .text-slate-900, 
+  .dark .text-slate-800, 
+  .dark .text-slate-700,
+  .dark .text-gray-900,
+  .dark .text-gray-800 {
+    color: #f8fafc !important; /* Blanc éclatant pour la lisibilité */
+  }
+  
+  .dark .text-slate-600, 
+  .dark .text-slate-500,
+  .dark .text-gray-600,
+  .dark .text-gray-500 {
+    color: #cbd5e1 !important; /* Gris ultra clair et lumineux (slate-300) */
+  }
+  
+  .dark .text-slate-400 {
+    color: #e2e8f0 !important; /* Presque blanc (slate-200) */
+  }
+
+  /* 2. RÉPARATION DES FONDS BLANCS (Safar AI, Finances, Dossiers, Modales) */
+  .dark .bg-white,
+  .dark [role="dialog"] {
+    background-color: #0f172a !important; /* Slate-900 : Sombre et élégant */
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
+  
+  .dark .bg-slate-50, 
+  .dark .bg-gray-50 {
+    background-color: #1e293b !important; /* Slate-800 */
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+  }
+
+  .dark .bg-slate-100, 
+  .dark .bg-gray-100 {
+    background-color: #334155 !important; /* Slate-700 */
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+  }
+
+  /* 3. RÉPARATION DES BORDURES ET CADRES GRIS */
+  .dark .border-slate-100, 
+  .dark .border-slate-200,
+  .dark .border-gray-100, 
+  .dark .border-gray-200 {
+    border-color: #1e293b !important; /* Bordures sombres élégantes */
+  }
+
+  /* 4. RÉPARATION DES FORMULAIRES & INPUTS */
+  .dark input, 
+  .dark select, 
+  .dark textarea {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+  }
+  
+  .dark input::placeholder, 
+  .dark textarea::placeholder {
+    color: #94a3b8 !important; /* Placeholder très clair (slate-400) */
+    opacity: 1 !important;
+  }
+
+  /* 5. RÉPARATION DES GRAPHIQUES (Dashboard : "7 Jours", "Ce Mois") */
+  /* Les axes du graphique (Recharts) */
+  .dark .recharts-text, 
+  .dark .recharts-cartesian-axis-tick-value {
+    fill: #cbd5e1 !important; /* Texte des stats lumineux */
+  }
+  .dark .recharts-cartesian-grid-horizontal line, 
+  .dark .recharts-cartesian-grid-vertical line {
+    stroke: #334155 !important; /* Lignes du fond du graphique */
+  }
+  .dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+    background-color: #0f172a !important;
+    border: 1px solid #1e293b !important;
+  }
+  .dark .recharts-tooltip-item {
+    color: #f8fafc !important;
+  }
+
+  /* 6. CORRECTIONS SPÉCIFIQUES DEMANDÉES */
+  /* Bouton "Voir la page publique" et "Voyage organisé" (Page Voyages) */
+  .dark .bg-white\/95 {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    color: #f8fafc !important;
+  }
+  
+  /* Boutons "Nouveau Client / Visa / Voyage" moches */
+  .dark .hover\:bg-slate-100:hover {
+    background-color: #334155 !important;
+  }
+}
