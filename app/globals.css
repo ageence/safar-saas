@@ -309,3 +309,119 @@
     background-color: #334155 !important;
   }
 }
+/* =========================================
+   🔴 MOTEUR DARK MODE GLOBAL PREMIUM 🔴
+   ========================================= */
+
+@layer utilities {
+  
+  /* 1. RÉPARATION DES TEXTES */
+  .dark .text-slate-900, 
+  .dark .text-slate-800, 
+  .dark .text-slate-700 {
+    color: #f8fafc !important; /* Blanc éclatant */
+  }
+  
+  .dark .text-slate-600, 
+  .dark .text-slate-500 {
+    color: #cbd5e1 !important; /* Gris lumineux */
+  }
+  
+  .dark .text-slate-400 {
+    color: #e2e8f0 !important; /* Presque blanc */
+  }
+
+  /* 2. RÉPARATION DES FONDS (Sans gris !) */
+  .dark .bg-white {
+    background-color: #0b1426 !important; /* Bleu nuit élégant au lieu du gris */
+    border-color: #172542 !important;
+    color: #f8fafc !important;
+  }
+  
+  .dark .bg-slate-50, 
+  .dark .bg-gray-50 {
+    /* CORRECTION DASHBOARD : Les cadres "Nouveau client/Visa" deviennent Bleu nuit au lieu de gris */
+    background-color: #0a1120 !important; 
+    border-color: #172542 !important;
+    color: #f8fafc !important;
+  }
+
+  .dark .bg-slate-100 {
+    background-color: #172542 !important; 
+    border-color: #1e2e4f !important;
+  }
+
+  .dark .border-slate-100, 
+  .dark .border-slate-200 {
+    border-color: #172542 !important;
+  }
+
+  /* 3. RÉPARATION DES MODALES (Pop-ups) & BOUTON X */
+  .dark [role="dialog"] {
+    background-color: #040b16 !important;
+    border-color: #0a1628 !important;
+  }
+
+  /* On force le dégradé des pop-ups à devenir sombre ! */
+  .dark [class*="from-emerald-50"],
+  .dark [class*="from-cyan-50"],
+  .dark [class*="from-indigo-50"],
+  .dark [class*="from-orange-50"],
+  .dark [class*="from-purple-50"] {
+    --tw-gradient-from: #0a1120 !important; /* Bleu nuit */
+    --tw-gradient-to: #040b16 !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+  .dark [class*="to-cyan-50"],
+  .dark [class*="to-blue-50"] {
+    --tw-gradient-to: #040b16 !important;
+  }
+
+  /* Le bouton X des modales */
+  .dark [role="dialog"] > button {
+    color: #ffffff !important;
+    background-color: #172542 !important;
+    border-radius: 50%;
+    padding: 6px;
+    opacity: 1 !important;
+  }
+  .dark [role="dialog"] > button:hover {
+    background-color: #ef4444 !important; /* Rouge au survol */
+  }
+
+  /* 4. FORMULAIRES & INPUTS */
+  .dark input, 
+  .dark select, 
+  .dark textarea {
+    background-color: #0a1120 !important;
+    color: #ffffff !important;
+    border-color: #172542 !important;
+  }
+  
+  .dark input::placeholder {
+    color: #94a3b8 !important; 
+    opacity: 1 !important;
+  }
+
+  /* =========================================
+     📜 LE REÇU (FACTURE) RESTE EN LIGHT MODE !
+     ========================================= */
+  .dark .receipt-box,
+  .dark .receipt-box * {
+    background-color: #ffffff !important; /* Forcé en blanc */
+    color: #0f172a !important; /* Texte noir */
+    border-color: #e2e8f0 !important;
+  }
+  
+  .dark .receipt-box .text-slate-500,
+  .dark .receipt-box p.text-slate-500 {
+    color: #64748b !important; /* Gris de texte normal */
+  }
+  
+  .dark .receipt-box h1,
+  .dark .receipt-box h2,
+  .dark .receipt-box h3,
+  .dark .receipt-box span.font-extrabold {
+    color: #020617 !important; /* Noir foncé pour les titres */
+  }
+}
