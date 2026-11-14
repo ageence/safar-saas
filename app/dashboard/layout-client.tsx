@@ -32,7 +32,7 @@ export default function LayoutClient({ children, session }: { children: React.Re
     { name: t("visas"), href: "/dashboard/visas", icon: FileText, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-500/10" },
     { name: t("safarAI"), href: "/dashboard/ai", icon: Sparkles, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
     { name: t("finances"), href: "/dashboard/finances", icon: Wallet, color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10" },
-    { name: t("settings"), href: "/dashboard/settings", icon: Settings, color: "text-slate-500 dark:text-slate-400", bg: "bg-slate-100 dark:bg-[#0a1628]" },
+    { name: t("settings"), href: "/dashboard/parametres", icon: Settings, color: "text-slate-500 dark:text-slate-400", bg: "bg-slate-100 dark:bg-[#0a1628]" },
   ];
 
   return (
