@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
@@ -18,11 +18,12 @@ const getIcon = (type: string) => {
   }
 };
 
-// 🟢 CORRECTION ICI : On a rajouté 'insights' et 'brainData' pour que TypeScript accepte les données venant de page.tsx
-export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainData = {} }: { insights?: any[], offers?: any[], metrics?: any, brainData?: any }) {
+export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { insights?: any[], offers?: any[], metrics?: any }) {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar'; 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const [localInput, setLocalInput] = useState("");
   
   const initialMessage = { 
     id: '1', 
@@ -30,7 +31,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
     content: t("aiHello") || "Bonjour ! Je suis Safar AI, votre assistant virtuel connecté à votre agence. Comment puis-je vous aider ?" 
   };
 
-  const { messages, input, handleInputChange, handleSubmit, setMessages, stop, append, isLoading, error } = useChat({
+  const { messages, setMessages, append, isLoading, stop, error } = useChat({
     api: '/api/chat',
     initialMessages: [initialMessage]
   });
@@ -41,18 +42,26 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
 
   const clearChat = () => setMessages([initialMessage]);
   const copyToClipboard = (text: string) => navigator.clipboard.writeText(text);
-  const handleSuggestion = (prompt: string) => append({ role: 'user', content: prompt });
 
-  const safeTotalExpected = metrics?.totalExpected || 0;
-  const safeUnpaidDebt = metrics?.unpaidDebt || 0;
-  const safeVisaRate = metrics?.visaSuccessRate || 0;
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!localInput.trim()) return;
+    append({ role: 'user', content: localInput });
+    setLocalInput("");
+  };
+
+  const handleSuggestion = (prompt: string) => {
+    append({ role: 'user', content: prompt });
+  };
 
   return (
     <div className={`space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10 ${isAr ? 'text-right' : 'text-left'}`}>
       
-      {/* HEADER */}
+      {/* 🚀 HEADER */}
       <div className="relative p-10 md:p-12 rounded-[2.5rem] overflow-hidden bg-slate-950 border border-slate-800 shadow-xl group">
         <div className={`absolute -top-40 w-96 h-96 bg-indigo-600 rounded-full blur-[100px] opacity-40 animate-pulse ${isAr ? '-left-40' : '-right-40'}`}></div>
+        <div className={`absolute -bottom-40 w-80 h-80 bg-cyan-600 rounded-full blur-[100px] opacity-30 ${isAr ? '-right-20' : '-left-20'}`}></div>
+        
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
           <div className="p-5 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-3xl shadow-lg shadow-indigo-500/40 text-white">
             <Sparkles className="h-10 w-10 animate-pulse text-white" />
@@ -114,7 +123,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
 
             {error && (
               <div className="p-4 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-2xl font-medium border border-rose-200">
-                🚨 Erreur : {error.message}. Vérifiez votre clé OPENAI_API_KEY.
+                🚨 Erreur : {error.message}.
               </div>
             )}
 
@@ -124,7 +133,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
                   <Sparkles className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div className="px-5 py-4 rounded-3xl bg-white dark:bg-[#0a1120] border border-slate-100 dark:border-[#172542] rounded-tl-none text-slate-500 text-sm font-medium">
-                  Analyse en cours...
+                  Génération en cours...
                 </div>
               </div>
             )}
@@ -132,26 +141,26 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
           </div>
 
           <div className="px-6 pb-4 pt-2 flex flex-wrap gap-2 border-t border-slate-100 dark:border-[#172542] bg-slate-50/50 dark:bg-[#040b16]/30">
-            <button onClick={() => handleSuggestion(isAr ? "📊 قدم لي تقريراً مالياً مفصلاً عن وكالتي." : "📊 Fais-moi un rapport financier détaillé de l'agence.")} className="text-xs font-bold bg-white dark:bg-[#13213c] hover:bg-indigo-50 border border-slate-200 dark:border-[#1e335b] text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm">
+            <button onClick={() => handleSuggestion(isAr ? "📊 قدم لي تقريراً مالياً مفصلاً عن وكالتي." : "📊 Fais-moi un rapport financier détaillé.")} className="text-xs font-bold bg-white dark:bg-[#13213c] hover:bg-indigo-50 border border-slate-200 dark:border-[#1e335b] text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm transition-all">
               📊 Rapport Financier
             </button>
-            <button onClick={() => handleSuggestion(isAr ? "💬 أكتب رسالة واتساب قوية لتحصيل الديون." : "💬 Génère un message WhatsApp pro pour relancer les impayés.")} className="text-xs font-bold bg-white dark:bg-[#13213c] hover:bg-indigo-50 border border-slate-200 dark:border-[#1e335b] text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm">
+            <button onClick={() => handleSuggestion(isAr ? "💬 أكتب رسالة واتساب قوية لتحصيل الديون." : "💬 Génère un message WhatsApp pro pour relancer les impayés.")} className="text-xs font-bold bg-white dark:bg-[#13213c] hover:bg-indigo-50 border border-slate-200 dark:border-[#1e335b] text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm transition-all">
               💬 Relance WhatsApp
             </button>
           </div>
 
           <div className="p-5 bg-white dark:bg-[#040b16] border-t border-slate-100 dark:border-[#172542]">
-            <form onSubmit={handleSubmit} className="flex items-center gap-3 bg-slate-50 dark:bg-[#0a1120] border border-slate-200 dark:border-[#1e335b] p-2 rounded-[1.25rem] shadow-inner" dir={isAr ? "rtl" : "ltr"}>
+            <form onSubmit={handleFormSubmit} className="flex items-center gap-3 bg-slate-50 dark:bg-[#0a1120] border border-slate-200 dark:border-[#1e335b] p-2 rounded-[1.25rem] shadow-inner" dir={isAr ? "rtl" : "ltr"}>
               <button type="button" className="p-3 text-slate-400 hover:text-indigo-600 transition-colors"><Mic className="w-6 h-6" /></button>
               <input 
-                name="prompt" type="text" value={input} onChange={handleInputChange}
+                type="text" value={localInput} onChange={(e) => setLocalInput(e.target.value)}
                 placeholder="Discutez avec l'IA (rapports, stratégies)..."
                 className="flex-1 bg-transparent border-none outline-none text-slate-800 dark:text-white font-medium placeholder-slate-400"
               />
               {isLoading ? (
                 <button type="button" onClick={stop} className="p-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl shadow-md"><StopCircle className="w-5 h-5" /></button>
               ) : (
-                <button type="submit" disabled={!input.trim()} className="p-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl shadow-md flex items-center justify-center">
+                <button type="submit" disabled={!localInput.trim()} className="p-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl shadow-md flex items-center justify-center">
                   <Send className={`w-5 h-5 ${isAr ? 'rotate-180' : ''}`} />
                 </button>
               )}
@@ -161,52 +170,23 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainD
 
         {/* PANNEAU LATÉRAL */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl transition-colors">
+          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl h-full">
             <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
-              <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Plan d'action IA
+              <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Données Synchronisées
             </h2>
             <div className="space-y-4">
-              {insights.slice(0, 3).map((insight, idx) => (
-                <div key={idx} className="bg-white dark:bg-[#040b16] p-5 rounded-2xl border border-slate-100 dark:border-[#172542] flex items-start gap-4">
-                  <div className={`p-3 rounded-xl ${insight.bg} ${insight.color} shadow-inner flex-shrink-0 dark:bg-opacity-10`}>
-                    {getIcon(insight.type)}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-slate-800 dark:text-white mb-1">{t(insight.titleKey) || insight.titleKey}</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                      {insight.text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {insights.length === 0 && (
-                <p className="text-sm text-slate-500">L'IA analyse vos données...</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl transition-colors">
-            <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
-              <PieChart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" /> Ventes & Remplissage
-            </h2>
-            <div className="space-y-5">
-              {offers.slice(0, 4).map((offer: any) => {
-                const fillRate = offer.totalSpots ? Math.round(((offer.totalSpots - (offer.availableSeats||0)) / offer.totalSpots) * 100) : 0;
-                return (
-                  <div key={offer.id} className="space-y-2">
-                    <div className="flex justify-between text-sm font-bold text-slate-700 dark:text-slate-300">
-                      <span className="truncate pr-4">{offer.title}</span>
-                      <span dir="ltr">{fillRate}%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 dark:bg-[#172542] h-2.5 rounded-full overflow-hidden" dir="ltr">
-                      <div className={`h-full rounded-full ${fillRate > 80 ? 'bg-rose-500' : fillRate > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${fillRate}%` }}></div>
-                    </div>
-                  </div>
-                );
-              })}
-              {offers.length === 0 && (
-                <p className="text-sm text-slate-500 text-center">Aucune offre disponible</p>
-              )}
+              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Revenus</span>
+                <span className="font-black text-indigo-600 dark:text-indigo-400">{new Intl.NumberFormat("fr-DZ").format(metrics?.totalExpected || 0)} DA</span>
+              </div>
+              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Dettes</span>
+                <span className="font-black text-rose-600 dark:text-rose-400">{new Intl.NumberFormat("fr-DZ").format(metrics?.unpaidDebt || 0)} DA</span>
+              </div>
+              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Taux Visas</span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400">{metrics?.visaSuccessRate || 0}%</span>
+              </div>
             </div>
           </div>
         </div>
