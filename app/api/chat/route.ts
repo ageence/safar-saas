@@ -11,7 +11,12 @@ export async function POST(req: Request) {
     const agencyId = session?.user?.agencyId;
     
     if (!agencyId) {
-      return new Response('Non autorisé', { status: 401 });
+      return new Response(JSON.stringify({ error: "Non autorisé. Connectez-vous." }), { status: 401 });
+    }
+
+    // 🟢 VÉRIFICATION DE LA CLÉ API
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response("Clé API OpenAI manquante. Veuillez l'ajouter dans les variables d'environnement Vercel.", { status: 500 });
     }
 
     const { messages } = await req.json();
@@ -29,7 +34,7 @@ export async function POST(req: Request) {
       Tu parles parfaitement Français et Arabe. Ton ton est expert, rassurant, et stratégique.
       Tu utilises le Markdown pour formuler tes réponses (tableaux, listes, gras).
       
-      DONNÉES EN TEMPS RÉEL :
+      DONNÉES DE L'AGENCE EN TEMPS RÉEL :
       - Clients : ${clients}
       - Chiffre d'affaires : ${new Intl.NumberFormat("fr-DZ").format(totalRevenue)} DA
       - Dossiers Visas : ${totalVisas} dont ${pendingVisas} en attente.
@@ -41,10 +46,10 @@ export async function POST(req: Request) {
       messages,
     });
 
-    // CORRECTION TYPESCRIPT : La nouvelle méthode officielle
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error("Erreur IA:", error);
-    return new Response('Erreur Serveur', { status: 500 });
+  } catch (error: any) {
+    console.error("Erreur API Chat:", error);
+    // On renvoie l'erreur exacte pour que le frontend l'affiche sans se bloquer
+    return new Response(error.message || "Erreur de connexion au modèle IA", { status: 500 });
   }
 }

@@ -4,9 +4,22 @@
 import { useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useLanguage } from "@/components/language-provider";
-import { Sparkles, BrainCircuit, Send, Bot, User, Mic, Trash2, Copy, StopCircle, PieChart, TrendingUp } from "lucide-react";
+import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
-export function SafarAIClient({ offers = [], metrics = {} }: { offers?: any[], metrics?: any }) {
+const getIcon = (type: string) => {
+  switch(type) {
+    case "SUCCESS": return <TrendingUp className="w-6 h-6" />;
+    case "WARNING": return <Clock className="w-6 h-6" />;
+    case "ALERT": return <AlertTriangle className="w-6 h-6" />;
+    case "ACTION": return <Zap className="w-6 h-6" />;
+    case "DEBT": return <CreditCard className="w-6 h-6" />;
+    case "VIP": return <Users className="w-6 h-6" />;
+    case "INFO": default: return <BrainCircuit className="w-6 h-6" />;
+  }
+};
+
+// 🟢 CORRECTION ICI : On a rajouté 'insights' et 'brainData' pour que TypeScript accepte les données venant de page.tsx
+export function SafarAIClient({ insights = [], offers = [], metrics = {}, brainData = {} }: { insights?: any[], offers?: any[], metrics?: any, brainData?: any }) {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar'; 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,9 +43,9 @@ export function SafarAIClient({ offers = [], metrics = {} }: { offers?: any[], m
   const copyToClipboard = (text: string) => navigator.clipboard.writeText(text);
   const handleSuggestion = (prompt: string) => append({ role: 'user', content: prompt });
 
-  const safeTotalExpected = metrics.totalExpected || 0;
-  const safeUnpaidDebt = metrics.unpaidDebt || 0;
-  const safeVisaRate = metrics.visaSuccessRate || 0;
+  const safeTotalExpected = metrics?.totalExpected || 0;
+  const safeUnpaidDebt = metrics?.unpaidDebt || 0;
+  const safeVisaRate = metrics?.visaSuccessRate || 0;
 
   return (
     <div className={`space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10 ${isAr ? 'text-right' : 'text-left'}`}>
@@ -148,23 +161,52 @@ export function SafarAIClient({ offers = [], metrics = {} }: { offers?: any[], m
 
         {/* PANNEAU LATÉRAL */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl h-full">
+          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl transition-colors">
             <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
-              <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Données Temps Réel
+              <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Plan d'action IA
             </h2>
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Revenus</span>
-                <span className="font-black text-indigo-600 dark:text-indigo-400">{new Intl.NumberFormat("fr-DZ").format(safeTotalExpected)} DA</span>
-              </div>
-              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Dettes Clients</span>
-                <span className="font-black text-rose-600 dark:text-rose-400">{new Intl.NumberFormat("fr-DZ").format(safeUnpaidDebt)} DA</span>
-              </div>
-              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Taux Visas</span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400">{safeVisaRate}%</span>
-              </div>
+              {insights.slice(0, 3).map((insight, idx) => (
+                <div key={idx} className="bg-white dark:bg-[#040b16] p-5 rounded-2xl border border-slate-100 dark:border-[#172542] flex items-start gap-4">
+                  <div className={`p-3 rounded-xl ${insight.bg} ${insight.color} shadow-inner flex-shrink-0 dark:bg-opacity-10`}>
+                    {getIcon(insight.type)}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white mb-1">{t(insight.titleKey) || insight.titleKey}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                      {insight.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {insights.length === 0 && (
+                <p className="text-sm text-slate-500">L'IA analyse vos données...</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl transition-colors">
+            <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
+              <PieChart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" /> Ventes & Remplissage
+            </h2>
+            <div className="space-y-5">
+              {offers.slice(0, 4).map((offer: any) => {
+                const fillRate = offer.totalSpots ? Math.round(((offer.totalSpots - (offer.availableSeats||0)) / offer.totalSpots) * 100) : 0;
+                return (
+                  <div key={offer.id} className="space-y-2">
+                    <div className="flex justify-between text-sm font-bold text-slate-700 dark:text-slate-300">
+                      <span className="truncate pr-4">{offer.title}</span>
+                      <span dir="ltr">{fillRate}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 dark:bg-[#172542] h-2.5 rounded-full overflow-hidden" dir="ltr">
+                      <div className={`h-full rounded-full ${fillRate > 80 ? 'bg-rose-500' : fillRate > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${fillRate}%` }}></div>
+                    </div>
+                  </div>
+                );
+              })}
+              {offers.length === 0 && (
+                <p className="text-sm text-slate-500 text-center">Aucune offre disponible</p>
+              )}
             </div>
           </div>
         </div>
