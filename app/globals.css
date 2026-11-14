@@ -11,7 +11,6 @@
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-border: hsl(var(--border));
   
-  /* Ajout des variables sémantiques pour le SaaS */
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
   --color-muted: hsl(var(--muted));
@@ -20,7 +19,7 @@
 
 @layer base {
   :root {
-    /* ☀️ LIGHT MODE (Tes valeurs originales) */
+    /* ☀️ LIGHT MODE */
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --primary: 199 89% 48%; 
@@ -34,7 +33,7 @@
   }
   
   .dark {
-    /* 🌙 DARK MODE PREMIUM (Base Slate-950, très profond et élégant) */
+    /* 🌙 DARK MODE PREMIUM */
     --background: 222 47% 5%;       
     --foreground: 210 40% 98%;      
     --primary: 199 89% 48%;         
@@ -62,7 +61,7 @@
    PRO MAX EXTRA LUXURY UI - GLOBAL
    ========================================= */
 
-/* 1. FOND GÉNÉRAL (S'adapte automatiquement) */
+/* FOND GÉNÉRAL */
 .bg-promax-paradise {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -77,7 +76,7 @@
 }
 
 .dark .bg-promax-paradise {
-  background-color: #020617; /* Slate 950 */
+  background-color: #020617; 
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
@@ -89,7 +88,7 @@
   100% { transform: scale(1.05) translate(-30px, 15px); }
 }
 
-/* 2. CARTES GLASSMORPHISM (S'adapte automatiquement) */
+/* CARTES GLASSMORPHISM */
 .glass-promax {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(30px);
@@ -106,8 +105,8 @@
 }
 
 .dark .glass-promax {
-  background: rgba(15, 23, 42, 0.5); /* Slate 900 avec transparence */
-  border: 1px solid rgba(255, 255, 255, 0.08); /* Bordure subtile pour délimiter */
+  background: rgba(15, 23, 42, 0.5); 
+  border: 1px solid rgba(255, 255, 255, 0.08); 
   box-shadow: 
     0 15px 35px -5px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -144,10 +143,7 @@
   border-color: rgba(14, 165, 233, 0.4);
 }
 
-/* 3. UTILITAIRES DE TEXTE */
-.animate-float {
-  animation: floatIcon 4s ease-in-out infinite;
-}
+.animate-float { animation: floatIcon 4s ease-in-out infinite; }
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
@@ -167,168 +163,152 @@
   color: transparent;
 }
 
-/* 4. SCROLLBARS (S'adapte automatiquement) */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
 .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-/* =========================================
-   CORRECTION GLOBALE DU CONTRASTE DARK MODE
-   ========================================= */
-@layer utilities {
-  /* On illumine tous les textes secondaires gris foncés pour le Dark Mode */
-  .dark .text-slate-500,
-  .dark .text-slate-600 {
-    color: #cbd5e1 !important; /* slate-300 : Gris clair très lumineux */
-  }
-  .dark .text-slate-400 {
-    color: #e2e8f0 !important; /* slate-200 : Presque blanc pour les petits textes */
-  }
-  .dark .text-slate-700,
-  .dark .text-slate-800,
-  .dark .text-slate-900 {
-    color: #f8fafc !important; /* slate-50 : Blanc pur pour les titres et textes forts */
-  }
-  
-  /* Correction globale des Inputs, Placeholders et bordures */
-  .dark input, 
-  .dark select, 
-  .dark textarea {
-    background-color: #0f172a !important; /* slate-900 */
-    color: #ffffff !important;
-    border-color: #334155 !important; /* slate-700 */
-  }
-  
-  .dark input::placeholder, 
-  .dark textarea::placeholder {
-    color: #94a3b8 !important; /* slate-400 : Placeholder parfaitement visible */
-    opacity: 1;
-  }
-}
+
 /* =========================================
    🔴 MOTEUR DARK MODE GLOBAL PREMIUM 🔴
-   Hada yrigel ga3 les pages d'un coup !
    ========================================= */
 
 @layer utilities {
   
-  /* 1. RÉPARATION DES TEXTES (Finis les textes gris invisibles !) */
+  /* 1. TEXTES (Lisibilité absolue) */
   .dark .text-slate-900, 
   .dark .text-slate-800, 
   .dark .text-slate-700,
   .dark .text-gray-900,
   .dark .text-gray-800 {
-    color: #f8fafc !important; /* Blanc éclatant pour la lisibilité */
+    color: #f8fafc !important; /* Blanc éclatant */
   }
   
   .dark .text-slate-600, 
   .dark .text-slate-500,
   .dark .text-gray-600,
   .dark .text-gray-500 {
-    color: #cbd5e1 !important; /* Gris ultra clair et lumineux (slate-300) */
+    color: #cbd5e1 !important; /* Gris ultra lumineux pour la lecture */
   }
   
   .dark .text-slate-400 {
-    color: #e2e8f0 !important; /* Presque blanc (slate-200) */
+    color: #e2e8f0 !important; /* Presque blanc */
   }
 
-  /* 2. RÉPARATION DES FONDS BLANCS (Safar AI, Finances, Dossiers, Modales) */
+  /* 2. FONDS & CADRES (Bleu nuit de luxe, zéro gris fade !) */
   .dark .bg-white,
-  .dark [role="dialog"] {
-    background-color: #0f172a !important; /* Slate-900 : Sombre et élégant */
-    border-color: #1e293b !important;
-    color: #f8fafc !important;
-  }
-  
   .dark .bg-slate-50, 
-  .dark .bg-gray-50 {
-    background-color: #1e293b !important; /* Slate-800 */
-    border-color: #334155 !important;
+  .dark .bg-gray-50,
+  .dark [role="dialog"] {
+    background-color: #0b1426 !important; /* Bleu nuit élégant (Fini le blanc/gris) */
+    border-color: #172542 !important;
     color: #f8fafc !important;
   }
 
   .dark .bg-slate-100, 
   .dark .bg-gray-100 {
-    background-color: #334155 !important; /* Slate-700 */
+    background-color: #172542 !important; 
+    border-color: #1e2e4f !important;
     color: #f8fafc !important;
-    border-color: #475569 !important;
   }
 
-  /* 3. RÉPARATION DES BORDURES ET CADRES GRIS */
   .dark .border-slate-100, 
   .dark .border-slate-200,
   .dark .border-gray-100, 
   .dark .border-gray-200 {
-    border-color: #1e293b !important; /* Bordures sombres élégantes */
+    border-color: #172542 !important;
   }
 
-  /* 4. RÉPARATION DES FORMULAIRES & INPUTS */
+  /* 3. MODALES (Pop-ups) & BOUTON X */
+  .dark [class*="from-emerald-50"],
+  .dark [class*="from-cyan-50"],
+  .dark [class*="from-indigo-50"],
+  .dark [class*="from-orange-50"],
+  .dark [class*="from-purple-50"] {
+    --tw-gradient-from: #0a1120 !important; /* Dégradé sombre et pro */
+    --tw-gradient-to: #040b16 !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+  .dark [class*="to-cyan-50"],
+  .dark [class*="to-blue-50"] {
+    --tw-gradient-to: #040b16 !important;
+  }
+
+  .dark [role="dialog"] > button {
+    color: #ffffff !important;
+    background-color: #172542 !important;
+    border-radius: 50%;
+    padding: 6px;
+    opacity: 1 !important;
+  }
+  .dark [role="dialog"] > button:hover {
+    background-color: #ef4444 !important; /* Rouge vif pour fermer (X) */
+  }
+
+  /* 4. FORMULAIRES & INPUTS */
   .dark input, 
   .dark select, 
   .dark textarea {
-    background-color: #1e293b !important;
-    color: #f8fafc !important;
-    border-color: #334155 !important;
+    background-color: #0a1120 !important;
+    color: #ffffff !important;
+    border-color: #172542 !important;
   }
   
-  .dark input::placeholder, 
+  .dark input::placeholder,
   .dark textarea::placeholder {
-    color: #94a3b8 !important; /* Placeholder très clair (slate-400) */
+    color: #94a3b8 !important; 
     opacity: 1 !important;
   }
 
-  /* 5. RÉPARATION DES GRAPHIQUES (Dashboard : "7 Jours", "Ce Mois") */
-  /* Les axes du graphique (Recharts) */
+  /* 5. BOUTONS QUICK ACTIONS DASHBOARD (L'effet Hover Magique) */
+  .dark .hover\:bg-white:hover,
+  .dark .hover\:bg-slate-50:hover,
+  .dark .hover\:bg-slate-100:hover,
+  .dark .hover\:bg-gray-50:hover {
+    background-color: #13213c !important; /* Bleu nuit plus clair, très premium */
+    border-color: #1e335b !important; 
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(0,0,0,0.5) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* 6. GRAPHIQUES (Recharts) */
   .dark .recharts-text, 
   .dark .recharts-cartesian-axis-tick-value {
-    fill: #cbd5e1 !important; /* Texte des stats lumineux */
+    fill: #cbd5e1 !important;
   }
   .dark .recharts-cartesian-grid-horizontal line, 
   .dark .recharts-cartesian-grid-vertical line {
-    stroke: #334155 !important; /* Lignes du fond du graphique */
+    stroke: #172542 !important;
   }
   .dark .recharts-tooltip-wrapper .recharts-default-tooltip {
-    background-color: #0f172a !important;
-    border: 1px solid #1e293b !important;
+    background-color: #0b1426 !important;
+    border: 1px solid #172542 !important;
   }
   .dark .recharts-tooltip-item {
     color: #f8fafc !important;
   }
 
-  /* 6. CORRECTIONS SPÉCIFIQUES DEMANDÉES */
-  /* Bouton "Voir la page publique" et "Voyage organisé" (Page Voyages) */
-  .dark .bg-white\/95 {
-    background-color: rgba(15, 23, 42, 0.95) !important;
-    color: #f8fafc !important;
-  }
-  
-  /* Boutons "Nouveau Client / Visa / Voyage" moches */
-  .dark .hover\:bg-slate-100:hover {
-    background-color: #334155 !important;
-  }
-/* =========================================
-     7. CORRECTION DES BOUTONS QUICK ACTIONS (DASHBOARD)
+  /* =========================================
+     📜 LE REÇU (FACTURE) RESTE EN LIGHT MODE !
      ========================================= */
-  
-  /* L'état normal des cadres d'actions */
-  .dark .bg-slate-50,
-  .dark .bg-gray-50,
-  .dark .bg-white {
-    background-color: #0a1120 !important; /* Bleu nuit très profond */
-    border-color: #172542 !important; /* Bordure discrète */
+  .dark .receipt-box,
+  .dark .receipt-box * {
+    background-color: #ffffff !important; /* Forcé en blanc toujours ! */
+    color: #0f172a !important; /* Texte noir */
+    border-color: #e2e8f0 !important;
   }
-
-  /* L'état au SURVOL (Hover) -> Fini le blanc ! */
-  .dark .hover\:bg-white:hover,
-  .dark .hover\:bg-slate-50:hover,
-  .dark .hover\:bg-slate-100:hover,
-  .dark .hover\:bg-gray-50:hover {
-    background-color: #13213c !important; /* Bleu nuit légèrement plus clair au survol (Super Pro) */
-    border-color: #1e335b !important; /* La bordure s'illumine un peu */
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -5px rgba(0,0,0,0.5) !important; /* Ombre douce et sombre */
-    transition: all 0.3s ease !important;
+  
+  .dark .receipt-box .text-slate-500,
+  .dark .receipt-box p.text-slate-500 {
+    color: #64748b !important; 
+  }
+  
+  .dark .receipt-box h1,
+  .dark .receipt-box h2,
+  .dark .receipt-box h3,
+  .dark .receipt-box span.font-extrabold {
+    color: #020617 !important; 
   }
 }
