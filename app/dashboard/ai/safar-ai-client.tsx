@@ -20,16 +20,104 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar'; 
 
-  // 🟢 LOGIQUE DU CHATBOT IA
   const [messages, setMessages] = useState([{ role: "ai", text: t("aiHello") }]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll vers le bas quand on écrit
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  // 🟢 MOTEUR SÉMANTIQUE (Génération de réponses dynamiques)
+  const generateDynamicResponse = (text: string) => {
+    const lowerText = text.toLowerCase();
+    
+    // VARIABLES DYNAMIQUES
+    const formatter = new Intl.NumberFormat("fr-DZ");
+    const ca = formatter.format(metrics.totalExpected);
+    const debt = formatter.format(metrics.unpaidDebt);
+    const topOffer = offers.length > 0 ? offers[0].title : "عروضك";
+
+    // 1. QUESTION SUR LES CLIENTS
+    if (lowerText.includes("client") || lowerText.includes("زبون") || lowerText.includes("عملاء") || lowerText.includes("عميل") || lowerText.includes("combien")) {
+      const variationsFr = [
+        `Vous avez actuellement **${metrics.clientsCount} clients** enregistrés dans la base, dont **${metrics.returningClients} clients VIP** !`,
+        `J'ai analysé la base : il y a **${metrics.clientsCount} profils clients** au total. Saviez-vous que ${metrics.returningClients} d'entre eux ont déjà voyagé avec vous plusieurs fois ?`,
+        `Le compteur affiche **${metrics.clientsCount} clients**. Pour augmenter ce chiffre, je vous conseille de lancer une campagne sur votre offre '${topOffer}'.`
+      ];
+      const variationsAr = [
+        `تم تسجيل **${metrics.clientsCount} عميل** في قاعدة بياناتك. من بينهم **${metrics.returningClients} عملاء VIP** (أوفياء)!`,
+        `قمت بالبحث في البيانات: لديك إجمالي **${metrics.clientsCount} عميل**. هل تعلم أن ${metrics.returningClients} منهم سافروا معك أكثر من مرة؟`,
+        `العدد الحالي هو **${metrics.clientsCount} عميل**. لزيادة هذا العدد، أنصحك بالترويج لعرض '${topOffer}' أكثر.`
+      ];
+      return isAr ? variationsAr[Math.floor(Math.random() * variationsAr.length)] : variationsFr[Math.floor(Math.random() * variationsFr.length)];
+    }
+
+    // 2. QUESTION SUR LES VISAS
+    if (lowerText.includes("visa") || lowerText.includes("تأشيرة") || lowerText.includes("فيزا")) {
+      return isAr 
+        ? `لديك **${metrics.visasCount} ملف تأشيرة** في النظام. منها **${metrics.activeVisas} قيد المعالجة** حالياً. معدل قبول التأشيرات في وكالتك هو ${metrics.visaSuccessRate}%.`
+        : `Vous gérez actuellement **${metrics.visasCount} dossiers de visas**, dont **${metrics.activeVisas} sont en cours de traitement**. Le taux de réussite global de votre agence est de ${metrics.visaSuccessRate}%.`;
+    }
+
+    // 3. QUESTION FINANCIÈRE (Revenus / Dettes)
+    if (lowerText.includes("revenu") || lowerText.includes("argent") || lowerText.includes("chiffre") || lowerText.includes("أرباح") || lowerText.includes("مداخيل") || lowerText.includes("💰")) {
+      const variationsFr = [
+        `Votre Chiffre d'Affaires potentiel s'élève à **${ca} DA**. Attention, il reste **${debt} DA** de dettes non recouvertes.`,
+        `Les chiffres sont clairs : **${ca} DA** générés au total. Pour optimiser votre trésorerie, il faut absolument récupérer les **${debt} DA** impayés.`,
+        `Résumé financier : \n- Total généré : ${ca} DA\n- Reste à recouvrer : ${debt} DA\nJe peux vous générer un message de relance si vous le souhaitez !`
+      ];
+      const variationsAr = [
+        `إجمالي الأرباح المتوقعة هو **${ca} دج**. لكن احذر، هناك **${debt} دج** ديون لم يتم تحصيلها بعد.`,
+        `البيانات المالية: حققت **${ca} دج**. لتحسين السيولة، يجب التواصل مع العملاء لتحصيل الـ **${debt} دج** المتبقية.`,
+        `ملخص مالي:\n- الإجمالي: ${ca} دج\n- الديون (المتبقي): ${debt} دج\nيمكنني كتابة رسالة تذكير بالدفع إذا أردت ذلك!`
+      ];
+      return isAr ? variationsAr[Math.floor(Math.random() * variationsAr.length)] : variationsFr[Math.floor(Math.random() * variationsFr.length)];
+    }
+
+    // 4. DEMANDE DE CONSEILS (Affiche TOUS les insights de manière naturelle)
+    if (lowerText.includes("conseil") || lowerText.includes("tips") || lowerText.includes("نصائح") || lowerText.includes("💡")) {
+      if (insights.length === 0 || (insights.length === 1 && insights[0].type === "INFO")) {
+        return isAr ? "تحليلاتي تظهر أن كل شيء مستقر حالياً. استمر في العمل الجيد! 🚀" : "Mes analyses montrent que tout est stable. Continuez votre excellent travail ! 🚀";
+      }
+      
+      let conseilText = isAr ? "بناءً على بياناتك الكاملة، إليك خطة العمل المقترحة اليوم:\n\n" : "Sur la base de toutes vos données actuelles, voici mon plan d'action :\n\n";
+      
+      insights.forEach(ins => {
+        if (ins.type !== "INFO") {
+          conseilText += isAr ? `🔹 ${ins.text}\n` : `🔹 ${ins.text}\n`;
+        }
+      });
+      
+      conseilText += isAr ? "\nأي من هذه النقاط تريد أن نبدأ في معالجتها؟" : "\nLequel de ces points souhaitez-vous traiter en premier ?";
+      return conseilText;
+    }
+
+    // 5. DEMANDE DE MARKETING / WHATSAPP
+    if (lowerText.includes("whatsapp") || lowerText.includes("promo") || lowerText.includes("رسالة") || lowerText.includes("✨") || lowerText.includes("marketing")) {
+      const templatesFr = [
+        `Voici un message attractif pour l'offre ${topOffer} :\n\n"🌟 Évadez-vous avec nous ! Découvrez notre offre exclusive : *${topOffer}*. \n✈️ Places très limitées ! Réservez aujourd'hui pour bloquer votre tarif.\n📞 Contactez-nous pour le programme complet !"`,
+        `Modèle pour les clients VIP :\n\n"Salam cher client 🕋✨\nVous nous avez fait confiance par le passé, c'est pourquoi vous êtes prioritaire sur notre nouvelle offre : *${topOffer}*. \nRépondez à ce message pour profiter de votre réduction VIP !"`,
+      ];
+      const templatesAr = [
+        `إليك رسالة لترويج عرض ${topOffer}:\n\n"🌟 لا تفوت الفرصة! اكتشف عرضنا الحصري: *${topOffer}*.\n✈️ الأماكن محدودة جداً! احجز اليوم لضمان مقعدك.\n📞 تواصل معنا الآن للحصول على البرنامج الكامل!"`,
+        `رسالة مخصصة لعملاء VIP:\n\n"السلام عليكم 🕋✨\nباعتبارك أحد عملائنا المميزين، نمنحك الأولوية في التسجيل لعرضنا الجديد: *${topOffer}*.\nرد على هذه الرسالة للاستفادة من تخفيض خاص بك! 🎁"`,
+      ];
+      return isAr ? templatesAr[Math.floor(Math.random() * templatesAr.length)] : templatesFr[Math.floor(Math.random() * templatesFr.length)];
+    }
+
+    // 6. DEFAULT (Si l'IA ne reconnait pas de mot clé)
+    const defaultsFr = [
+      "C'est une excellente question. Je n'ai pas la statistique précise pour cela, mais je peux vous renseigner sur vos clients, visas, finances ou vous donner des conseils marketing !",
+      "Je suis en train d'enrichir ma base d'apprentissage. En attendant, essayez de me demander : 'Combien de clients ai-je ?' ou 'Génère une promo WhatsApp'."
+    ];
+    const defaultsAr = [
+      "هذا سؤال ممتاز. ليس لدي الإحصائية الدقيقة حالياً، لكن يمكنني إخبارك عن عملائك، تأشيراتك، أرباحك، أو كتابة رسائل تسويقية!",
+      "أنا لا أزال في مرحلة التعلم لتحسين إجاباتي. جرب أن تسألني: 'كم عدد عملائي؟' أو 'اكتب رسالة واتساب'."
+    ];
+    return isAr ? defaultsAr[Math.floor(Math.random() * defaultsAr.length)] : defaultsFr[Math.floor(Math.random() * defaultsFr.length)];
+  };
 
   const handleSendMessage = (text = inputValue) => {
     if (!text.trim()) return;
@@ -38,40 +126,11 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
     setInputValue("");
     setIsTyping(true);
 
-    // 🟢 SIMULATION DE L'IA INTELLIGENTE
     setTimeout(() => {
-      let aiResponse = "";
-      const lowerText = text.toLowerCase();
-
-      // Mots clés Financiers
-      if (lowerText.includes("revenu") || lowerText.includes("revenue") || lowerText.includes("أرباح") || lowerText.includes("💰")) {
-        const formattedAmount = new Intl.NumberFormat("fr-DZ").format(metrics.totalExpected);
-        aiResponse = isAr 
-          ? `بناءً على بيانات وكالتك الحالية، الإيرادات المتوقعة الإجمالية هي **${formattedAmount} دج**. \n\nبينما الديون غير المسددة تبلغ **${new Intl.NumberFormat("fr-DZ").format(metrics.unpaidDebt)} دج**. أنصحك بإرسال رسائل تذكير للعملاء اليوم لزيادة التدفق النقدي!` 
-          : `D'après vos données actuelles, le Chiffre d'Affaires potentiel global de l'agence est de **${formattedAmount} DA**.\n\nCependant, vous avez **${new Intl.NumberFormat("fr-DZ").format(metrics.unpaidDebt)} DA** de dettes non recouvertes. Je vous conseille d'envoyer des relances de paiement aujourd'hui pour sécuriser votre trésorerie !`;
-      } 
-      // Mots clés Conseils Marketing
-      else if (lowerText.includes("conseil") || lowerText.includes("tips") || lowerText.includes("نصائح") || lowerText.includes("💡")) {
-        aiResponse = isAr
-          ? `لاحظت أن لديك **${metrics.returningClients} عملاء VIP** (متكررين). \n\n**نصيحتي:** أطلق حملة 'عمرة VIP' خاصة بهم عبر الواتساب. العملاء المتكررون لديهم فرصة 70% للحجز مرة أخرى إذا قدمت لهم عرضاً خاصاً!`
-          : `J'ai remarqué que vous avez **${metrics.returningClients} clients VIP** réguliers dans votre base de données.\n\n**Mon conseil :** Lancez une campagne 'Omra VIP' ciblée uniquement pour eux. Les clients fidèles ont 70% de chances de réserver à nouveau si on leur propose une offre exclusive !`;
-      }
-      // Mots clés Génération de texte (Promo)
-      else if (lowerText.includes("whatsapp") || lowerText.includes("promo") || lowerText.includes("رسالة") || lowerText.includes("✨")) {
-        aiResponse = isAr
-          ? "إليك رسالة واتساب جاهزة ومحسنة تسويقياً لعملائك:\n\n'السلام عليكم 🕋✨ \nبمناسبة اقتراب الموسم، وكالتنا تقدم لكم عرض عمرة VIP حصري بأسعار تنافسية!\n\n🏢 فندق 5 نجوم مطل على الحرم\n✈️ طيران مباشر\n\nاحجز مقعدك الآن قبل نفاذ الأماكن! ⏳'"
-          : "Voici un message WhatsApp persuasif, prêt à être envoyé à vos clients :\n\n'Salam 🕋✨\nLa saison approche ! Notre agence vous propose une offre Omra VIP exclusive avec des tarifs imbattables !\n\n🏢 Hôtel 5 étoiles face au Haram\n✈️ Vol direct garanti\n\nRéservez vite, les places sont très limitées ! ⏳ Contactez-nous pour les détails.'";
-      }
-      // Réponse par défaut
-      else {
-        aiResponse = isAr
-          ? "أنا أقوم بتحليل طلبك... كذكاء اصطناعي، أتعلم باستمرار من بيانات وكالتك لأقدم لك أفضل التوقعات والإجابات."
-          : "J'analyse votre demande... En tant qu'IA, j'apprends en continu des données de votre agence pour vous fournir les meilleures prédictions possibles.";
-      }
-
+      const aiResponse = generateDynamicResponse(text);
       setMessages(prev => [...prev, { role: "ai", text: aiResponse }]);
       setIsTyping(false);
-    }, 1200); // 1.2 secondes de temps de réponse
+    }, 1200); // 1.2s de temps de réflexion
   };
 
   return (
@@ -107,10 +166,9 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* 🟢 INTERFACE CHATBOT IA (7 COLONNES) */}
+        {/* 🟢 INTERFACE CHATBOT IA DYNAMIQUE */}
         <div className="lg:col-span-7 glass-promax dark:bg-[#040b16] dark:border-[#0a1628] rounded-[2.5rem] flex flex-col h-[750px] shadow-xl overflow-hidden transition-colors">
           
-          {/* Entête du chat */}
           <div className="p-6 bg-white/50 dark:bg-[#0a1120]/50 border-b border-slate-100 dark:border-[#172542] backdrop-blur-md flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -126,7 +184,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
             </div>
           </div>
 
-          {/* Zone des messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar" dir={isAr ? "rtl" : "ltr"}>
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? (isAr ? 'flex-row-reverse' : '') : ''}`}>
@@ -158,7 +215,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Boutons de Suggestions rapides */}
           <div className="px-6 pb-4 pt-2 flex flex-wrap gap-2 border-t border-slate-100 dark:border-[#172542] bg-white/30 dark:bg-[#040b16]/30" dir={isAr ? "rtl" : "ltr"}>
             <button onClick={() => handleSendMessage(t("promptRevenue"))} className="text-xs font-bold bg-white dark:bg-[#0a1120] hover:bg-indigo-50 dark:hover:bg-[#13213c] border border-slate-200 dark:border-[#172542] text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full transition-all shadow-sm">
               {t("promptRevenue")}
@@ -171,7 +227,6 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
             </button>
           </div>
 
-          {/* Input de texte */}
           <div className="p-5 bg-slate-50 dark:bg-[#0a1120] border-t border-slate-100 dark:border-[#172542]">
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
@@ -200,9 +255,8 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
 
         </div>
 
-        {/* 🟢 PANNEAU DES STATISTIQUES (5 COLONNES) */}
+        {/* 🟢 PANNEAU DES STATISTIQUES */}
         <div className="lg:col-span-5 space-y-6">
-          
           <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl transition-colors">
             <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
               <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> {t("stratRecs")}
@@ -234,7 +288,7 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
               <PieChart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" /> Ventes & Remplissage
             </h2>
             <div className="space-y-5">
-              {offers.slice(0, 4).map(offer => {
+              {offers.slice(0, 4).map((offer: any) => {
                 const fillRate = offer.totalSpots ? Math.round(((offer.totalSpots - (offer.availableSeats||0)) / offer.totalSpots) * 100) : 0;
                 return (
                   <div key={offer.id} className="space-y-2">
@@ -250,8 +304,8 @@ export function SafarAIClient({ insights, offers, metrics }: { insights: any[], 
               })}
             </div>
           </div>
-
         </div>
+
       </div>
     </div>
   );
