@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE VERS LE NOUVEAU MODÈLE ACTIF DE GROQ
+    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE LLAMA 3.1 INSTANT (100% Gratuit et stable)
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile', // 👈 Le nouveau modèle actif et super rapide
+        model: 'llama-3.1-8b-instant', // 👈 Le modèle garanti actif et sans restriction
         messages: groqMessages,
         temperature: 0.7
       })
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const data = await response.json();
     const text = data.choices[0].message.content;
 
-    // 4. On renvoie le texte à l'interface client (qui fera l'effet machine à écrire)
+    // 4. On renvoie le texte à l'interface client
     return new Response(JSON.stringify({ text }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
