@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE DIRECTE VERS GROQ (0% AI SDK, 0% CRASH)
+    // 3. 🟢 REQUÊTE NATIVE VERS LE NOUVEAU MODÈLE ACTIF DE GROQ
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama3-70b-8192', // Le modèle ultra-rapide de Meta
+        model: 'llama-3.3-70b-versatile', // 👈 Le nouveau modèle actif et super rapide
         messages: groqMessages,
         temperature: 0.7
       })
