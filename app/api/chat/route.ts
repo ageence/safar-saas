@@ -15,7 +15,24 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // 1. Récupération des données
+    // 1. 🟢 LE FIX MAGIQUE : On demande à Groq les modèles autorisés pour TON compte !
+    const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
+      headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` }
+    });
+    
+    if (!modelsResponse.ok) {
+       throw new Error("Clé Groq invalide ou compte non autorisé.");
+    }
+    
+    const modelsData = await modelsResponse.json();
+    if (!modelsData.data || modelsData.data.length === 0) {
+       throw new Error("Ton compte Groq n'a accès à aucun modèle gratuit actuellement.");
+    }
+    
+    // On sélectionne automatiquement le premier modèle disponible (ex: mixtral-8x7b-32768)
+    const activeModel = modelsData.data[0].id;
+
+    // 2. Récupération de tes données
     const clientsCount = await prisma.client.count({ where: { agencyId } });
     const visasCount = await prisma.visaApplication.count({ where: { agencyId } });
     const payments = await prisma.payment.findMany({ where: { agencyId }, select: { amount: true } });
@@ -32,13 +49,13 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    // 2. Formatage 100% propre pour plaire à GROQ (Texte simple)
+    // 3. Formatage propre
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE LLAMA 3.1 INSTANT (100% Gratuit et stable)
+    // 4. 🟢 REQUÊTE NATIVE AVEC LE MODÈLE DÉTECTÉ AUTOMATIQUEMENT
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,7 +63,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-instant', // 👈 Le modèle garanti actif et sans restriction
+        model: activeModel, // 👈 Utilise le modèle validé à 100%
         messages: groqMessages,
         temperature: 0.7
       })
@@ -54,13 +71,12 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errData = await response.json();
-      throw new Error(errData.error?.message || "Erreur de connexion à Groq");
+      throw new Error(errData.error?.message || "Erreur de connexion au modèle Groq");
     }
 
     const data = await response.json();
     const text = data.choices[0].message.content;
 
-    // 4. On renvoie le texte à l'interface client
     return new Response(JSON.stringify({ text }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
