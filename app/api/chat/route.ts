@@ -1,16 +1,7 @@
-// @ts-nocheck
-import { createOpenAI } from '@ai-sdk/openai';
-import { generateText } from 'ai';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
 
 export const maxDuration = 30;
-
-// 🟢 L'ASTUCE DE PRO : On utilise le moteur OpenAI, mais on le détourne vers les serveurs 100% gratuits de GROQ !
-const groq = createOpenAI({
-  baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 export async function POST(req: Request) {
   try {
@@ -18,14 +9,13 @@ export async function POST(req: Request) {
     const agencyId = session?.user?.agencyId;
     if (!agencyId) return new Response("Non autorisé", { status: 401 });
 
-    // 🟢 VÉRIFICATION DE LA NOUVELLE CLÉ
     if (!process.env.GROQ_API_KEY) {
       return new Response("La clé GROQ_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
     }
 
     const { messages } = await req.json();
 
-    // Récupération des données pour l'IA
+    // 1. Récupération des données
     const clientsCount = await prisma.client.count({ where: { agencyId } });
     const visasCount = await prisma.visaApplication.count({ where: { agencyId } });
     const payments = await prisma.payment.findMany({ where: { agencyId }, select: { amount: true } });
@@ -42,19 +32,42 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    // 🟢 ON UTILISE LLaMA 3 (Gratuit, sans carte, et plus rapide que ChatGPT)
-    const result = await generateText({
-      model: groq('llama3-70b-8192'), 
-      system: systemPrompt,
-      messages,
+    // 2. Formatage 100% propre pour plaire à GROQ (Texte simple)
+    const groqMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages.map((m: any) => ({ role: m.role, content: m.content }))
+    ];
+
+    // 3. 🟢 REQUÊTE NATIVE DIRECTE VERS GROQ (0% AI SDK, 0% CRASH)
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama3-70b-8192', // Le modèle ultra-rapide de Meta
+        messages: groqMessages,
+        temperature: 0.7
+      })
     });
 
-    return new Response(JSON.stringify({ text: result.text }), {
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error?.message || "Erreur de connexion à Groq");
+    }
+
+    const data = await response.json();
+    const text = data.choices[0].message.content;
+
+    // 4. On renvoie le texte à l'interface client (qui fera l'effet machine à écrire)
+    return new Response(JSON.stringify({ text }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
+    
   } catch (error: any) {
-    console.error("Erreur API Groq:", error);
+    console.error("Erreur API Native Groq:", error);
     return new Response(error.message || "Erreur interne de l'API Groq.", { status: 500 });
   }
 }
