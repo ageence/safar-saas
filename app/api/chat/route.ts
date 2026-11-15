@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // 1. 🟢 LE FIX MAGIQUE : On demande à Groq les modèles autorisés pour TON compte !
+    // 1. 🟢 ON SCANE LES MODÈLES ET ON PREND LE PLUS STABLE SANS CONDITIONS
     const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
       headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` }
     });
@@ -25,12 +25,10 @@ export async function POST(req: Request) {
     }
     
     const modelsData = await modelsResponse.json();
-    if (!modelsData.data || modelsData.data.length === 0) {
-       throw new Error("Ton compte Groq n'a accès à aucun modèle gratuit actuellement.");
-    }
     
-    // On sélectionne automatiquement le premier modèle disponible (ex: mixtral-8x7b-32768)
-    const activeModel = modelsData.data[0].id;
+    // Liste des modèles 100% ouverts sans cases à cocher
+    const safeModels = ["llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"];
+    const activeModel = modelsData.data?.find((m: any) => safeModels.includes(m.id))?.id || "mixtral-8x7b-32768";
 
     // 2. Récupération de tes données
     const clientsCount = await prisma.client.count({ where: { agencyId } });
@@ -49,13 +47,12 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    // 3. Formatage propre
     const groqMessages = [
       { role: 'system', content: systemPrompt },
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 4. 🟢 REQUÊTE NATIVE AVEC LE MODÈLE DÉTECTÉ AUTOMATIQUEMENT
+    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE SÉCURISÉ
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -63,7 +60,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: activeModel, // 👈 Utilise le modèle validé à 100%
+        model: activeModel, 
         messages: groqMessages,
         temperature: 0.7
       })
