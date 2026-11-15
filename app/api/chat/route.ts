@@ -1,10 +1,16 @@
 // @ts-nocheck
-import { google } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
 
 export const maxDuration = 30;
+
+// 🟢 L'ASTUCE DE PRO : On utilise le moteur OpenAI, mais on le détourne vers les serveurs 100% gratuits de GROQ !
+const groq = createOpenAI({
+  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export async function POST(req: Request) {
   try {
@@ -12,13 +18,14 @@ export async function POST(req: Request) {
     const agencyId = session?.user?.agencyId;
     if (!agencyId) return new Response("Non autorisé", { status: 401 });
 
-    // 🟢 VÉRIFICATION DE LA NOUVELLE CLÉ GOOGLE
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-      return new Response("La clé GOOGLE_GENERATIVE_AI_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
+    // 🟢 VÉRIFICATION DE LA NOUVELLE CLÉ
+    if (!process.env.GROQ_API_KEY) {
+      return new Response("La clé GROQ_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
     }
 
     const { messages } = await req.json();
 
+    // Récupération des données pour l'IA
     const clientsCount = await prisma.client.count({ where: { agencyId } });
     const visasCount = await prisma.visaApplication.count({ where: { agencyId } });
     const payments = await prisma.payment.findMany({ where: { agencyId }, select: { amount: true } });
@@ -35,9 +42,9 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    // 🟢 ON UTILISE LE MODÈLE GEMINI 1.5 FLASH (Gratuit et ultra-rapide)
+    // 🟢 ON UTILISE LLaMA 3 (Gratuit, sans carte, et plus rapide que ChatGPT)
     const result = await generateText({
-      model: google('gemini-1.5-flash'), 
+      model: groq('llama3-70b-8192'), 
       system: systemPrompt,
       messages,
     });
@@ -47,7 +54,7 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error: any) {
-    console.error("Erreur API Gemini:", error);
-    return new Response(error.message || "Erreur interne de l'API Gemini.", { status: 500 });
+    console.error("Erreur API Groq:", error);
+    return new Response(error.message || "Erreur interne de l'API Groq.", { status: 500 });
   }
 }
