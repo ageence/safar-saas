@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { openai } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { generateText } from 'ai';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
 
@@ -13,12 +13,11 @@ export async function POST(req: Request) {
     if (!agencyId) return new Response("Non autorisé", { status: 401 });
 
     if (!process.env.OPENAI_API_KEY) {
-      return new Response("Clé OPENAI_API_KEY manquante sur Vercel.", { status: 500 });
+      return new Response("La clé OPENAI_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
     }
 
     const { messages } = await req.json();
 
-    // 🟢 STATISTIQUES SÉCURISÉES POUR L'IA
     const clientsCount = await prisma.client.count({ where: { agencyId } });
     const visasCount = await prisma.visaApplication.count({ where: { agencyId } });
     const payments = await prisma.payment.findMany({ where: { agencyId }, select: { amount: true } });
@@ -35,16 +34,20 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    const result = await streamText({
+    // 🟢 ON UTILISE GENERATETEXT : Ça force le serveur à attraper les erreurs OpenAI !
+    const result = await generateText({
       model: openai('gpt-4o'), 
       system: systemPrompt,
       messages,
     });
 
-    // 🟢 ON ENVOIE UN STREAM DE TEXTE BRUT (Plus robuste)
-    return result.toTextStreamResponse();
+    return new Response(JSON.stringify({ text: result.text }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error: any) {
     console.error("Erreur API Chat:", error);
-    return new Response(error.message || "Erreur interne du serveur OpenAI", { status: 500 });
+    // 🔴 SI TON COMPTE OPENAI N'A PAS DE CRÉDIT, L'ERREUR SORTIRA ICI !
+    return new Response(error.message || "Erreur interne de l'API OpenAI.", { status: 500 });
   }
 }

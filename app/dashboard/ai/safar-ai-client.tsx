@@ -5,19 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
-const getIcon = (type: string) => {
-  switch(type) {
-    case "SUCCESS": return <TrendingUp className="w-6 h-6" />;
-    case "WARNING": return <Clock className="w-6 h-6" />;
-    case "ALERT": return <AlertTriangle className="w-6 h-6" />;
-    case "ACTION": return <Zap className="w-6 h-6" />;
-    case "DEBT": return <CreditCard className="w-6 h-6" />;
-    case "VIP": return <Users className="w-6 h-6" />;
-    case "INFO": default: return <BrainCircuit className="w-6 h-6" />;
-  }
-};
-
-// Formateur de texte natif (Zéro Crash)
+// 🟢 LE MOTEUR QUI TRADUIT LE GRAS ET LES SAUTS DE LIGNE (0% CRASH)
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
   let html = text
@@ -26,30 +14,45 @@ const formatSafeText = (text: string) => {
   return { __html: html };
 };
 
+// 🟢 L'EFFET CHATGPT SUR LE CLIENT
+const TypewriterText = ({ text }: { text: string }) => {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    let i = 0;
+    setDisplayed("");
+    const interval = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, 15); // Vitesse d'écriture
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <div dangerouslySetInnerHTML={formatSafeText(displayed)} className="leading-relaxed" />;
+};
+
 export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { insights?: any[], offers?: any[], metrics?: any }) {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar'; 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const initialMessage = { role: 'assistant', content: t("aiHello") || "Bonjour ! Je suis Safar AI, votre assistant virtuel connecté à l'agence. Que voulez-vous savoir ?" };
+  const initialMessage = { role: 'assistant', content: t("aiHello") || "Bonjour ! Je suis Safar AI. Mes systèmes sont en ligne. Que voulez-vous savoir ?", isNew: false };
   
-  // 🟢 MOTEUR CUSTOM 100% FIABLE
   const [messages, setMessages] = useState([initialMessage]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, errorMsg]);
 
-  // 🟢 LA FONCTION D'ENVOI QUI NE BLOQUE JAMAIS
+  // 🟢 LA FONCTION D'ENVOI ULTRA-ROBUSTE
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     
     setErrorMsg(null);
-    const newMessages = [...messages, { role: 'user', content: text }];
+    const newMessages = [...messages, { role: 'user', content: text, isNew: false }];
     setMessages(newMessages);
     setInputValue("");
     setIsLoading(true);
@@ -58,38 +61,22 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages })
+        body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) })
       });
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(errText || "Erreur de connexion à l'IA.");
+        throw new Error(errText || "OpenAI a refusé la connexion.");
       }
 
-      // Prépare le message de l'IA (vide au début)
-      setMessages(prev => [...prev, { role: 'assistant', content: "" }]);
+      const data = await response.json();
+      
+      // On ajoute la réponse avec "isNew: true" pour déclencher l'animation Typewriter
+      setMessages(prev => [...prev, { role: 'assistant', content: data.text, isNew: true }]);
 
-      // Lecture du Streaming lettre par lettre
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-
-      while (!done) {
-        const { value, done: doneReading } = await reader!.read();
-        done = doneReading;
-        if (value) {
-          const chunkValue = decoder.decode(value, { stream: !done });
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastIndex = updated.length - 1;
-            updated[lastIndex] = { ...updated[lastIndex], content: updated[lastIndex].content + chunkValue };
-            return updated;
-          });
-        }
-      }
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message);
+      setErrorMsg(err.message); // VA AFFICHER LA VRAIE ERREUR D'OPENAI EN ROUGE
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +104,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-4">Safar AI Copilot</h1>
-            <p className="text-slate-300 font-medium mt-2 text-lg">Votre moteur IA Natif ultra-puissant.</p>
+            <p className="text-slate-300 font-medium mt-2 text-lg">Moteur d'Intelligence Artificielle V2</p>
           </div>
         </div>
       </div>
@@ -135,7 +122,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
               </div>
               <div>
                 <h3 className="text-lg font-black text-slate-800 dark:text-white leading-tight">Safar LLM Engine</h3>
-                <p className="text-xs font-bold text-emerald-600 animate-pulse">Connecté et Prêt</p>
+                <p className="text-xs font-bold text-emerald-600 animate-pulse">Connecté à la base de données</p>
               </div>
             </div>
             <button onClick={clearChat} className="p-3 bg-slate-100 dark:bg-[#172542] text-slate-500 rounded-xl hover:text-rose-500 transition-colors">
@@ -155,11 +142,13 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                     ? 'bg-indigo-600 text-white shadow-md rounded-tr-none font-medium' 
                     : 'bg-white dark:bg-[#0a1120] text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
                 }`}>
-                  {msg.role === 'user' ? (
-                    <span className="whitespace-pre-wrap">{msg.content}</span>
-                  ) : (
+                  {/* 🟢 GESTION DE L'ANIMATION */}
+                  {msg.role === 'user' || !msg.isNew ? (
                     <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed" />
+                  ) : (
+                    <TypewriterText text={msg.content} />
                   )}
+
                   {msg.role !== 'user' && (
                     <button onClick={() => navigator.clipboard.writeText(msg.content)} className="absolute -right-12 top-2 p-2 text-slate-400 hover:text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Copy className="w-4 h-4" />
@@ -169,9 +158,13 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
               </div>
             ))}
 
+            {/* 🔴 L'ERREUR D'OPENAI S'AFFICHERA ICI */}
             {errorMsg && (
               <div className="p-5 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-2xl font-bold border border-rose-200">
                 🚨 Erreur Système : {errorMsg}
+                <div className="mt-2 text-sm font-medium opacity-80">
+                  Si le message dit "Insufficient Quota" ou "401", cela veut dire que votre compte OpenAI n'a plus de crédit ou que la clé est invalide.
+                </div>
               </div>
             )}
 
@@ -181,7 +174,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                   <Sparkles className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div className="px-5 py-4 rounded-3xl bg-white dark:bg-[#0a1120] border border-slate-100 dark:border-[#172542] rounded-tl-none text-slate-500 font-medium">
-                  Analyse en cours...
+                  Analyse des données en cours...
                 </div>
               </div>
             )}
@@ -226,10 +219,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
               <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
                 <span className="font-bold text-slate-700 dark:text-slate-300">Dettes</span>
                 <span className="font-black text-rose-600 dark:text-rose-400">{new Intl.NumberFormat("fr-DZ").format(metrics?.unpaidDebt || 0)} DA</span>
-              </div>
-              <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Taux Visas</span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400">{metrics?.visaSuccessRate || 0}%</span>
               </div>
             </div>
           </div>
