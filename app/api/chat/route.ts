@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { openai } from '@ai-sdk/openai';
+import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import prisma from '@/lib/prisma';
 import { auth } from '@/auth';
@@ -12,8 +12,9 @@ export async function POST(req: Request) {
     const agencyId = session?.user?.agencyId;
     if (!agencyId) return new Response("Non autorisé", { status: 401 });
 
-    if (!process.env.OPENAI_API_KEY) {
-      return new Response("La clé OPENAI_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
+    // 🟢 VÉRIFICATION DE LA NOUVELLE CLÉ GOOGLE
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      return new Response("La clé GOOGLE_GENERATIVE_AI_API_KEY n'est pas configurée sur Vercel.", { status: 500 });
     }
 
     const { messages } = await req.json();
@@ -34,9 +35,9 @@ export async function POST(req: Request) {
       - Chiffre d'affaires généré : ${new Intl.NumberFormat("fr-DZ").format(revenue)} DA
     `;
 
-    // 🟢 ON UTILISE GENERATETEXT : Ça force le serveur à attraper les erreurs OpenAI !
+    // 🟢 ON UTILISE LE MODÈLE GEMINI 1.5 FLASH (Gratuit et ultra-rapide)
     const result = await generateText({
-      model: openai('gpt-4o'), 
+      model: google('gemini-1.5-flash'), 
       system: systemPrompt,
       messages,
     });
@@ -46,8 +47,7 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error: any) {
-    console.error("Erreur API Chat:", error);
-    // 🔴 SI TON COMPTE OPENAI N'A PAS DE CRÉDIT, L'ERREUR SORTIRA ICI !
-    return new Response(error.message || "Erreur interne de l'API OpenAI.", { status: 500 });
+    console.error("Erreur API Gemini:", error);
+    return new Response(error.message || "Erreur interne de l'API Gemini.", { status: 500 });
   }
 }
