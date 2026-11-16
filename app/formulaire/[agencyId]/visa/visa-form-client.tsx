@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { MapPin, Phone, Globe, ChevronRight, CheckCircle2, User, FileText, Send, Building2 } from "lucide-react";
+import { submitVisaApplication } from "./actions"; // 🟢 Connexion au backend Prisma
 
-// 🟢 DICTIONNAIRE MULTILINGUE INTEGRE
+// Dictionnaire Multilingue
 const dict = {
   fr: {
     apply: "Demande de Visa",
@@ -14,8 +15,6 @@ const dict = {
     phone: "Numéro de téléphone",
     passport: "Numéro de Passeport",
     submit: "Envoyer ma demande",
-    address: "Notre adresse",
-    callUs: "Nous appeler",
     successMsg: "Votre demande a été envoyée avec succès !",
   },
   en: {
@@ -27,8 +26,6 @@ const dict = {
     phone: "Phone Number",
     passport: "Passport Number",
     submit: "Submit Application",
-    address: "Our address",
-    callUs: "Call us",
     successMsg: "Your application has been successfully submitted!",
   },
   ar: {
@@ -40,8 +37,6 @@ const dict = {
     phone: "رقم الهاتف",
     passport: "رقم جواز السفر",
     submit: "إرسال الطلب",
-    address: "عنواننا",
-    callUs: "اتصل بنا",
     successMsg: "تم إرسال طلبك بنجاح!",
   }
 };
@@ -54,14 +49,24 @@ export default function VisaFormClient({ agency }: { agency: any }) {
   const t = dict[lang];
   const isAr = lang === "ar";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 🟢 LA FONCTION QUI ENVOIE LES DONNÉES À PRISMA
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulation d'envoi à l'API
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    // Récupération des données du formulaire
+    const formData = new FormData(e.currentTarget);
+    
+    // Appel du fichier actions.ts
+    const result = await submitVisaApplication(agency.id, formData);
+    
+    setIsSubmitting(false);
+    
+    if (result.success) {
       setIsSubmitted(true);
-    }, 1500);
+    } else {
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
   };
 
   return (
@@ -73,11 +78,7 @@ export default function VisaFormClient({ agency }: { agency: any }) {
         {/* Infos Agence */}
         <div className={`flex items-center gap-5 ${isAr ? 'text-right' : 'text-left'} mb-6 md:mb-0`}>
           <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
-            {agency.logo ? (
-              <img src={agency.logo} alt="Logo" className="w-full h-full object-cover rounded-2xl" />
-            ) : (
-              <Building2 className="w-8 h-8 text-white" />
-            )}
+            <Building2 className="w-8 h-8 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">{agency.name || "Agence de Voyage"}</h1>
@@ -138,31 +139,31 @@ export default function VisaFormClient({ agency }: { agency: any }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Inputs avec design flottant et focus premium */}
+                {/* 🟢 Le nom (name) de chaque input est CRUCIAL, c'est ce que Prisma récupère */}
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">{t.firstName}</label>
-                  <input required type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder={t.firstName} />
+                  <input required name="firstName" type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder={t.firstName} />
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">{t.lastName}</label>
-                  <input required type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder={t.lastName} />
+                  <input required name="lastName" type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder={t.lastName} />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">{t.phone}</label>
-                  <input required type="tel" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder="+213 XXX XX XX XX" dir="ltr" />
+                  <input required name="phone" type="tel" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder="+213 XXX XX XX XX" dir="ltr" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700 ml-1">{t.passport}</label>
-                  <input required type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 uppercase placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder="Ex: 123456789" />
+                  <input required name="passport" type="text" className={`w-full bg-white border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl px-5 py-4 outline-none transition-all font-medium text-slate-800 uppercase placeholder-slate-400 ${isAr ? 'text-right' : 'text-left'}`} placeholder="Ex: 123456789" />
                 </div>
               </div>
             </div>
 
             <button type="submit" disabled={isSubmitting} className="w-full relative group bg-slate-900 hover:bg-indigo-600 text-white font-black text-lg py-5 rounded-[1.5rem] shadow-xl hover:shadow-indigo-500/30 transition-all duration-300 overflow-hidden flex items-center justify-center gap-3">
-              <span className="relative z-10">{isSubmitting ? "..." : t.submit}</span>
+              <span className="relative z-10">{isSubmitting ? "Chargement..." : t.submit}</span>
               {!isSubmitting && <Send className={`w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1 ${isAr ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />}
             </button>
             
