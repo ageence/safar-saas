@@ -9,12 +9,12 @@ export async function submitVisaApplication(agencyId: string, formData: FormData
     const phone = formData.get("phone") as string;
     const passport = formData.get("passport") as string;
 
-    // 1. On cherche si le client existe déjà avec ce numéro de téléphone
+    // 1. On cherche si le client existe déjà avec ce numéro de téléphone pour cette agence
     let client = await prisma.client.findFirst({
       where: { phone, agencyId },
     });
 
-    // 2. S'il n'existe pas, on le crée
+    // 2. S'il n'existe pas, on le crée avec les champs obligatoires manquants
     if (!client) {
       client = await prisma.client.create({
         data: {
@@ -23,6 +23,7 @@ export async function submitVisaApplication(agencyId: string, formData: FormData
           phone,
           passport,
           agencyId,
+          source: "Site Web", // 🟢 FIX 1 : On indique que le client vient du formulaire public
         },
       });
     }
@@ -32,7 +33,8 @@ export async function submitVisaApplication(agencyId: string, formData: FormData
       data: {
         clientId: client.id,
         agencyId: agencyId,
-        status: "PENDING", // Statut "En attente" par défaut
+        status: "PENDING", 
+        country: "À définir", // 🟢 FIX 2 : Le client choisira le pays plus tard avec l'agence
       },
     });
 
