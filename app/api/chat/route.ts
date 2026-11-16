@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // 1. 🟢 ON SCANE LES MODÈLES ET ON PREND LE PLUS STABLE SANS CONDITIONS
+    // 1. 🟢 DÉTECTION 100% DYNAMIQUE DU MODÈLE
     const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
       headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` }
     });
@@ -25,12 +25,18 @@ export async function POST(req: Request) {
     }
     
     const modelsData = await modelsResponse.json();
+    const availableModels = modelsData.data.map((m: any) => m.id);
     
-    // Liste des modèles 100% ouverts sans cases à cocher
-    const safeModels = ["llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"];
-    const activeModel = modelsData.data?.find((m: any) => safeModels.includes(m.id))?.id || "mixtral-8x7b-32768";
+    // On trouve le premier modèle Llama ou Gemma actif, en excluant formellement 'orpheus'
+    const activeModel = availableModels.find((id: string) => 
+      (id.includes('llama') || id.includes('gemma')) && !id.includes('orpheus')
+    );
 
-    // 2. Récupération de tes données
+    if (!activeModel) {
+        throw new Error("Aucun modèle de chat compatible n'est actif sur votre compte Groq actuellement.");
+    }
+
+    // 2. Récupération des données
     const clientsCount = await prisma.client.count({ where: { agencyId } });
     const visasCount = await prisma.visaApplication.count({ where: { agencyId } });
     const payments = await prisma.payment.findMany({ where: { agencyId }, select: { amount: true } });
@@ -52,7 +58,7 @@ export async function POST(req: Request) {
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE SÉCURISÉ
+    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE DÉTECTÉ DYNAMIQUEMENT
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
