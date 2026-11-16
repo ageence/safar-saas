@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
-// Formateur de texte (Laissé propre, CSS gérera les sauts de lignes)
+// Formateur de texte
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
   let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-indigo-700 dark:text-indigo-400">$1</strong>');
@@ -40,16 +40,13 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
-  // 🟢 SÉCURITÉ NEXT.JS : Vérifier que le composant est bien monté avant de lire le PC
   const [isMounted, setIsMounted] = useState(false);
 
-  // 1. CHARGEMENT SÉCURISÉ (1 seule fois)
+  // 1. CHARGEMENT SÉCURISÉ 
   useEffect(() => {
     const savedChat = localStorage.getItem("safar_ai_history");
     if (savedChat) {
       try {
-        // 🟢 LE FIX : On s'assure que TOUS les anciens messages perdent leur animation
         const parsedHistory = JSON.parse(savedChat).map((msg: any) => ({ ...msg, isNew: false }));
         setMessages(parsedHistory);
       } catch (e) {
@@ -59,7 +56,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     setIsMounted(true);
   }, []);
 
-  // 2. SAUVEGARDE STRICTE À CHAQUE CHANGEMENT
+  // 2. SAUVEGARDE STRICTE
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem("safar_ai_history", JSON.stringify(messages));
@@ -71,7 +68,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, errorMsg]);
 
-  // 3. FONCTION D'ENVOI SANS BUG
+  // 3. FONCTION D'ENVOI (AVEC LA PROTECTION DE MÉMOIRE)
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     
@@ -79,18 +76,22 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     setInputValue("");
     setIsLoading(true);
 
-    // 🟢 LE FIX : On désactive l'animation sur TOUT l'historique avant d'ajouter la nouvelle question
     const messagesToSend = [
       ...messages.map(m => ({ ...m, isNew: false })), 
       { role: 'user', content: text, isNew: false }
     ];
+    // On met à jour l'écran avec TOUTE l'histoire
     setMessages(messagesToSend);
+
+    // 🟢 LE FIX : On découpe l'histoire ! On n'envoie que les 6 derniers messages à l'IA
+    // Ça empêche l'erreur "reduce length of messages" de Groq
+    const shortTermMemoryAPI = messagesToSend.slice(-6).map(m => ({ role: m.role, content: m.content }));
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: messagesToSend.map(m => ({ role: m.role, content: m.content })) })
+        body: JSON.stringify({ messages: shortTermMemoryAPI }) // 👈 On envoie juste les 6 derniers
       });
 
       if (!response.ok) {
@@ -100,7 +101,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
 
       const data = await response.json();
       
-      // 🟢 Seule cette TOUTE NOUVELLE réponse de l'IA va s'animer !
       setMessages(prev => [
         ...prev.map(m => ({ ...m, isNew: false })),
         { role: 'assistant', content: data.text, isNew: true }
@@ -175,7 +175,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                     : 'bg-white dark:bg-[#0a1120] text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
                 }`}>
                   
-                  {/* 🟢 Le secret est ici : Les vieux messages utilisent la div figée, le nouveau utilise l'animation */}
                   {msg.role === 'user' || !msg.isNew ? (
                     <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed whitespace-pre-wrap" />
                   ) : (
