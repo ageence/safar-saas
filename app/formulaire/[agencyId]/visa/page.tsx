@@ -2,12 +2,12 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import VisaFormClient from "./visa-form-client";
 
-// 🟢 En Next.js 16, 'params' DOIT être typé comme une Promise
+// 🟢 LE FIX ABSOLU DEMANDÉ PAR NEXT.JS 16 (Bloque le prerendering sans crasher le cache)
+export const instant = false;
+
 export default async function PublicVisaPage({ params }: { params: Promise<{ agencyId: string }> }) {
-  // 1. 🟢 LE FIX : On "await" les paramètres pour éviter le crash de prerendering Vercel
   const resolvedParams = await params;
 
-  // 2. On utilise l'ID récupéré en toute sécurité
   const agency = await prisma.agency.findUnique({
     where: { id: resolvedParams.agencyId },
     select: { name: true, phone: true, address: true }
