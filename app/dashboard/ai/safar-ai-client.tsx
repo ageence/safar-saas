@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
-// 🟢 LE MOTEUR QUI TRADUIT LE GRAS ET LES SAUTS DE LIGNE (0% CRASH)
+// Formateur de texte
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
   let html = text
@@ -14,7 +14,7 @@ const formatSafeText = (text: string) => {
   return { __html: html };
 };
 
-// 🟢 L'EFFET CHATGPT SUR LE CLIENT
+// Effet Machine à écrire
 const TypewriterText = ({ text }: { text: string }) => {
   const [displayed, setDisplayed] = useState("");
   useEffect(() => {
@@ -24,7 +24,7 @@ const TypewriterText = ({ text }: { text: string }) => {
       setDisplayed(text.slice(0, i + 1));
       i++;
       if (i >= text.length) clearInterval(interval);
-    }, 15); // Vitesse d'écriture
+    }, 15);
     return () => clearInterval(interval);
   }, [text]);
 
@@ -43,11 +43,33 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // 🟢 1. CHARGEMENT DE LA MÉMOIRE AU DÉMARRAGE
+  useEffect(() => {
+    const savedChat = localStorage.getItem("safar_ai_history");
+    if (savedChat) {
+      try {
+        // On récupère l'historique et on désactive l'animation pour les vieux messages
+        const parsedHistory = JSON.parse(savedChat).map((msg: any) => ({ ...msg, isNew: false }));
+        setMessages(parsedHistory);
+      } catch (e) {
+        console.error("Erreur lors du chargement de l'historique", e);
+      }
+    }
+  }, []);
+
+  // 🟢 2. SAUVEGARDE AUTOMATIQUE À CHAQUE NOUVEAU MESSAGE
+  useEffect(() => {
+    if (messages.length > 1) {
+      localStorage.setItem("safar_ai_history", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Auto-scroll vers le bas
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, errorMsg]);
 
-  // 🟢 LA FONCTION D'ENVOI ULTRA-ROBUSTE
+  // Fonction d'envoi à Groq
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     
@@ -66,17 +88,16 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(errText || "OpenAI a refusé la connexion.");
+        throw new Error(errText || "Erreur de connexion.");
       }
 
       const data = await response.json();
       
-      // On ajoute la réponse avec "isNew: true" pour déclencher l'animation Typewriter
       setMessages(prev => [...prev, { role: 'assistant', content: data.text, isNew: true }]);
 
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message); // VA AFFICHER LA VRAIE ERREUR D'OPENAI EN ROUGE
+      setErrorMsg(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -87,15 +108,16 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     sendMessage(inputValue);
   };
 
+  // 🟢 3. FONCTION POUR VIDER LA CORBEILLE (EFFACER LA MÉMOIRE)
   const clearChat = () => {
     setMessages([initialMessage]);
     setErrorMsg(null);
+    localStorage.removeItem("safar_ai_history"); // Supprime du navigateur
   };
 
   return (
     <div className={`space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full pb-10 ${isAr ? 'text-right' : 'text-left'}`}>
       
-      {/* HEADER */}
       <div className="relative p-10 md:p-12 rounded-[2.5rem] overflow-hidden bg-slate-950 border border-slate-800 shadow-xl group">
         <div className={`absolute -top-40 w-96 h-96 bg-indigo-600 rounded-full blur-[100px] opacity-40 animate-pulse ${isAr ? '-left-40' : '-right-40'}`}></div>
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
@@ -104,7 +126,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-4">Safar AI Copilot</h1>
-            <p className="text-slate-300 font-medium mt-2 text-lg">Moteur d'Intelligence Artificielle V2</p>
+            <p className="text-slate-300 font-medium mt-2 text-lg">Votre IA avec mémoire persistante.</p>
           </div>
         </div>
       </div>
@@ -125,7 +147,8 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                 <p className="text-xs font-bold text-emerald-600 animate-pulse">Connecté à la base de données</p>
               </div>
             </div>
-            <button onClick={clearChat} className="p-3 bg-slate-100 dark:bg-[#172542] text-slate-500 rounded-xl hover:text-rose-500 transition-colors">
+            {/* Bouton pour effacer l'historique */}
+            <button onClick={clearChat} title="Effacer l'historique" className="p-3 bg-slate-100 dark:bg-[#172542] text-slate-500 rounded-xl hover:text-rose-500 transition-colors">
               <Trash2 className="w-5 h-5" />
             </button>
           </div>
@@ -142,7 +165,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                     ? 'bg-indigo-600 text-white shadow-md rounded-tr-none font-medium' 
                     : 'bg-white dark:bg-[#0a1120] text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
                 }`}>
-                  {/* 🟢 GESTION DE L'ANIMATION */}
+                  
                   {msg.role === 'user' || !msg.isNew ? (
                     <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed" />
                   ) : (
@@ -158,13 +181,9 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
               </div>
             ))}
 
-            {/* 🔴 L'ERREUR D'OPENAI S'AFFICHERA ICI */}
             {errorMsg && (
               <div className="p-5 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-2xl font-bold border border-rose-200">
                 🚨 Erreur Système : {errorMsg}
-                <div className="mt-2 text-sm font-medium opacity-80">
-                  Si le message dit "Insufficient Quota" ou "401", cela veut dire que votre compte OpenAI n'a plus de crédit ou que la clé est invalide.
-                </div>
               </div>
             )}
 
@@ -174,7 +193,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                   <Sparkles className="w-5 h-5 animate-spin-slow" />
                 </div>
                 <div className="px-5 py-4 rounded-3xl bg-white dark:bg-[#0a1120] border border-slate-100 dark:border-[#172542] rounded-tl-none text-slate-500 font-medium">
-                  Analyse des données en cours...
+                  Analyse en cours...
                 </div>
               </div>
             )}
@@ -205,7 +224,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
         </div>
 
-        {/* PANNEAU LATÉRAL */}
         <div className="lg:col-span-4 space-y-6">
           <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl h-full">
             <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
