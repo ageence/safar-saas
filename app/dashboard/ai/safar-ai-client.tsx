@@ -5,6 +5,19 @@ import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
+// Les icônes pour les insights
+const getIcon = (type: string) => {
+  switch(type) {
+    case "SUCCESS": return <TrendingUp className="w-6 h-6" />;
+    case "WARNING": return <Clock className="w-6 h-6" />;
+    case "ALERT": return <AlertTriangle className="w-6 h-6" />;
+    case "ACTION": return <Zap className="w-6 h-6" />;
+    case "DEBT": return <CreditCard className="w-6 h-6" />;
+    case "VIP": return <Users className="w-6 h-6" />;
+    case "INFO": default: return <BrainCircuit className="w-6 h-6" />;
+  }
+};
+
 // Formateur de texte
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
@@ -80,18 +93,16 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
       ...messages.map(m => ({ ...m, isNew: false })), 
       { role: 'user', content: text, isNew: false }
     ];
-    // On met à jour l'écran avec TOUTE l'histoire
     setMessages(messagesToSend);
 
-    // 🟢 LE FIX : On découpe l'histoire ! On n'envoie que les 6 derniers messages à l'IA
-    // Ça empêche l'erreur "reduce length of messages" de Groq
+    // Protection anti-token limit : On n'envoie que les 6 derniers messages à l'IA
     const shortTermMemoryAPI = messagesToSend.slice(-6).map(m => ({ role: m.role, content: m.content }));
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: shortTermMemoryAPI }) // 👈 On envoie juste les 6 derniers
+        body: JSON.stringify({ messages: shortTermMemoryAPI })
       });
 
       if (!response.ok) {
@@ -136,7 +147,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-4">Safar AI Copilot</h1>
-            <p className="text-slate-300 font-medium mt-2 text-lg">Votre IA avec mémoire persistante.</p>
+            <p className="text-slate-300 font-medium mt-2 text-lg">Votre IA avec mémoire persistante et analyse temps réel.</p>
           </div>
         </div>
       </div>
@@ -233,22 +244,70 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
         </div>
 
+        {/* 🟢 LE PANNEAU LATÉRAL ENRICHI 🟢 */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl h-full">
+          
+          {/* Bloc 1 : Données Financières et Statistiques Clés */}
+          <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl">
             <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
-              <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Données Temps Réel
+              <PieChart className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Données Temps Réel
             </h2>
+            
             <div className="space-y-4">
               <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
                 <span className="font-bold text-slate-700 dark:text-slate-300">Revenus</span>
                 <span className="font-black text-indigo-600 dark:text-indigo-400">{new Intl.NumberFormat("fr-DZ").format(metrics?.totalExpected || 0)} DA</span>
               </div>
+              
               <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] flex justify-between items-center">
                 <span className="font-bold text-slate-700 dark:text-slate-300">Dettes</span>
                 <span className="font-black text-rose-600 dark:text-rose-400">{new Intl.NumberFormat("fr-DZ").format(metrics?.unpaidDebt || 0)} DA</span>
               </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] text-center shadow-sm">
+                   <div className="text-xs font-bold text-slate-500 mb-1">Taux Visas</div>
+                   <div className="text-2xl font-black text-emerald-600">{metrics?.visaSuccessRate || 0}%</div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] text-center shadow-sm">
+                   <div className="text-xs font-bold text-slate-500 mb-1">VIP Clients</div>
+                   <div className="text-2xl font-black text-purple-600">{metrics?.returningClients || 0}</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] text-center shadow-sm">
+                   <div className="text-xs font-bold text-slate-500 mb-1">Total Clients</div>
+                   <div className="text-xl font-black text-slate-700 dark:text-slate-300">{metrics?.clientsCount || 0}</div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-[#040b16] rounded-2xl border border-slate-100 dark:border-[#172542] text-center shadow-sm">
+                   <div className="text-xs font-bold text-slate-500 mb-1">Dossiers Visas</div>
+                   <div className="text-xl font-black text-slate-700 dark:text-slate-300">{metrics?.visasCount || 0}</div>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Bloc 2 : Insights IA (Alertes et Recommandations) */}
+          {insights && insights.length > 0 && (
+             <div className="glass-promax dark:bg-[#0a1120] dark:border-[#172542] p-8 rounded-3xl">
+                <h2 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-3 mb-6">
+                  <BrainCircuit className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Analyse IA
+                </h2>
+                <div className="space-y-3">
+                  {insights.map((insight: any, i: number) => (
+                    <div key={i} className={`p-4 rounded-2xl border ${insight.bg} dark:bg-[#040b16] ${insight.color} border-current/20 flex items-start gap-3 shadow-sm`}>
+                      <div className="mt-0.5">{getIcon(insight.type)}</div>
+                      <div>
+                        <div className="font-bold text-sm uppercase tracking-wider">{insight.titleKey}</div>
+                        <div className="text-sm font-medium mt-1 opacity-90">{insight.text}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+             </div>
+          )}
+
         </div>
 
       </div>
