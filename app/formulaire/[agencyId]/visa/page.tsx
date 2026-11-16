@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import VisaFormClient from "./visa-form-client";
 
 export default async function PublicVisaPage({ params }: { params: { agencyId: string } }) {
-  // 1. On récupère les infos de l'agence depuis la BDD
+  // 1. On récupère les infos (SANS le logo qui n'existe pas dans le schema)
   const agency = await prisma.agency.findUnique({
     where: { id: params.agencyId },
-    select: { name: true, phone: true, address: true, logo: true }
+    select: { name: true, phone: true, address: true }
   });
 
   if (!agency) return notFound();
