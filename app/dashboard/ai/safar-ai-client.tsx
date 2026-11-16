@@ -18,14 +18,14 @@ const getIcon = (type: string) => {
   }
 };
 
-// Formateur de texte
+// 🟢 FORMATAGE TYPOGRAPHIQUE PREMIUM POUR LE GRAS
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
-  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-indigo-700 dark:text-indigo-400">$1</strong>');
+  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight">$1</strong>');
   return { __html: html };
 };
 
-// Effet Machine à écrire
+// Effet Machine à écrire (avec le nouveau style)
 const TypewriterText = ({ text }: { text: string }) => {
   const [displayed, setDisplayed] = useState("");
   useEffect(() => {
@@ -39,7 +39,7 @@ const TypewriterText = ({ text }: { text: string }) => {
     return () => clearInterval(interval);
   }, [text]);
 
-  return <div dangerouslySetInnerHTML={formatSafeText(displayed)} className="leading-relaxed whitespace-pre-wrap" />;
+  return <div dangerouslySetInnerHTML={formatSafeText(displayed)} className="leading-8 whitespace-pre-wrap" />;
 };
 
 export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { insights?: any[], offers?: any[], metrics?: any }) {
@@ -55,7 +55,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  // 1. CHARGEMENT SÉCURISÉ 
   useEffect(() => {
     const savedChat = localStorage.getItem("safar_ai_history");
     if (savedChat) {
@@ -69,19 +68,16 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     setIsMounted(true);
   }, []);
 
-  // 2. SAUVEGARDE STRICTE
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem("safar_ai_history", JSON.stringify(messages));
     }
   }, [messages, isMounted]);
 
-  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, errorMsg]);
 
-  // 3. FONCTION D'ENVOI (AVEC LA PROTECTION DE MÉMOIRE)
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     
@@ -95,7 +91,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     ];
     setMessages(messagesToSend);
 
-    // Protection anti-token limit : On n'envoie que les 6 derniers messages à l'IA
     const shortTermMemoryAPI = messagesToSend.slice(-6).map(m => ({ role: m.role, content: m.content }));
 
     try {
@@ -147,7 +142,7 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
           </div>
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-4">Safar AI Copilot</h1>
-            <p className="text-slate-300 font-medium mt-2 text-lg">Votre IA avec mémoire persistante et analyse temps réel.</p>
+            <p className="text-slate-300 font-medium mt-2 text-lg">Votre assistant intelligent avec analyse en temps réel.</p>
           </div>
         </div>
       </div>
@@ -164,8 +159,9 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-[3px] border-white rounded-full"></div>
               </div>
               <div>
-                <h3 className="text-lg font-black text-slate-800 dark:text-white leading-tight">Safar LLM Engine</h3>
-                <p className="text-xs font-bold text-emerald-600 animate-pulse">Connecté à la base de données</p>
+                {/* 🟢 CHANGEMENT DE NOM ICI */}
+                <h3 className="text-lg font-black text-slate-800 dark:text-white leading-tight">Safar AI</h3>
+                <p className="text-xs font-bold text-emerald-600 animate-pulse">En ligne</p>
               </div>
             </div>
             <button onClick={clearChat} title="Effacer l'historique" className="p-3 bg-slate-100 dark:bg-[#172542] text-slate-500 rounded-xl hover:text-rose-500 transition-colors">
@@ -180,14 +176,15 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                   {msg.role !== 'user' ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
                 </div>
                 
-                <div className={`group relative p-5 rounded-3xl max-w-[90%] text-[15px] leading-relaxed ${
+                {/* 🟢 NOUVELLE TYPOGRAPHIE PREMIUM : text-[15.5px] leading-8 font-medium */}
+                <div className={`group relative p-5 rounded-3xl max-w-[90%] text-[15.5px] leading-8 font-medium tracking-wide ${
                   msg.role === 'user' 
-                    ? 'bg-indigo-600 text-white shadow-md rounded-tr-none font-medium' 
-                    : 'bg-white dark:bg-[#0a1120] text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-md rounded-tr-none' 
+                    : 'bg-white dark:bg-[#0a1120] text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
                 }`}>
                   
                   {msg.role === 'user' || !msg.isNew ? (
-                    <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed whitespace-pre-wrap" />
+                    <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-8 whitespace-pre-wrap" />
                   ) : (
                     <TypewriterText text={msg.content} />
                   )}
