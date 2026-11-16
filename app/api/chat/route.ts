@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // 1. 🟢 DÉTECTION 100% DYNAMIQUE DU MODÈLE
+    // 1. 🟢 DÉTECTION DYNAMIQUE SANS LES MODÈLES "POLICIERS" (GUARD)
     const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
       headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` }
     });
@@ -27,9 +27,13 @@ export async function POST(req: Request) {
     const modelsData = await modelsResponse.json();
     const availableModels = modelsData.data.map((m: any) => m.id);
     
-    // On trouve le premier modèle Llama ou Gemma actif, en excluant formellement 'orpheus'
+    // 🛑 LE FIX EST ICI : On exclut formellement "guard", "vision", "whisper", et "orpheus"
     const activeModel = availableModels.find((id: string) => 
-      (id.includes('llama') || id.includes('gemma')) && !id.includes('orpheus')
+      (id.includes('llama') || id.includes('gemma') || id.includes('mixtral')) 
+      && !id.includes('guard') 
+      && !id.includes('orpheus')
+      && !id.includes('whisper')
+      && !id.includes('vision')
     );
 
     if (!activeModel) {
@@ -58,7 +62,7 @@ export async function POST(req: Request) {
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE DÉTECTÉ DYNAMIQUEMENT
+    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE DE CONVERSATION PUR
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
