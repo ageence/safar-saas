@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // 1. 🟢 DÉTECTION DYNAMIQUE SANS LES MODÈLES "POLICIERS" (GUARD)
+    // 1. 🟢 DÉTECTION ULTIME : ON PREND CE QUI EST DISPONIBLE !
     const modelsResponse = await fetch('https://api.groq.com/openai/v1/models', {
       headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` }
     });
@@ -25,20 +25,21 @@ export async function POST(req: Request) {
     }
     
     const modelsData = await modelsResponse.json();
+    
+    if (!modelsData.data || modelsData.data.length === 0) {
+        throw new Error("Ton compte Groq est complètement vide de modèles.");
+    }
+
     const availableModels = modelsData.data.map((m: any) => m.id);
     
-    // 🛑 LE FIX EST ICI : On exclut formellement "guard", "vision", "whisper", et "orpheus"
+    // 🛑 LE FIX ABSOLU : On prend le TOUT PREMIER modèle qui n'est pas un outil technique
     const activeModel = availableModels.find((id: string) => 
-      (id.includes('llama') || id.includes('gemma') || id.includes('mixtral')) 
-      && !id.includes('guard') 
-      && !id.includes('orpheus')
-      && !id.includes('whisper')
-      && !id.includes('vision')
-    );
-
-    if (!activeModel) {
-        throw new Error("Aucun modèle de chat compatible n'est actif sur votre compte Groq actuellement.");
-    }
+      !id.toLowerCase().includes('guard') && 
+      !id.toLowerCase().includes('orpheus') &&
+      !id.toLowerCase().includes('whisper') &&
+      !id.toLowerCase().includes('vision') &&
+      !id.toLowerCase().includes('embed')
+    ) || availableModels[0]; // Sécurité absolue : s'il ne trouve rien, il force le tout premier de la liste.
 
     // 2. Récupération des données
     const clientsCount = await prisma.client.count({ where: { agencyId } });
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
       ...messages.map((m: any) => ({ role: m.role, content: m.content }))
     ];
 
-    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE DE CONVERSATION PUR
+    // 3. 🟢 REQUÊTE NATIVE VERS LE MODÈLE SAISI
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
