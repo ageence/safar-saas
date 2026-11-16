@@ -5,12 +5,10 @@ import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Sparkles, BrainCircuit, TrendingUp, Clock, AlertTriangle, Zap, CreditCard, Users, PieChart, Send, Bot, User, Mic, Trash2, Copy, StopCircle } from "lucide-react";
 
-// Formateur de texte
+// Formateur de texte (Laissé propre, CSS gérera les sauts de lignes)
 const formatSafeText = (text: string) => {
   if (!text) return { __html: "" };
-  let html = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-indigo-700 dark:text-indigo-400">$1</strong>')
-    .replace(/\n/g, '<br />');
+  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-indigo-700 dark:text-indigo-400">$1</strong>');
   return { __html: html };
 };
 
@@ -28,7 +26,7 @@ const TypewriterText = ({ text }: { text: string }) => {
     return () => clearInterval(interval);
   }, [text]);
 
-  return <div dangerouslySetInnerHTML={formatSafeText(displayed)} className="leading-relaxed" />;
+  return <div dangerouslySetInnerHTML={formatSafeText(displayed)} className="leading-relaxed whitespace-pre-wrap" />;
 };
 
 export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { insights?: any[], offers?: any[], metrics?: any }) {
@@ -42,48 +40,57 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  // 🟢 SÉCURITÉ NEXT.JS : Vérifier que le composant est bien monté avant de lire le PC
+  const [isMounted, setIsMounted] = useState(false);
 
-  // 🟢 1. CHARGEMENT DE LA MÉMOIRE AU DÉMARRAGE
+  // 1. CHARGEMENT SÉCURISÉ (1 seule fois)
   useEffect(() => {
     const savedChat = localStorage.getItem("safar_ai_history");
     if (savedChat) {
       try {
-        // On récupère l'historique et on désactive l'animation pour les vieux messages
+        // 🟢 LE FIX : On s'assure que TOUS les anciens messages perdent leur animation
         const parsedHistory = JSON.parse(savedChat).map((msg: any) => ({ ...msg, isNew: false }));
         setMessages(parsedHistory);
       } catch (e) {
-        console.error("Erreur lors du chargement de l'historique", e);
+        console.error("Erreur historique", e);
       }
     }
+    setIsMounted(true);
   }, []);
 
-  // 🟢 2. SAUVEGARDE AUTOMATIQUE À CHAQUE NOUVEAU MESSAGE
+  // 2. SAUVEGARDE STRICTE À CHAQUE CHANGEMENT
   useEffect(() => {
-    if (messages.length > 1) {
+    if (isMounted) {
       localStorage.setItem("safar_ai_history", JSON.stringify(messages));
     }
-  }, [messages]);
+  }, [messages, isMounted]);
 
-  // Auto-scroll vers le bas
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, errorMsg]);
 
-  // Fonction d'envoi à Groq
+  // 3. FONCTION D'ENVOI SANS BUG
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     
     setErrorMsg(null);
-    const newMessages = [...messages, { role: 'user', content: text, isNew: false }];
-    setMessages(newMessages);
     setInputValue("");
     setIsLoading(true);
+
+    // 🟢 LE FIX : On désactive l'animation sur TOUT l'historique avant d'ajouter la nouvelle question
+    const messagesToSend = [
+      ...messages.map(m => ({ ...m, isNew: false })), 
+      { role: 'user', content: text, isNew: false }
+    ];
+    setMessages(messagesToSend);
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) })
+        body: JSON.stringify({ messages: messagesToSend.map(m => ({ role: m.role, content: m.content })) })
       });
 
       if (!response.ok) {
@@ -93,7 +100,11 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
 
       const data = await response.json();
       
-      setMessages(prev => [...prev, { role: 'assistant', content: data.text, isNew: true }]);
+      // 🟢 Seule cette TOUTE NOUVELLE réponse de l'IA va s'animer !
+      setMessages(prev => [
+        ...prev.map(m => ({ ...m, isNew: false })),
+        { role: 'assistant', content: data.text, isNew: true }
+      ]);
 
     } catch (err: any) {
       console.error(err);
@@ -108,11 +119,10 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
     sendMessage(inputValue);
   };
 
-  // 🟢 3. FONCTION POUR VIDER LA CORBEILLE (EFFACER LA MÉMOIRE)
   const clearChat = () => {
     setMessages([initialMessage]);
     setErrorMsg(null);
-    localStorage.removeItem("safar_ai_history"); // Supprime du navigateur
+    localStorage.removeItem("safar_ai_history");
   };
 
   return (
@@ -147,7 +157,6 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                 <p className="text-xs font-bold text-emerald-600 animate-pulse">Connecté à la base de données</p>
               </div>
             </div>
-            {/* Bouton pour effacer l'historique */}
             <button onClick={clearChat} title="Effacer l'historique" className="p-3 bg-slate-100 dark:bg-[#172542] text-slate-500 rounded-xl hover:text-rose-500 transition-colors">
               <Trash2 className="w-5 h-5" />
             </button>
@@ -166,8 +175,9 @@ export function SafarAIClient({ insights = [], offers = [], metrics = {} }: { in
                     : 'bg-white dark:bg-[#0a1120] text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-[#172542] rounded-tl-none shadow-sm'
                 }`}>
                   
+                  {/* 🟢 Le secret est ici : Les vieux messages utilisent la div figée, le nouveau utilise l'animation */}
                   {msg.role === 'user' || !msg.isNew ? (
-                    <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed" />
+                    <div dangerouslySetInnerHTML={formatSafeText(msg.content)} className="leading-relaxed whitespace-pre-wrap" />
                   ) : (
                     <TypewriterText text={msg.content} />
                   )}
