@@ -2,7 +2,7 @@ export const instant = false;
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import LayoutClient from "./layout-client";
-import { NotificationBell } from "@/components/notification-bell"; // 🟢 1. ON IMPORTE TA CLOCHE ICI
+import { NotificationBell } from "@/components/notification-bell";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <LayoutClient session={session}>
       {children}
-      {/* 🟢 2. TA CLOCHE EST DE RETOUR ICI ! (Sécurisée uniquement pour l'admin) */}
+      {/* 🟢 LA CLOCHE EST ICI, SÉCURISÉE DANS LE DASHBOARD */}
       <NotificationBell />
     </LayoutClient>
   );
