@@ -13,15 +13,46 @@ export function NotificationBell() {
   const prevCount = useRef(0);
   const isFirstLoad = useRef(true);
 
+  // 🟢 DEMANDER LA PERMISSION AU NAVIGATEUR (STYLE WHATSAPP)
+  const requestDesktopPermission = () => {
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  };
+
   useEffect(() => {
+    // On demande la permission doucement au chargement si ce n'est pas déjà fait
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
     const fetchNotifs = async () => {
       try {
         const data = await getUnreadNotifications(Date.now());
         
-        // LE SON JOUE ICI
         if (!isFirstLoad.current && data.length > prevCount.current) {
+          
+          // 1. Essayer de jouer le son dans le navigateur
           const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
-          audio.play().catch(() => console.log("Son bloqué"));
+          audio.play().catch(() => console.log("Son navigateur bloqué"));
+
+          // 2. 🟢 DÉCLENCHER LA NOTIFICATION BUREAU (WINDOWS / MAC)
+          if ("Notification" in window && Notification.permission === "granted") {
+            const latest = data[0]; // La dernière notification reçue
+            
+            // Crée le popup natif du PC qui passe par-dessus toutes les applications !
+            const desktopNotif = new Notification(latest?.title || "Safar SaaS - Nouvelle Demande", {
+              body: latest?.message || "Vous avez reçu une nouvelle notification sur la plateforme.",
+              icon: "/favicon.ico", // Le petit logo de ton site
+              requireInteraction: true // Garde l'alerte à l'écran jusqu'à ce que tu cliques dessus
+            });
+
+            // Si tu cliques sur le popup Windows/Mac, ça t'ouvre l'onglet du CRM
+            desktopNotif.onclick = () => {
+              window.focus();
+              desktopNotif.close();
+            };
+          }
         }
         
         prevCount.current = data.length;
@@ -45,12 +76,16 @@ export function NotificationBell() {
     setIsOpen(false);
   };
 
+  const handleOpenPanel = () => {
+    setIsOpen(!isOpen);
+    requestDesktopPermission(); // Si l'admin n'a pas encore autorisé, on lui redemande quand il clique sur la cloche
+  };
+
   const unreadCount = notifications.length;
 
   return (
     <div className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-[999999]">
       
-      {/* LE PANNEAU QUI S'OUVRE */}
       {isOpen && (
         <div className="absolute bottom-24 right-0 w-[320px] sm:w-[400px] bg-slate-50 rounded-2xl shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-4 border-slate-900 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           <div className="bg-slate-900 p-5 flex justify-between items-center text-white">
@@ -81,8 +116,8 @@ export function NotificationBell() {
         </div>
       )}
 
-      {/* LA CLOCHE EN BAS À DROITE */}
-      <button onClick={() => setIsOpen(!isOpen)} className="relative p-5 bg-slate-900 hover:bg-indigo-600 text-white rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.4)] transition-all hover:scale-110 border-4 border-white active:scale-95">
+      {/* BOUTON DE LA CLOCHE */}
+      <button onClick={handleOpenPanel} className="relative p-5 bg-slate-900 hover:bg-indigo-600 text-white rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.4)] transition-all hover:scale-110 border-4 border-white active:scale-95">
         <Bell className="w-8 h-8" />
         {unreadCount > 0 && (
           <span className="absolute -top-3 -right-3 w-8 h-8 bg-rose-500 text-white text-sm font-black rounded-full flex items-center justify-center border-4 border-white shadow-xl animate-bounce">{unreadCount}</span>
