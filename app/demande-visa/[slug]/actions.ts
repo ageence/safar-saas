@@ -8,8 +8,8 @@ export async function submitVisaApplication(agencyId: string, offerId: string, f
     const phone = formData.get("phone") as string;
     const passport = formData.get("passport") as string;
     const country = formData.get("country") as string;
+    const notes = formData.get("notes") as string; // 🟢 RESTAURATION DES NOTES
 
-    // 1. Création ou maj du Client
     let client = await prisma.client.findFirst({ where: { phone, agencyId } });
     if (!client) {
       client = await prisma.client.create({
@@ -17,32 +17,33 @@ export async function submitVisaApplication(agencyId: string, offerId: string, f
       });
     }
 
-    // 2. Création du Dossier Visa
     const visa = await prisma.visaApplication.create({
       data: {
         clientId: client.id,
         agencyId: agencyId,
         status: "EN_ATTENTE",
         country: country || "Non spécifié",
-        type: "Touristique/Étude", 
+        type: "Touristique/Étude",
+        notes: notes, // 🟢 SAUVEGARDE DES NOTES
       },
     });
 
-    // 3. (Simulation) Enregistrement des documents dans la base
-    // Dans la réalité, tu uploaderais le fichier sur Vercel Blob ici, puis tu mettrais l'URL
+    // Sauvegarde simulée des documents
     const photoName = formData.get("photoName") as string;
     const passName = formData.get("passName") as string;
+    if (photoName) await prisma.document.create({ data: { name: "Photo d'identité", fileUrl: photoName, visaId: visa.id }});
+    if (passName) await prisma.document.create({ data: { name: "Passeport", fileUrl: passName, visaId: visa.id }});
 
-    if (photoName) {
-      await prisma.document.create({
-        data: { name: "Photo d'identité", fileUrl: photoName, visaId: visa.id }
-      });
-    }
-    if (passName) {
-      await prisma.document.create({
-        data: { name: "Passeport", fileUrl: passName, visaId: visa.id }
-      });
-    }
+    // 🟢 RESTAURATION DES NOTIFICATIONS POUR L'ADMIN
+    await prisma.notification.create({
+      data: {
+        title: "Nouveau Dossier Visa",
+        message: `${firstName} ${lastName} a soumis un dossier visa. Remarques: ${notes || "Aucune"}`,
+        type: "VISA",
+        agencyId: agencyId,
+        link: `/dashboard/visas/${visa.id}`
+      }
+    });
 
     return { success: true, ref: visa.id.slice(-6).toUpperCase() };
   } catch (error) {

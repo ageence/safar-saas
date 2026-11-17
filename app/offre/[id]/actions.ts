@@ -6,6 +6,7 @@ export async function submitBooking(agencyId: string, offerId: string, formData:
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const phone = formData.get("phone") as string;
+    const notes = formData.get("notes") as string; // 🟢 RESTAURATION DES NOTES
 
     let client = await prisma.client.findFirst({ where: { phone, agencyId } });
     if (!client) {
@@ -21,6 +22,17 @@ export async function submitBooking(agencyId: string, offerId: string, formData:
         offerId: offerId,
         status: "EN_ATTENTE",
       },
+    });
+
+    // 🟢 RESTAURATION DES NOTIFICATIONS POUR L'ADMIN
+    await prisma.notification.create({
+      data: {
+        title: "Nouvelle Réservation",
+        message: `${firstName} ${lastName} a réservé un voyage. Remarques: ${notes || "Aucune"}`,
+        type: "VOYAGE",
+        agencyId: agencyId,
+        link: `/dashboard/bookings/${booking.id}`,
+      }
     });
 
     return { success: true, ref: booking.id.slice(-6).toUpperCase() };

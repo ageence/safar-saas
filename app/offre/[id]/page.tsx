@@ -4,12 +4,12 @@ import OffreClient from "./offre-client";
 
 export const instant = false;
 
-export default async function PublicOfferPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicOfferPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   
-  // On cherche l'Offre de Voyage par son ID
+  // 🟢 FIX CRASH : On cherche par "id" car ton dossier est [id] !
   const offer = await prisma.offer.findUnique({
-    where: { id: resolvedParams.slug },
+    where: { id: resolvedParams.id },
     include: { agency: true }
   });
 

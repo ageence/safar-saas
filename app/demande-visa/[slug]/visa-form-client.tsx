@@ -8,15 +8,27 @@ const dict = {
     title: "Dossier Visa", subtitle: "Préparation et soumission sécurisée",
     step1: "Identité", step2: "Documents", step3: "Vérification",
     fname: "Prénom", lname: "Nom", phone: "Téléphone", pass: "N° Passeport", country: "Pays de destination",
+    notes: "Vos remarques supplémentaires (Optionnel)...",
     uploadPhoto: "Photo d'identité", uploadPass: "Copie du Passeport", dragDrop: "Glissez le fichier ou cliquez",
     sizeRule: "PNG, JPG jusqu'à 5MB", fileReady: "Prêt à l'envoi", remove: "Retirer",
     next: "Continuer", prev: "Retour", submit: "Soumettre le dossier", loading: "Analyse en cours...",
     success: "Dossier Transmis !", successSub: "Référence de suivi :",
   },
+  en: {
+    title: "Visa Application", subtitle: "Secure preparation and submission",
+    step1: "Identity", step2: "Documents", step3: "Verification",
+    fname: "First Name", lname: "Last Name", phone: "Phone", pass: "Passport No.", country: "Destination Country",
+    notes: "Additional remarks (Optional)...",
+    uploadPhoto: "Passport Photo", uploadPass: "Passport Copy", dragDrop: "Drag file or click",
+    sizeRule: "PNG, JPG up to 5MB", fileReady: "Ready to send", remove: "Remove",
+    next: "Continue", prev: "Back", submit: "Submit Application", loading: "Processing...",
+    success: "Application Submitted!", successSub: "Tracking Reference:",
+  },
   ar: {
     title: "ملف التأشيرة", subtitle: "إعداد وتقديم آمن",
     step1: "الهوية", step2: "الوثائق", step3: "المراجعة",
     fname: "الاسم", lname: "اللقب", phone: "الهاتف", pass: "رقم الجواز", country: "بلد الوجهة",
+    notes: "ملاحظات إضافية (اختياري)...",
     uploadPhoto: "صورة شمسية", uploadPass: "نسخة الجواز", dragDrop: "اسحب الملف أو اضغط",
     sizeRule: "PNG, JPG حتى 5MB", fileReady: "جاهز للإرسال", remove: "حذف",
     next: "متابعة", prev: "رجوع", submit: "إرسال الملف", loading: "جاري التحليل...",
@@ -25,7 +37,7 @@ const dict = {
 };
 
 export default function VisaFormClient({ agency, visaOffer }: { agency: any, visaOffer: any }) {
-  const [lang, setLang] = useState<"fr"|"ar">("fr");
+  const [lang, setLang] = useState<"fr" | "en" | "ar">("fr");
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean, ref?: string } | null>(null);
@@ -54,6 +66,7 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
     
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
+    
     // On simule l'envoi des noms de fichiers pour la BDD
     if (photo) formData.append("photoName", photo.file.name);
     if (passportDoc) formData.append("passName", passportDoc.file.name);
@@ -67,8 +80,8 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
     <div className="max-w-4xl mx-auto px-4" dir={isAr ? "rtl" : "ltr"}>
       
       {/* HEADER AGENCE */}
-      <div className="flex justify-between items-center bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/10 mb-8 shadow-xl">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/10 mb-8 shadow-xl">
+        <div className="flex items-center gap-4 mb-4 md:mb-0">
           <div className="w-16 h-16 bg-white rounded-2xl p-1 shadow-lg flex items-center justify-center font-black text-indigo-900 text-xl">
             {agency.name.charAt(0)}
           </div>
@@ -77,9 +90,23 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
             <p className="text-slate-300 text-sm">{visaOffer.title}</p>
           </div>
         </div>
-        <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className="px-5 py-2 bg-white/20 hover:bg-white text-white hover:text-indigo-900 rounded-xl font-bold transition-all">
-          {lang === "fr" ? "العربية" : "Français"}
-        </button>
+        
+        {/* SELECTEUR DE LANGUES MULTIPLE */}
+        <div className="flex bg-white/10 p-1.5 rounded-2xl shadow-inner border border-white/20">
+          {(["fr", "en", "ar"] as const).map((l) => (
+             <button 
+               key={l} 
+               onClick={() => setLang(l)} 
+               className={`px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                 lang === l 
+                   ? "bg-white text-indigo-900 shadow-md" 
+                   : "text-white/70 hover:text-white hover:bg-white/20"
+               }`}
+             >
+               {l === "fr" ? "FR" : l === "en" ? "EN" : "العربية"}
+             </button>
+          ))}
+        </div>
       </div>
 
       <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-slate-100">
@@ -106,17 +133,27 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
             </div>
 
             {/* ETAPE 1: IDENTITE */}
-            <div className={`space-y-6 ${step === 1 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-6 animate-in fade-in duration-500 ${step === 1 ? 'block' : 'hidden'}`}>
               <div className="grid md:grid-cols-2 gap-6">
                 <input required={step===1} name="firstName" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-4 font-bold outline-none" placeholder={t.fname} />
                 <input required={step===1} name="lastName" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-4 font-bold outline-none" placeholder={t.lname} />
                 <input required={step===1} name="phone" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-4 font-bold outline-none" placeholder={t.phone} dir="ltr" />
                 <input required={step===1} name="passport" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-4 font-bold outline-none" placeholder={t.pass} />
+                
+                {/* 🟢 CHAMP NOTES AJOUTÉ ICI (Prend toute la largeur) */}
+                <div className="md:col-span-2 relative mt-2">
+                  <textarea 
+                    name="notes" 
+                    rows={3}
+                    className={`w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-4 font-bold outline-none resize-none transition-colors ${isAr ? 'text-right' : 'text-left'}`} 
+                    placeholder={t.notes} 
+                  />
+                </div>
               </div>
             </div>
 
             {/* ETAPE 2: UPLOAD */}
-            <div className={`space-y-6 ${step === 2 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-6 animate-in fade-in duration-500 ${step === 2 ? 'block' : 'hidden'}`}>
               {/* Photo Upload Dropzone */}
               <div className="relative overflow-hidden bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-8 text-center hover:border-indigo-500 transition-colors group">
                 <input type="file" ref={photoRef} onChange={(e) => handleFile(e, "photo")} accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
@@ -157,10 +194,10 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
             </div>
 
             {/* ETAPE 3: RECAPITULATIF */}
-            <div className={`space-y-6 ${step === 3 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-6 animate-in fade-in duration-500 ${step === 3 ? 'block' : 'hidden'}`}>
               <div className="bg-indigo-50 p-6 rounded-3xl text-center">
                 <ShieldCheck className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
-                <h3 className="text-xl font-black text-slate-800 mb-2">Vérification Finale</h3>
+                <h3 className="text-xl font-black text-slate-800 mb-2">{t.step3}</h3>
                 <p className="text-slate-600">Vos informations et documents sont prêts à être transmis à l'agence de manière sécurisée.</p>
                 <input type="hidden" name="country" value={visaOffer.country || "Non défini"} />
               </div>
@@ -169,12 +206,13 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
             {/* NAVIGATION */}
             <div className="flex gap-4 pt-4">
               {step > 1 && (
-                <button type="button" onClick={() => setStep(step-1)} className="px-6 py-4 rounded-2xl bg-slate-100 font-black text-slate-600 hover:bg-slate-200 w-1/3">
+                <button type="button" onClick={() => setStep(step-1)} className="px-6 py-4 rounded-2xl bg-slate-100 font-black text-slate-600 hover:bg-slate-200 w-1/3 transition-colors">
                   {t.prev}
                 </button>
               )}
-              <button type="submit" disabled={isSubmitting} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/30">
-                {isSubmitting ? t.loading : step < 3 ? t.next : t.submit} {step < 3 ? <ArrowRight className="w-5 h-5"/> : <Send className="w-5 h-5"/>}
+              <button type="submit" disabled={isSubmitting} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/30 transition-all">
+                {isSubmitting ? t.loading : step < 3 ? t.next : t.submit} 
+                {!isSubmitting && (step < 3 ? <ArrowRight className={`w-5 h-5 ${isAr ? 'rotate-180' : ''}`}/> : <Send className={`w-5 h-5 ${isAr ? 'rotate-180' : ''}`}/>)}
               </button>
             </div>
 
