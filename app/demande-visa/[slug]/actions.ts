@@ -1,60 +1,52 @@
 "use server";
 import prisma from "@/lib/prisma";
 
-export async function submitVisaApplication(agencyId: string, formData: FormData) {
+export async function submitVisaApplication(agencyId: string, offerId: string, formData: FormData) {
   try {
-    // 1. Récupération des informations personnelles
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const phone = formData.get("phone") as string;
     const passport = formData.get("passport") as string;
-    
-    // 2. Récupération des informations de voyage
-    const destination = formData.get("destination") as string;
-    const visaType = formData.get("visaType") as string;
-    const travelDate = formData.get("travelDate") as string;
+    const country = formData.get("country") as string;
 
-    // 3. Récupération des fichiers (Ils sont dans le FormData, prêts à être envoyés sur S3 ou Vercel Blob)
-    const photoFile = formData.get("photoFile") as File;
-    const passportFile = formData.get("passportFile") as File;
-
-    // TODO: Ici, dans le futur, tu pourras ajouter le code d'upload vers Vercel Blob ou AWS S3
-    // const photoUrl = await uploadToStorage(photoFile);
-
-    // 4. Création ou mise à jour du client
-    let client = await prisma.client.findFirst({
-      where: { phone, agencyId },
-    });
-
+    // 1. Création ou maj du Client
+    let client = await prisma.client.findFirst({ where: { phone, agencyId } });
     if (!client) {
       client = await prisma.client.create({
-        data: { 
-          firstName, 
-          lastName, 
-          phone, 
-          passport, 
-          agencyId, 
-          source: "Plateforme Visa Premium" 
-        },
+        data: { firstName, lastName, phone, passport, agencyId, source: "Plateforme Visa Publique" },
       });
     }
 
-    // 5. Création du dossier Visa complet
-    await prisma.visaApplication.create({
-      data: { 
-        clientId: client.id, 
-        agencyId: agencyId, 
-        status: "PENDING", 
-        country: destination || "À définir",
-        // Remarque : Si tu as ajouté visaType ou travelDate dans ton schéma Prisma, décommente les lignes ci-dessous :
-        // type: visaType,
-        // departureDate: travelDate ? new Date(travelDate) : null,
+    // 2. Création du Dossier Visa
+    const visa = await prisma.visaApplication.create({
+      data: {
+        clientId: client.id,
+        agencyId: agencyId,
+        status: "EN_ATTENTE",
+        country: country || "Non spécifié",
+        type: "Touristique/Étude", 
       },
     });
 
-    return { success: true, reference: `VISA-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}` };
+    // 3. (Simulation) Enregistrement des documents dans la base
+    // Dans la réalité, tu uploaderais le fichier sur Vercel Blob ici, puis tu mettrais l'URL
+    const photoName = formData.get("photoName") as string;
+    const passName = formData.get("passName") as string;
+
+    if (photoName) {
+      await prisma.document.create({
+        data: { name: "Photo d'identité", fileUrl: photoName, visaId: visa.id }
+      });
+    }
+    if (passName) {
+      await prisma.document.create({
+        data: { name: "Passeport", fileUrl: passName, visaId: visa.id }
+      });
+    }
+
+    return { success: true, ref: visa.id.slice(-6).toUpperCase() };
   } catch (error) {
-    console.error("Erreur sauvegarde Visa Premium :", error);
-    return { success: false, error: "Erreur serveur lors de la soumission." };
+    console.error("Erreur Visa:", error);
+    return { success: false, error: "Erreur serveur" };
   }
 }
