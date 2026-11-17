@@ -3,14 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Bell, PlaneTakeoff, Globe, CheckCircle2 } from "lucide-react";
 import { getUnreadNotifications, markAsRead } from "@/app/actions/notifications";
-import { useLanguage } from "@/components/language-provider"; // 🟢 IMPORT DU MOTEUR DE LANGUES
+import { useLanguage } from "@/components/language-provider"; 
 
 export function NotificationBell() {
-  const { t } = useLanguage(); // 🟢 INITIALISATION
+  const { t } = useLanguage(); 
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   
-  // 🟢 LES VARIABLES QUI CONTRÔLENT LE SON EXACTEMENT AU BON MOMENT
   const prevCount = useRef(0);
   const isFirstLoad = useRef(true);
 
@@ -19,16 +18,11 @@ export function NotificationBell() {
       try {
         const data = await getUnreadNotifications(Date.now());
         
-        // 🟢 LE SON NE JOUE QUE SI :
-        // 1. Ce n'est pas le chargement initial de la page.
-        // 2. Le NOUVEAU nombre de notifs est strictement supérieur à l'ancien.
         if (!isFirstLoad.current && data.length > prevCount.current) {
-          // Belle sonnerie de notification professionnelle (Style iPhone/SaaS)
           const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
           audio.play().catch(() => console.log("Son bloqué, cliquez sur l'écran."));
         }
         
-        // On met à jour l'ancien nombre avec le nouveau
         prevCount.current = data.length;
         isFirstLoad.current = false;
         
@@ -39,7 +33,7 @@ export function NotificationBell() {
     };
 
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 4000); // Polling ultra-rapide (4 secondes)
+    const interval = setInterval(fetchNotifs, 4000); 
     return () => clearInterval(interval);
   }, []);
 
@@ -57,7 +51,6 @@ export function NotificationBell() {
       {isOpen && (
         <div className="absolute bottom-24 right-0 w-[320px] sm:w-[400px] bg-slate-50 rounded-2xl shadow-[0_30px_100px_rgba(0,0,0,0.5)] border-4 border-slate-900 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           <div className="bg-slate-900 p-5 flex justify-between items-center text-white">
-            {/* 🟢 TRADUCTION DU TITRE */}
             <h3 className="font-black text-xl">{t("yourNotifs")}</h3>
             <span className="bg-rose-500 text-white text-sm font-black px-3 py-1 rounded-full shadow-lg">{unreadCount}</span>
           </div>
@@ -66,7 +59,6 @@ export function NotificationBell() {
             {unreadCount === 0 ? (
               <div className="p-10 text-center text-slate-500 font-bold bg-white rounded-xl border border-slate-300 shadow-sm">
                 <Bell className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                {/* 🟢 TRADUCTION DU MESSAGE "À JOUR" */}
                 {t("upToDate")}
               </div>
             ) : (

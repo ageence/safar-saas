@@ -17,7 +17,6 @@ export async function getUnreadNotifications(timestamp?: number) {
       take: 10
     });
   } catch (error) {
-    // 🟢 SI LA TABLE N'EXISTE PAS ENCORE, ON NE BLOQUE PAS LE DASHBOARD
     console.error("Erreur Notifications (Vérifiez la BDD):", error);
     return [];
   }
