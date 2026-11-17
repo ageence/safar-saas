@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { CheckCircle2, Send, UploadCloud, X, ArrowRight, ArrowLeft, ShieldCheck, FileImage, Briefcase, Globe2 } from "lucide-react";
 import { submitVisaApplication } from "./actions";
 
+// 🟢 FIX : Dictionnaire 100% complet avec "loading", "fileReady", "remove" et la langue "en" (Anglais)
 const dict = {
   fr: {
     title: "Dossier Visa Premium", subtitle: "Traitement rapide et sécurisé",
@@ -14,8 +15,23 @@ const dict = {
     history: "Historique de Visa (Pour ce pays)",
     histList: ["Jamais demandé (Première fois)", "Visa déjà obtenu dans le passé", "Visa refusé précédemment"],
     uploadPhoto: "Photo d'identité", uploadPass: "Copie du Passeport", dragDrop: "Glissez ou cliquez",
-    sizeRule: "Max 5MB", remove: "Retirer", next: "Suivant", prev: "Retour", submit: "Transmettre le dossier",
+    sizeRule: "Max 5MB", fileReady: "Prêt à l'envoi", remove: "Retirer", 
+    next: "Suivant", prev: "Retour", submit: "Transmettre le dossier", loading: "Analyse en cours...",
     success: "Dossier Transmis !", successSub: "Réf. de suivi :",
+  },
+  en: {
+    title: "Premium Visa File", subtitle: "Fast and secure processing",
+    step1: "Identity", step2: "Profile", step3: "Documents", step4: "Confirmation",
+    fname: "First Name", lname: "Last Name", phone: "Phone", pass: "Passport No.", country: "Destination Country",
+    notes: "Your remarks (Optional)",
+    prof: "Current Professional Status",
+    profList: ["Student", "Employed", "Freelance", "Retired", "Unemployed"],
+    history: "Visa History (For this country)",
+    histList: ["Never applied (First time)", "Visa obtained in the past", "Visa previously refused"],
+    uploadPhoto: "Passport Photo", uploadPass: "Passport Copy", dragDrop: "Drag file or click",
+    sizeRule: "Max 5MB", fileReady: "Ready to send", remove: "Remove", 
+    next: "Next", prev: "Back", submit: "Submit Application", loading: "Processing...",
+    success: "Application Submitted!", successSub: "Tracking Ref:",
   },
   ar: {
     title: "ملف التأشيرة المتميز", subtitle: "معالجة سريعة وآمنة",
@@ -27,13 +43,14 @@ const dict = {
     history: "تاريخ التأشيرات (لهذا البلد)",
     histList: ["أول مرة (لم يسبق لي الطلب)", "سبق لي الحصول على تأشيرة", "تم رفض طلبي سابقاً"],
     uploadPhoto: "صورة شمسية", uploadPass: "نسخة الجواز", dragDrop: "اسحب أو اضغط",
-    sizeRule: "الحد الأقصى 5MB", remove: "حذف", next: "التالي", prev: "رجوع", submit: "إرسال الملف",
+    sizeRule: "الحد الأقصى 5MB", fileReady: "جاهز للإرسال", remove: "حذف", 
+    next: "التالي", prev: "رجوع", submit: "إرسال الملف", loading: "جاري التحليل...",
     success: "تم إرسال الملف!", successSub: "مرجع التتبع:",
   }
 };
 
 export default function VisaFormClient({ agency, visaOffer }: { agency: any, visaOffer: any }) {
-  const [lang, setLang] = useState<"fr"|"ar">("fr");
+  const [lang, setLang] = useState<"fr" | "en" | "ar">("fr");
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{success: boolean, ref?: string}|null>(null);
@@ -59,7 +76,6 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Bloquants d'étapes
     if (step === 2 && (!occupation || !visaHistory)) return alert(isAr ? "يرجى اختيار المهنة والتاريخ" : "Veuillez sélectionner votre situation et historique.");
     if (step < 4) return setStep(step + 1);
     
@@ -78,19 +94,29 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
   return (
     <div className="max-w-4xl mx-auto px-4 pb-20" dir={isAr ? "rtl" : "ltr"}>
       
-      {/* HEADER AGENCE (Même style que voyage) */}
+      {/* HEADER AGENCE */}
       <div className="flex justify-between items-center mb-10 mt-6">
         <div className="bg-white px-6 py-3 rounded-full shadow-lg border border-slate-200 font-black text-indigo-900 text-xl flex items-center gap-3">
           <Globe2 className="w-6 h-6 text-indigo-500" /> {agency.name}
         </div>
-        <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-full font-bold transition-all shadow-inner">
-          {lang === "fr" ? "العربية" : "Français"}
-        </button>
+        
+        {/* SELECTEUR DE LANGUES */}
+        <div className="flex bg-slate-200 p-1 rounded-full shadow-inner border border-slate-300">
+          {(["fr", "en", "ar"] as const).map((l) => (
+            <button 
+              key={l} 
+              onClick={() => setLang(l)} 
+              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                lang === l ? "bg-white text-indigo-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {l === "fr" ? "FR" : l === "en" ? "EN" : "عربي"}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="bg-white rounded-[3rem] p-8 md:p-14 shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-slate-100 relative overflow-hidden">
-        
-        {/* LIGNE DE DÉCO */}
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-indigo-600"></div>
 
         {result?.success ? (
@@ -108,7 +134,7 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               <p className="text-slate-500 mt-2 font-medium">{t.subtitle}</p>
             </div>
 
-            {/* PROGRESS BAR (4 Etapes) */}
+            {/* PROGRESS BAR */}
             <div className="flex justify-between relative mb-12 max-w-lg mx-auto">
               <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2"></div>
               <div className="absolute top-1/2 left-0 h-1 bg-indigo-600 -translate-y-1/2 transition-all duration-500" style={{width: `${((step-1)/3)*100}%`}}></div>
@@ -130,9 +156,8 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               </div>
             </div>
 
-            {/* 🟢 ETAPE 2: PROFIL (NOUVEAU) 🟢 */}
+            {/* ETAPE 2: PROFIL */}
             <div className={`space-y-10 animate-in fade-in slide-in-from-right-10 duration-500 ${step === 2 ? 'block' : 'hidden'}`}>
-              
               <div>
                 <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2"><Briefcase className="w-6 h-6 text-indigo-500"/> {t.prof}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -143,7 +168,6 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
                   ))}
                 </div>
               </div>
-
               <div>
                 <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2"><Globe2 className="w-6 h-6 text-indigo-500"/> {t.history}</h3>
                 <div className="flex flex-col gap-3">
@@ -157,7 +181,6 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
                   ))}
                 </div>
               </div>
-
             </div>
 
             {/* ETAPE 3: UPLOAD */}
