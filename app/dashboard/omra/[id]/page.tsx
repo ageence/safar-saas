@@ -7,7 +7,7 @@ export const instant = false;
 export default async function OmraDashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
 
-  // On récupère TOUT le programme Omra avec ses relations (Chambres, Bus, Pèlerins, Mahram)
+  // 🟢 FIX: On inclut "room" et "bus" dans les réservations !
   const program = await prisma.omraProgram.findUnique({
     where: { id: resolvedParams.id },
     include: {
@@ -17,7 +17,9 @@ export default async function OmraDashboardPage({ params }: { params: Promise<{ 
         include: { 
           client: true, 
           mahram: { include: { client: true } },
-          dependents: { include: { client: true } }
+          dependents: { include: { client: true } },
+          room: true, // 🟢 La ligne magique manquante
+          bus: true   // 🟢 La ligne magique manquante
         } 
       },
     }
