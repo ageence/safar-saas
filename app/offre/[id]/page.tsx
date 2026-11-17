@@ -9,26 +9,23 @@ export default async function PublicOfferPage({ params }: { params: Promise<{ of
   let agency = null;
 
   try {
-    // Tentative de récupération depuis Prisma (Peut échouer si la table ne s'appelle pas "offer")
-    // @ts-ignore
-    offer = await prisma.offer.findUnique({ where: { id: resolvedParams.offerId } });
+    offer = await prisma.offer.findUnique({ where: { id: resolvedParams.offerId } }) as any;
     if (offer && offer.agencyId) {
-      agency = await prisma.agency.findUnique({ where: { id: offer.agencyId } });
+      agency = await prisma.agency.findUnique({ where: { id: offer.agencyId } }) as any;
     }
   } catch (error) {
-    console.log("Prisma n'a pas trouvé la table offre, utilisation des données de secours pour le design");
-    offer = { title: "Voyage Spécial (Démo)", price: 0 };
-    agency = { name: "Mon Agence", address: "Alger", phone: "0500000000" };
+    offer = { title: "Voyage Exclusif", price: 0 };
+    agency = { name: "Safar Agency", address: "", phone: "" };
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 selection:bg-indigo-500 selection:text-white">
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-slate-900 to-slate-50"></div>
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40"></div>
-        <div className="absolute top-24 -left-24 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-40"></div>
+    <main className="min-h-screen bg-slate-50 selection:bg-emerald-500 selection:text-white flex items-center justify-center py-12 overflow-hidden relative">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-50"></div>
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-cyan-500 rounded-full mix-blend-multiply filter blur-[150px] opacity-40 animate-pulse"></div>
+        <div className="absolute top-40 -left-20 w-[500px] h-[500px] bg-emerald-500 rounded-full mix-blend-multiply filter blur-[150px] opacity-30"></div>
       </div>
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <OffreClient offer={offer} agency={agency} />
       </div>
     </main>
