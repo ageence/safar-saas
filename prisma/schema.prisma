@@ -22,13 +22,16 @@ model Agency {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]   
-  clients   Client[] 
-  offers    Offer[]
-  bookings  Booking[]
-  visas     VisaApplication[] 
-  payments  Payment[] 
-  expenses  Expense[] 
+  users        User[]   
+  clients      Client[] 
+  offers       Offer[]
+  bookings     Booking[]
+  visas        VisaApplication[] 
+  payments     Payment[] 
+  expenses     Expense[] 
+  
+  // 👇 AJOUT POUR LE MODULE OMRA
+  omraPrograms OmraProgram[]
 }
 
 model User {
@@ -53,17 +56,18 @@ model Client {
   source    String
   status    String   @default("PROSPECT")
   notes     String?
-  
-  // 👇 AJOUTE CETTE LIGNE EXACTEMENT ICI 👇
   passport  String?
-  // 👆 👆 👆 👆 👆
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   agencyId  String
   agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  
   bookings  Booking[]
   visas     VisaApplication[]
+  
+  // 👇 AJOUT POUR LE MODULE OMRA
+  omraBookings OmraBooking[]
 }
 
 model Offer {
@@ -77,35 +81,33 @@ model Offer {
   availableSeats Int?     
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-// 👇 LES 4 NOUVELLES COLONNES À AJOUTER 👇
   startDate      DateTime?
   endDate        DateTime?
   totalSpots     Int?
   availableSpots Int?
-  // 👆 👆 👆 👆 👆
+  
   agencyId       String
   agency         Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   bookings       Booking[]
 }
 
 model Booking {
-  id          String   @id @default(cuid())
-  status      String   @default("EN_ATTENTE") 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  status    String   @default("EN_ATTENTE") 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  offerId     String
-  offer       Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  agencyId    String
-  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  offerId   String
+  offer     Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   
-  payments    Payment[] 
-documents   Document[]
+  payments  Payment[] 
+  documents Document[]
 }
 
-// 1. LE NOUVEAU MODÈLE VISA
 model VisaApplication {
   id              String   @id @default(cuid())
   country         String   
@@ -132,27 +134,25 @@ model VisaApplication {
   documents       Document[]
 }
 
-// 2. METS À JOUR LA TABLE PAYMENT (Ajoute les 2 lignes Visa)
 model Payment {
-  id          String   @id @default(cuid())
-  amount      Float
-  method      String   
-  reference   String?  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  amount    Float
+  method    String   
+  reference String?  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  bookingId   String?
-  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   
-  // 👇 AJOUTE CES 2 LIGNES 👇
-  visaId      String?
-  visa        VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
+  visaId    String?
+  visa      VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
 
-  agencyId    String
-  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  clientId    String?
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  clientId  String?
 }
-// Table des Dépenses (Sorties d'argent)
+
 model Expense {
   id          String   @id @default(cuid())
   amount      Float
@@ -164,36 +164,107 @@ model Expense {
   agencyId    String
   agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 }
-// 3. METS À JOUR LA TABLE DOCUMENT (Ajoute les 2 lignes Visa et met un ? au bookingId)
-model Document {
-  id          String   @id @default(cuid())
-  name        String   
-  fileUrl     String?
-  createdAt   DateTime @default(now())
 
-  bookingId   String?  // <--- N'oublie pas le point d'interrogation ici !
-  booking     Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+model Document {
+  id        String   @id @default(cuid())
+  name      String   
+  fileUrl   String?
+  createdAt DateTime @default(now())
+
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   
-  // 👇 AJOUTE CES 2 LIGNES 👇
-  visaId      String?
-  visa        VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
+  visaId    String?
+  visa      VisaApplication? @relation(fields: [visaId], references: [id], onDelete: Cascade)
 }
-// TABLE POUR LES OFFRES DE VISA (CAMPAGNES PUBLIQUES)
+
 model VisaOffer {
-  id          String   @id @default(cuid())
-  title       String   // Ex: "Visa Étude", "Visa Touristique"
-  country     String?  // Optionnel : Si vide, le client choisit le pays
-  slug        String   @unique // Le lien public (ex: mon-agence-visa-etude)
-  agencyId    String
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  title     String   
+  country   String?  
+  slug      String   @unique 
+  agencyId  String
+  createdAt DateTime @default(now())
 }
+
 model Notification {
   id        String   @id @default(cuid())
   title     String
   message   String
-  type      String   // "VISA" ou "VOYAGE"
+  type      String   
   isRead    Boolean  @default(false)
-  link      String?  // Le lien vers le dossier
+  link      String?  
   agencyId  String
   createdAt DateTime @default(now())
+}
+
+// ==========================================
+// 🕋 MODULE OMRA & HAJJ (NOUVEAU)
+// ==========================================
+
+model OmraProgram {
+  id            String   @id @default(cuid())
+  title         String   // Ex: "Omra Ramadan 2027 - 15 Jours"
+  departureDate DateTime
+  returnDate    DateTime
+  status        String   @default("OUVERT") // OUVERT, COMPLET, CLÔTURÉ
+  
+  agencyId      String
+  agency        Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  
+  buses         Bus[]
+  rooms         Room[]
+  bookings      OmraBooking[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Bus {
+  id          String   @id @default(cuid())
+  name        String   // Ex: "Bus 1 - VIP Makkah"
+  capacity    Int      @default(49)
+  
+  programId   String
+  program     OmraProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  bookings    OmraBooking[]
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  hotelName   String
+  city        String   // MAKKAH ou MADINAH
+  type        String   // DOUBLE, TRIPLE, QUADRUPLE
+  capacity    Int
+  roomNumber  String?  // Assigné plus tard par l'agence
+  
+  programId   String
+  program     OmraProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  bookings    OmraBooking[]
+}
+
+model OmraBooking {
+  id            String   @id @default(cuid())
+  
+  clientId      String
+  client        Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  programId     String
+  program       OmraProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  
+  // 🟢 AFFECTATIONS (Bus & Chambre)
+  busId         String?
+  bus           Bus?     @relation(fields: [busId], references: [id], onDelete: SetNull)
+  roomId        String?
+  room          Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  
+  // 🟢 GESTION DU MAHRAM (Relation avec un autre pèlerin)
+  mahramId      String?
+  mahram        OmraBooking?  @relation("MahramRelation", fields: [mahramId], references: [id])
+  dependents    OmraBooking[] @relation("MahramRelation")
+  relationType  String?       // Ex: "Épouse", "Mère", "Fille"
+
+  status        String   @default("INSCRIT") // INSCRIT, VISA_EN_COURS, CONFIRMÉ, ANNULÉ
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
