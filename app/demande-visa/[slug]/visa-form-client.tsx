@@ -1,12 +1,11 @@
 "use client";
 import { useState, useRef } from "react";
-import { CheckCircle2, Send, UploadCloud, X, ArrowRight, ArrowLeft, ShieldCheck, FileImage, Briefcase, Globe2 } from "lucide-react";
+import { CheckCircle2, Send, UploadCloud, ArrowRight, ArrowLeft, ShieldCheck, FileImage, Briefcase, Globe2 } from "lucide-react";
 import { submitVisaApplication } from "./actions";
 
-// 🟢 FIX : Dictionnaire 100% complet avec "loading", "fileReady", "remove" et la langue "en" (Anglais)
 const dict = {
   fr: {
-    title: "Dossier Visa Premium", subtitle: "Traitement rapide et sécurisé",
+    title: "Dossier Visa", subtitle: "Traitement rapide et sécurisé",
     step1: "Identité", step2: "Profil", step3: "Documents", step4: "Confirmation",
     fname: "Prénom", lname: "Nom", phone: "Téléphone", pass: "N° Passeport", country: "Pays de destination",
     notes: "Vos remarques (Optionnel)",
@@ -20,7 +19,7 @@ const dict = {
     success: "Dossier Transmis !", successSub: "Réf. de suivi :",
   },
   en: {
-    title: "Premium Visa File", subtitle: "Fast and secure processing",
+    title: "Visa Application", subtitle: "Fast and secure processing",
     step1: "Identity", step2: "Profile", step3: "Documents", step4: "Confirmation",
     fname: "First Name", lname: "Last Name", phone: "Phone", pass: "Passport No.", country: "Destination Country",
     notes: "Your remarks (Optional)",
@@ -34,7 +33,7 @@ const dict = {
     success: "Application Submitted!", successSub: "Tracking Ref:",
   },
   ar: {
-    title: "ملف التأشيرة المتميز", subtitle: "معالجة سريعة وآمنة",
+    title: "ملف التأشيرة", subtitle: "معالجة سريعة وآمنة",
     step1: "الهوية", step2: "الملف الشخصي", step3: "الوثائق", step4: "تأكيد",
     fname: "الاسم", lname: "اللقب", phone: "الهاتف", pass: "رقم الجواز", country: "بلد الوجهة",
     notes: "ملاحظات (اختياري)",
@@ -75,7 +74,6 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
     if (step === 2 && (!occupation || !visaHistory)) return alert(isAr ? "يرجى اختيار المهنة والتاريخ" : "Veuillez sélectionner votre situation et historique.");
     if (step < 4) return setStep(step + 1);
     
@@ -94,21 +92,16 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
   return (
     <div className="max-w-4xl mx-auto px-4 pb-20" dir={isAr ? "rtl" : "ltr"}>
       
-      {/* HEADER AGENCE */}
       <div className="flex justify-between items-center mb-10 mt-6">
         <div className="bg-white px-6 py-3 rounded-full shadow-lg border border-slate-200 font-black text-indigo-900 text-xl flex items-center gap-3">
           <Globe2 className="w-6 h-6 text-indigo-500" /> {agency.name}
         </div>
         
-        {/* SELECTEUR DE LANGUES */}
         <div className="flex bg-slate-200 p-1 rounded-full shadow-inner border border-slate-300">
           {(["fr", "en", "ar"] as const).map((l) => (
             <button 
-              key={l} 
-              onClick={() => setLang(l)} 
-              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ${
-                lang === l ? "bg-white text-indigo-900 shadow-sm" : "text-slate-500 hover:text-slate-800"
-              }`}
+              key={l} onClick={() => setLang(l)} 
+              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ${lang === l ? "bg-white text-indigo-900 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
             >
               {l === "fr" ? "FR" : l === "en" ? "EN" : "عربي"}
             </button>
@@ -134,7 +127,6 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               <p className="text-slate-500 mt-2 font-medium">{t.subtitle}</p>
             </div>
 
-            {/* PROGRESS BAR */}
             <div className="flex justify-between relative mb-12 max-w-lg mx-auto">
               <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2"></div>
               <div className="absolute top-1/2 left-0 h-1 bg-indigo-600 -translate-y-1/2 transition-all duration-500" style={{width: `${((step-1)/3)*100}%`}}></div>
@@ -143,21 +135,19 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               ))}
             </div>
 
-            {/* ETAPE 1: IDENTITE */}
-            <div className={`space-y-6 animate-in fade-in slide-in-from-right-10 duration-500 ${step === 1 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-6 animate-in fade-in duration-500 ${step === 1 ? 'block' : 'hidden'}`}>
               <div className="grid md:grid-cols-2 gap-6">
                 <input required={step===1} name="firstName" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none shadow-inner" placeholder={t.fname} />
                 <input required={step===1} name="lastName" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none shadow-inner" placeholder={t.lname} />
                 <input required={step===1} name="phone" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none shadow-inner" placeholder={t.phone} dir="ltr" />
                 <input required={step===1} name="passport" className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none shadow-inner uppercase" placeholder={t.pass} />
-                <div className="md:col-span-2">
-                  <textarea name="notes" rows={3} className="w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none shadow-inner resize-none" placeholder={t.notes} />
+                <div className="md:col-span-2 relative mt-2">
+                  <textarea name="notes" rows={3} className={`w-full bg-slate-50 border-2 border-slate-200 focus:border-indigo-500 rounded-2xl p-5 font-bold outline-none resize-none transition-colors ${isAr ? 'text-right' : 'text-left'}`} placeholder={t.notes} />
                 </div>
               </div>
             </div>
 
-            {/* ETAPE 2: PROFIL */}
-            <div className={`space-y-10 animate-in fade-in slide-in-from-right-10 duration-500 ${step === 2 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-10 animate-in fade-in duration-500 ${step === 2 ? 'block' : 'hidden'}`}>
               <div>
                 <h3 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2"><Briefcase className="w-6 h-6 text-indigo-500"/> {t.prof}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -183,8 +173,7 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               </div>
             </div>
 
-            {/* ETAPE 3: UPLOAD */}
-            <div className={`space-y-6 animate-in fade-in slide-in-from-right-10 duration-500 ${step === 3 ? 'block' : 'hidden'}`}>
+            <div className={`space-y-6 animate-in fade-in duration-500 ${step === 3 ? 'block' : 'hidden'}`}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="relative overflow-hidden bg-slate-50 border-2 border-dashed border-slate-300 rounded-[2rem] p-8 text-center hover:border-indigo-500 transition-colors group">
                   <input type="file" ref={photoRef} onChange={(e) => handleFile(e, "photo")} accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
@@ -220,17 +209,15 @@ export default function VisaFormClient({ agency, visaOffer }: { agency: any, vis
               </div>
             </div>
 
-            {/* ETAPE 4: RECAPITULATIF */}
-            <div className={`animate-in fade-in slide-in-from-right-10 duration-500 ${step === 4 ? 'block' : 'hidden'}`}>
+            <div className={`animate-in fade-in duration-500 ${step === 4 ? 'block' : 'hidden'}`}>
               <div className="bg-indigo-50 border-2 border-indigo-100 p-8 rounded-[2rem] text-center">
                 <ShieldCheck className="w-20 h-20 text-indigo-500 mx-auto mb-6" />
-                <h3 className="text-2xl font-black text-slate-800 mb-2">Dossier Complet</h3>
+                <h3 className="text-2xl font-black text-slate-800 mb-2">{t.step4}</h3>
                 <p className="text-slate-600 font-medium">Vos informations, votre profil et vos documents sont prêts à être transmis de manière sécurisée à notre équipe.</p>
                 <input type="hidden" name="country" value={visaOffer.country || "Non défini"} />
               </div>
             </div>
 
-            {/* NAVIGATION */}
             <div className="flex gap-4 pt-6 border-t border-slate-100 mt-10">
               {step > 1 && (
                 <button type="button" onClick={() => setStep(step-1)} className="px-8 py-5 rounded-2xl bg-slate-100 font-black text-slate-600 hover:bg-slate-200 transition-colors flex items-center gap-2">
